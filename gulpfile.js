@@ -7,8 +7,13 @@ var gulp = require('gulp'),
     // browserify = require('gulp-browserify');
     // webserver = require('gulp-webserver'),
     // browserSync = require('browser-sync');
+var del = require('del'),
+     usemin = require('gulp-usemin'),
+     uglify = require('gulp-uglify'),
+     minifycss = require('gulp-minify-css');
     
 // npm i gulp gulp-jshint jshint-stylish gulp-typescript gulp-sourcemaps gulp-cached --save-dev
+// npm i del gulp-usemin gulp-minify-css gulp-uglify --save-dev
 
 // watch
 gulp.task('watch', function () {
@@ -35,8 +40,8 @@ gulp.task('compileTs', function () {
         return file.base;
     }));
 	return tsResult.js
-				.pipe(sourcemaps.write('src/maps'))
-				.pipe(gulp.dest(function(file) {
+                .pipe(sourcemaps.write('./maps'))
+                .pipe(gulp.dest(function(file) {
                     return file.base;
                 }));   
 });
@@ -49,26 +54,30 @@ gulp.task('jshint', function () {
         .pipe(jshint.reporter(stylish));
 });
 
-// compileTSServer
-gulp.task('compileTsServer', function () {
-    var tsResult = gulp.src('*.ts')
-    .pipe(sourcemaps.init())
-    .pipe(ts({
-        target: 'ES5',
-        declarationFiles: false,
-        noExternalResolve: false,
-        removeComments: false,
-    }));
-		
-	tsResult.dts.pipe(gulp.dest(''));
-	return tsResult.js
-				.pipe(sourcemaps.write('maps'))
-				.pipe(gulp.dest(''));   
+
+
+// Default task
+gulp.task('build', ['clean'], function() {
+    // gulp.start('usemin', 'imagemin','copy');
+    gulp.start('usemin', 'copy');
+    // gulp.start('copy');
 });
 
-// jshintServer
-gulp.task('jshintServer', function () {
-    return gulp.src(['*.js'])
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish));
+// Clean
+gulp.task('clean', function() {
+    return del(['build']);
+});
+
+gulp.task('copy', ['clean'], function() {
+   gulp.src('./src/assets/**/*')
+   .pipe(gulp.dest('./build/assets'));
+});
+
+gulp.task('usemin',['jshint'], function () {
+  return gulp.src('./src/index.html')
+      .pipe(usemin({
+        css: [minifycss()],
+        js: [uglify()],
+      }))
+      .pipe(gulp.dest('build/'));
 });

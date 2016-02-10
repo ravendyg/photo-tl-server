@@ -21,4 +21,4 @@ app.listen(app.get('port'));
 console.log('Listen on ' + config.get('port'));
 // console.log(path.join(__dirname, config.get('src'), 'index.html')); 
 
-//# sourceMappingURL=src/maps/server.js.map
+//# sourceMappingURL=maps/server.js.map
