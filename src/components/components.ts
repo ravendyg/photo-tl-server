@@ -1,4 +1,5 @@
 /// <reference path="../../typings/tsd.d.ts" />
+(function(){
 angular.module('photoAlbum')
     .directive('userMenu', function () {
          return {
@@ -12,3 +13,4 @@ angular.module('photoAlbum')
              templateUrl: 'components/userInfo/userInfo.html'
          }
      });
+})();

@@ -1,5 +1,6 @@
 /// <reference path="../../typings/tsd.d.ts" />
 /// <reference path="../../typings/others.d.ts" />
+(function(){
 angular.module('photoAlbum')
      .service('userService', [UserService])    
 
@@ -81,5 +82,6 @@ function UserService(){
         });
         return promise;
     }
-  };
+  }
 }
+})();

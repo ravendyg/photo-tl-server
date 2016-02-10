@@ -8,12 +8,20 @@ var gulp = require('gulp'),
     // webserver = require('gulp-webserver'),
     // browserSync = require('browser-sync');
 var del = require('del'),
-     usemin = require('gulp-usemin'),
-     uglify = require('gulp-uglify'),
-     minifycss = require('gulp-minify-css');
+    usemin = require('gulp-usemin'),
+    uglify = require('gulp-uglify'),
+    minifycss = require('gulp-minify-css'),
+    rename = require('gulp-rename'),
+    concat = require('gulp-concat'),
+    notify = require('gulp-notify'),
+    cache = require('gulp-cache'),
+    changed = require('gulp-changed'),
+    htmlmin = require('gulp-htmlmin');
+var fs = require('fs');
     
 // npm i gulp gulp-jshint jshint-stylish gulp-typescript gulp-sourcemaps gulp-cached --save-dev
 // npm i del gulp-usemin gulp-minify-css gulp-uglify --save-dev
+// npm i gulp-rename gulp-concat gulp-notify gulp-cache gulp-changed --save-dev
 
 // watch
 gulp.task('watch', function () {
@@ -73,11 +81,34 @@ gulp.task('copy', ['clean'], function() {
    .pipe(gulp.dest('./build/assets'));
 });
 
+/** find templates in .directive
+ * replace templateURL by template
+ * insert templates directly into js
+ */
+gulp.task('inline-teplates', ['usemin'], function () {
+    var output = '';
+    output = fs.readFileSync('./build/bundle.js', 'utf8')
+        .replace(/templateUrl/g, 'template');
+    var templateFiles = output.match(/"components\/[a-zA-Z0-9\/]*.html"/g);
+    var template = '';
+console.log(templateFiles);
+    for (var i=0; i< templateFiles.length; i++) {
+        template = fs.readFileSync('./src/' + templateFiles[i].replace(/"/g, ''), 'utf8');
+console.log('./src/' + templateFiles[i]);
+// console.log(output.indexOf(templateFiles[i]));
+        output = output.replace(templateFiles[i],
+            '\''+ template.replace(/(\n|\r)/g, '').replace(/\'/g, '\\\'').replace(/[ \t]{2,}/g, ' ') +'\'');
+// console.log(template);
+// console.log(JSON.stringify(template));
+    }    
+    fs.writeFileSync('./build/bundle.js', output, 'utf8');
+});
+
 gulp.task('usemin',['jshint'], function () {
   return gulp.src('./src/index.html')
       .pipe(usemin({
-        css: [minifycss()],
-        js: [uglify()],
+        css: [minifycss(), 'concat'],
+        js: [ uglify({ mangle: false })]
       }))
       .pipe(gulp.dest('build/'));
 });
