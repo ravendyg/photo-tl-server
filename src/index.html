@@ -7,18 +7,12 @@
 <!-- endbuild -->
 <!-- build:css bundle.css -->
     <link rel="stylesheet" href="css/app.css"/>
+    <link rel="stylesheet" href="css/b-app.css"/>
 <!-- endbuild -->
 </head>
     <body ng-app="photoAlbum" ng-cloack layout="column" ng-controller="UserWrapperController as uwCtrl">
 
-    <!--<div ui-view></div>-->
-    
-    <md-toolbar layout="row" >
-        <md-button class="menu" hide-gt-sm ng-click="uwCtrl.toggleList()" aria-label="Show User List">
-            <md-icon md-svg-icon="menu"></md-icon>
-        </md-button>
-        <h3>Angular Material - Starter App</h3>
-    </md-toolbar>
+    <app-toolbar></app-toolbar>
 
     <div flex layout="row">
 
@@ -47,9 +41,11 @@
     <script src="js/app.js"></script>
     <script src="components/stores.js"></script>
     <script src="components/userContact/UserContact.js"></script>
-    <script src="components/userInfo/UserInfo.js"></script>   
+    <script src="components/userInfo/UserInfo.js"></script>
     <script src="components/userMenu/UserMenu.js"></script>
-    <script src="components/userWrapper/UserWrapper.js"></script>
+    <script src="components/logIn/logIn.js"></script>
+    <!--<script src="components/userWrapper/UserWrapper.js"></script>-->
+    <script src="components/appToolbar/appToolbar.js"></script>
     <script src="components/components.js"></script>
 <!-- endbuild -->
 

@@ -1,0 +1,41 @@
+<md-dialog aria-label="Mango (Fruit)"  ng-cloak>
+  <form>
+    <!--<md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Mango (Fruit)</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>-->
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-input-container layout="row">
+            <label>Логин</label>
+            <input ng-model="lgCtrl.user.name" name="login">
+        </md-input-container>
+        <md-input-container layout="row">
+            <label>Пароль</label>
+            <input ng-model="lgCtrl.user.pas" type="password" name="password">
+        </md-input-container>
+        <md-input-container layout="row">
+            <label>Подтверждение пароля</label>
+            <input ng-model="lgCtrl.user.pasConfirm" type="password" name="passwordConfirmation">
+        </md-input-container layout="row">
+        <md-checkbox ng-model="lgCtrl.user.rem" class="md-primary" aria-label="Remember on this computer">
+            Запомнить
+        </md-checkbox>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="answer('not useful')">
+       Not Useful
+      </md-button>
+      <md-button ng-click="answer('useful')" style="margin-right:20px;">
+        Useful
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

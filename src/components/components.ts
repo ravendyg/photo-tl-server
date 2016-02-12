@@ -13,10 +13,12 @@ angular.module('photoAlbum')
              templateUrl: 'components/userInfo/userInfo.html'
          }
      })
-     .directive('userWrapper', function () {
+     .directive('appToolbar', function () {
          return {
-            controller: 'UserWrapperController as usWrCtrl',
-            templateUrl: 'components/userWrapper/userWrapper.html'
+            restrict: 'E',
+            replace: true,
+            controller: 'AppToolbarController as apTbCtrl',
+            templateUrl: 'components/appToolbar/appToolbar.html'
          }
      })
      .controller('UserWrapperController', ['$mdSidenav', userWrapperController]);

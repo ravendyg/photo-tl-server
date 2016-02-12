@@ -3,7 +3,8 @@ var gulp = require('gulp'),
     stylish = require('jshint-stylish'),
     ts = require('gulp-typescript'),
     sourcemaps = require('gulp-sourcemaps'),
-    cache = require('gulp-cached');
+    cache = require('gulp-cached'),
+    sass = require('gulp-sass');
     // browserify = require('gulp-browserify');
     // webserver = require('gulp-webserver'),
     // browserSync = require('browser-sync');
@@ -19,18 +20,19 @@ var del = require('del'),
     htmlmin = require('gulp-htmlmin');
 var fs = require('fs');
     
-// npm i gulp gulp-jshint jshint-stylish gulp-typescript gulp-sourcemaps gulp-cached --save-dev
+// npm i gulp gulp-jshint jshint-stylish gulp-sass gulp-typescript gulp-sourcemaps gulp-cached --save-dev
 // npm i del gulp-usemin gulp-minify-css gulp-uglify --save-dev
 // npm i gulp-rename gulp-concat gulp-notify gulp-cache gulp-changed --save-dev
 
 // watch
 gulp.task('watch', function () {
-   gulp.watch(['./**/*.ts'], ['compileTs']);
+    gulp.watch(['./**/*.ts'], ['compileTs']);
 //    gulp.watch('./*.ts', ['compileTs']);
 //    gulp.watch('src/styles/*.sass', ['styles']);
-   gulp.watch(['./src/**/*.js', './*.js',
+    gulp.watch(['./src/**/*.js', './*.js',
     '!./src/bower_components/**/*.js', '!./node_modules/**/*.js'], ['jshint']);
 //    gulp.watch('./*.js', ['jshint']);
+    gulp.watch('./src/css/*.scss', ['sass']);
 });
 
 // compileTS
@@ -60,6 +62,14 @@ gulp.task('jshint', function () {
         '!./src/bower_components/**/*.js', '!./node_modules/**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
+});
+
+//sass
+gulp.task('sass', function () {
+    return gulp.src(['./src/css/*.scss'])
+        .pipe(sass())
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('./src/css'));
 });
 
 

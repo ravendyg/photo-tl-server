@@ -6,16 +6,18 @@
     // Users DataService
     function UserService() {
         var self = this;
-        var users = [];
-        var user = {};
+        var user = null;
+        var usersOld = [];
+        var userOld = {};
         var selected = 0;
         // Promise-based API
         return {
+            loggedInUser: user,
             getAllUsers: function () {
                 var promise = new Promise(function (resolve, reject) {
-                    if (!users.length) {
+                    if (!usersOld.length) {
                         // first time loading
-                        users = [
+                        usersOld = [
                             {
                                 name: 'Lia Lugo',
                                 avatar: 'svg-1',
@@ -47,26 +49,26 @@
                                 content: "Lebowski ipsum yeah? What do you think happens when you get rad? You turn in your library card? Get a new driver's license? Stop being awesome? Dolor sit amet, consectetur adipiscing elit praesent ac magna justo pellentesque ac lectus. You don't go out and make a living dressed like that in the middle of a weekday. Quis elit blandit fringilla a ut turpis praesent felis ligula, malesuada suscipit malesuada."
                             }
                         ];
-                        resolve(users);
+                        resolve(usersOld);
                     }
                     else {
                         // already loaded
-                        resolve(users);
+                        resolve(usersOld);
                     }
                 });
                 return promise;
             },
             getUser: function () {
                 var promise = new Promise(function (resolve, reject) {
-                    if (users.length > selected) {
-                        user = users[selected];
-                        resolve(user);
+                    if (usersOld.length > selected) {
+                        userOld = usersOld[selected];
+                        resolve(userOld);
                     }
                     else {
                         self.getAllUsers()
                             .then(function (users) {
-                            user = users[0];
-                            resolve(user);
+                            userOld = users[0];
+                            resolve(userOld);
                         });
                     }
                 });
@@ -75,8 +77,8 @@
             setUser: function (index) {
                 var promise = new Promise(function (resolve, reject) {
                     selected = index;
-                    user = users[selected];
-                    resolve(user);
+                    userOld = usersOld[selected];
+                    resolve(userOld);
                 });
                 return promise;
             }
