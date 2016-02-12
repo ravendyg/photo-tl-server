@@ -4,7 +4,8 @@ var gulp = require('gulp'),
     ts = require('gulp-typescript'),
     sourcemaps = require('gulp-sourcemaps'),
     cache = require('gulp-cached'),
-    sass = require('gulp-sass');
+    sass = require('gulp-sass'),
+    run = require('gulp-run');
     // browserify = require('gulp-browserify');
     // webserver = require('gulp-webserver'),
     // browserSync = require('browser-sync');
@@ -26,40 +27,39 @@ var fs = require('fs');
 
 // watch
 gulp.task('watch', function () {
-    gulp.watch(['./**/*.ts'], ['compileTs']);
+    gulp.watch(['./src/**/*.ts'], ['compileTs']);
 //    gulp.watch('./*.ts', ['compileTs']);
 //    gulp.watch('src/styles/*.sass', ['styles']);
-    gulp.watch(['./src/**/*.js', './*.js',
-    '!./src/bower_components/**/*.js', '!./node_modules/**/*.js'], ['jshint']);
+    gulp.watch(['./prebuild/app.js'], ['jshint']);
 //    gulp.watch('./*.js', ['jshint']);
     gulp.watch('./src/css/*.scss', ['sass']);
 });
 
 // compileTS
 gulp.task('compileTs', function () {
-    var tsResult = gulp.src(['./src/**/*.ts', './*.ts'])
-    .pipe(sourcemaps.init())
-    .pipe(ts({
-        target: 'ES5',
-        declarationFiles: false,
-        noExternalResolve: false,
-        removeComments: false,
-    }));
+    run('tsc').exec();
+    // var tsResult = gulp.src(['./src/**/*.ts', './*.ts'])
+    // .pipe(sourcemaps.init())
+    // .pipe(ts({
+    //     target: 'ES5',
+    //     declarationFiles: false,
+    //     noExternalResolve: false,
+    //     removeComments: false,
+    // }));
 		
-	tsResult.dts.pipe(gulp.dest(function(file) {
-        return file.base;
-    }));
-	return tsResult.js
-                .pipe(sourcemaps.write('./maps'))
-                .pipe(gulp.dest(function(file) {
-                    return file.base;
-                }));   
+	// tsResult.dts.pipe(gulp.dest(function(file) {
+    //     return file.base;
+    // }));
+	// return tsResult.js
+    //             .pipe(sourcemaps.write('./maps'))
+    //             .pipe(gulp.dest(function(file) {
+    //                 return file.base;
+    //             }));   
 });
 
 // jshint
 gulp.task('jshint', function () {
-    return gulp.src(['./src/**/*.js', './*.js',
-        '!./src/bower_components/**/*.js', '!./node_modules/**/*.js'])
+    return gulp.src(['./prebuild/app.js'])
         .pipe(jshint())
         .pipe(jshint.reporter(stylish));
 });
@@ -69,7 +69,7 @@ gulp.task('sass', function () {
     return gulp.src(['./src/css/*.scss'])
         .pipe(sass())
         .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest('./src/css'));
+        .pipe(gulp.dest('./prebuild'));
 });
 
 
@@ -77,7 +77,8 @@ gulp.task('sass', function () {
 // Default task
 gulp.task('build', ['clean'], function() {
     // gulp.start('usemin', 'imagemin','copy');
-    gulp.start('usemin', 'copy');
+    // gulp.start('usemin', 'copy');
+    gulp.start('inline-teplates', 'copy');
     // gulp.start('copy');
 });
 

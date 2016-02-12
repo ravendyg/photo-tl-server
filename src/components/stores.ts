@@ -21,10 +21,9 @@ function UserService(){
   return {
       loggedInUser: user,
       
+     
       
-      
-      
-      
+  
     getAllUsers : function() {
         var promise = new Promise ( (resolve, reject) => {
             if (!usersOld.length) {

@@ -17,7 +17,7 @@
             {name: 'Google+', icon: 'google_plus',  icon_url: 'assets/svg/google_plus.svg'},
             {name: 'Hangout', icon: 'hangouts',  icon_url: 'assets/svg/hangouts.svg'}
         ];
-        
+
         self.contactUser = function (action) {
             $mdBottomSheet.hide(action);
         };
