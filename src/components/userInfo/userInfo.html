@@ -1,3 +1,9 @@
 <md-icon md-svg-icon="{{selectedUser.avatar}}" class="avatar" ng-click="usInfCtrl.show()"></md-icon>
 <h2>{{selectedUser.name}}</h2>
 <p>{{selectedUser.content}}</p>
+
+<md-button class="contact" md-no-ink ng-click="usInfCtrl.makeContact()"
+    aria-label="Share with {{selectedUser.name}}">
+    <md-tooltip>Contact {{selectedUser.name}}</md-tooltip>
+    <md-icon md-svg-icon="share"></md-icon>
+</md-button>

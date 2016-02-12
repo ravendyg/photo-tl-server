@@ -87,20 +87,21 @@ gulp.task('copy', ['clean'], function() {
  */
 gulp.task('inline-teplates', ['usemin'], function () {
     var output = '';
+    // find templates
     output = fs.readFileSync('./build/bundle.js', 'utf8')
         .replace(/templateUrl/g, 'template');
     var templateFiles = output.match(/"components\/[a-zA-Z0-9\/]*.html"/g);
     var template = '';
-console.log(templateFiles);
+// console.log(templateFiles);
     for (var i=0; i< templateFiles.length; i++) {
+        // read template from file
         template = fs.readFileSync('./src/' + templateFiles[i].replace(/"/g, ''), 'utf8');
-console.log('./src/' + templateFiles[i]);
-// console.log(output.indexOf(templateFiles[i]));
+// console.log('./src/' + templateFiles[i]);
+        // remove extra spaces, surround by single quotes, and insert into js
         output = output.replace(templateFiles[i],
             '\''+ template.replace(/(\n|\r)/g, '').replace(/\'/g, '\\\'').replace(/[ \t]{2,}/g, ' ') +'\'');
-// console.log(template);
-// console.log(JSON.stringify(template));
-    }    
+    }
+    // output result    
     fs.writeFileSync('./build/bundle.js', output, 'utf8');
 });
 

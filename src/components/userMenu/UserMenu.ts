@@ -4,7 +4,7 @@
 (function(){
 angular.module('photoAlbum')
      .controller('UserMenuController', [
-        '$scope', 'userService', '$mdSidenav', '$mdBottomSheet', '$log',
+        '$scope', 'userService',
         UserMenuController
      ]);
 

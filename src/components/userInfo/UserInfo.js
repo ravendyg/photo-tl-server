@@ -4,10 +4,10 @@
 (function () {
     angular.module('photoAlbum')
         .controller('UserInfoController', [
-        '$scope', 'userService', '$mdSidenav', '$mdBottomSheet', '$log',
+        '$scope', 'userService', '$mdBottomSheet',
         UserInfoController
     ]);
-    function UserInfoController($scope, userService) {
+    function UserInfoController($scope, userService, $mdBottomSheet) {
         var self = this;
         $scope.selectedUser = {};
         $scope.selectedUser = userService.getUser()
@@ -15,8 +15,12 @@
             $scope.selectedUser = selectedUser;
             $scope.$digest();
         });
-        self.show = function () {
-            console.log($scope.selectedUser);
+        self.makeContact = function () {
+            $mdBottomSheet.show({
+                controller: 'UserContactController as ucCtrl',
+                templateUrl: 'components/userContact/userContact.html',
+                parent: angular.element(document.getElementById('content'))
+            });
         };
     }
 })();

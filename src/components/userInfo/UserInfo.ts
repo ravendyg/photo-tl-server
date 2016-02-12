@@ -2,24 +2,29 @@
 /// <reference path="../../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
 (function(){
-angular.module('photoAlbum')
-     .controller('UserInfoController', [
-        '$scope', 'userService', '$mdSidenav', '$mdBottomSheet', '$log',
-        UserInfoController
-     ]);
+    angular.module('photoAlbum')
+        .controller('UserInfoController', [
+            '$scope', 'userService', '$mdBottomSheet',
+            UserInfoController
+        ]);
 
-function UserInfoController ($scope, userService) {
-    var self = this;
+    function UserInfoController ($scope, userService, $mdBottomSheet) {
+        var self = this;
 
-    $scope.selectedUser = {};
-    $scope.selectedUser = userService.getUser()
-        .then( selectedUser => {
-            $scope.selectedUser = selectedUser;
-            $scope.$digest();
-        });
+        $scope.selectedUser = {};
         
-    self.show = function () {
-        console.log($scope.selectedUser);
+        $scope.selectedUser = userService.getUser()
+            .then( selectedUser => {
+                $scope.selectedUser = selectedUser;
+                $scope.$digest();
+            });
+     
+        self.makeContact = function () {
+            $mdBottomSheet.show({
+                controller: 'UserContactController as ucCtrl',
+                templateUrl: 'components/userContact/userContact.html',
+                parent: angular.element(document.getElementById('content'))
+            });
+        }
     }
-}
 })();
