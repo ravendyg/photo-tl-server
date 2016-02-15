@@ -16,15 +16,8 @@ function UserService(){
     var usersOld = [];
     var userOld = {};
     var selected = 0;
-
-  // Promise-based API
-  return {
-      loggedInUser: user,
-      
-     
-      
-  
-    getAllUsers : function() {
+    
+    function getAllUsers () {
         var promise = new Promise ( (resolve, reject) => {
             if (!usersOld.length) {
                 // first time loading
@@ -67,14 +60,15 @@ function UserService(){
             }
         });
         return promise;
-    },
-    getUser: function () {
+    }
+    
+    function getUser () {
         var promise = new Promise ( (resolve, reject) => {
             if (usersOld.length > selected) {
                 userOld = usersOld[selected];
                 resolve(userOld);
             } else {
-                self.getAllUsers()
+                getAllUsers()
                     .then( users => {
                         userOld = users[0];
                         resolve(userOld);
@@ -82,8 +76,9 @@ function UserService(){
             }
         });
         return promise;
-    },
-    setUser: function (index) {
+    }
+    
+    function setUser (index) {
         var promise = new Promise ( (resolve, reject) => {
             selected = index;
             userOld = usersOld[selected];
@@ -91,6 +86,12 @@ function UserService(){
         });
         return promise;
     }
+
+  return {
+    loggedInUser: user,
+    getAllUsers : getAllUsers,
+    getUser: getUser,
+    setUser: setUser
   }
 }
 })();
