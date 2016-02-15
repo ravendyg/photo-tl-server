@@ -25,7 +25,6 @@ class UserMenuController {
     
     public resetItems () {
         this._users = this._userStore.users();
-console.log(this._users);
     }
     
     public getUsers () {

@@ -7,7 +7,6 @@
   },
   "files": [
     "src/app.ts",
-    "src/components/flux-stuff2.ts",
     "src/components/stores.ts",
     "src/components/userContact/UserContact.ts",
     "src/components/userInfo/UserInfo.ts",
