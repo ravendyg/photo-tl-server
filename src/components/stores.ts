@@ -50,9 +50,11 @@ angular.module( 'photoAlbum')
 class UserStore extends EventEmmiter {
     private _users;
     private _selectedUser;
+    private _q;
     
-    constructor () {
+    constructor ($q) {
         super();
+        this._q = $q;
         this._users = [
                     {
                         id: 0,
@@ -103,17 +105,18 @@ class UserStore extends EventEmmiter {
     }
     
     public selectUser (id: number) {
-        var promise = new Promise ( (resolve, reject) => {
+        var deferred = this._q.defer();
+        // var promise = new Promise ( (resolve, reject) => {
             setTimeout( function(self) {
                 if (id < self._users.length) {
                     self._selectedUser = self._users[id];
                 } else {
                     self._selectedUser = self._users[0];
                 }
-                resolve();
+                deferred.resolve();
             }, 1000, this);
-        });
-        return promise;
+        // });
+        return deferred.promise;
     }
     
     public emitChange () {
@@ -134,9 +137,9 @@ angular.module('photoAlbum')
             selectUser: selectUser
         }
     })
-    .factory('userStore', function (dispatcher: EventEmmiter) {
+    .factory('userStore', ['$q', function (dispatcher: EventEmmiter, $q) {
         
-        var userStore = new UserStore();
+        var userStore = new UserStore($q);
         
         dispatcher.addListener(function (action) {
             switch (action.type) {
@@ -154,7 +157,7 @@ angular.module('photoAlbum')
             users: () => userStore.getUsers(),
             user: () => userStore.getUser()
         }
-});
+}]);
 
 /**
  * UserDataStore
