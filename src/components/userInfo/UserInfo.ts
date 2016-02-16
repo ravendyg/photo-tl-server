@@ -17,6 +17,7 @@
             userStore.addListener( () => {
                 this.resetItems();
                 $scope.$digest();
+                // $scope.$apply();
             });  
         }
         
