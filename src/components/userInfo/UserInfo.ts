@@ -8,13 +8,16 @@
         private _user: any;
         private _$mdBottomSheet: any;
         
-        constructor(userStore, $mdBottomSheet) {
+        constructor($scope, userStore, $mdBottomSheet) {
             this._userStore = userStore;
             this._$mdBottomSheet = $mdBottomSheet;
             
             this.resetItems();
             
-            userStore.addListener( () => this.resetItems() );  
+            userStore.addListener( () => {
+                this.resetItems();
+                $scope.$digest();
+            });  
         }
         
         public resetItems () {

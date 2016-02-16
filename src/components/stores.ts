@@ -103,11 +103,17 @@ class UserStore extends EventEmmiter {
     }
     
     public selectUser (id: number) {
-        if (id < this._users.length) {
-            this._selectedUser = this._users[id];
-        } else {
-            this._selectedUser = this._users[0];
-        }
+        var promise = new Promise ( (resolve, reject) => {
+            setTimeout( function(self) {
+                if (id < self._users.length) {
+                    self._selectedUser = self._users[id];
+                } else {
+                    self._selectedUser = self._users[0];
+                }
+                resolve();
+            }, 1000, this);
+        });
+        return promise;
     }
     
     public emitChange () {
@@ -137,8 +143,10 @@ angular.module( 'photoAlbum')
         dispatcher.addListener(function (action) {
             switch (action.type) {
                 case 'SELECT_USER':
-                    userStore.selectUser(action.userId);
-                    userStore.emitChange();
+                    userStore.selectUser(action.userId)
+                        .then( () => {
+                            userStore.emitChange();
+                        });       
                 break;
             }
         });
