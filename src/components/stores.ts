@@ -121,7 +121,7 @@ class UserStore extends EventEmmiter {
     }
 }
 
-angular.module( 'photoAlbum')
+angular.module('photoAlbum')
     .factory('userActions', function (dispatcher: EventEmmiter) {
         function selectUser (userId) {
             dispatcher.emit({
@@ -133,9 +133,7 @@ angular.module( 'photoAlbum')
         return {
             selectUser: selectUser
         }
-    });
-
-angular.module( 'photoAlbum')
+    })
     .factory('userStore', function (dispatcher: EventEmmiter) {
         
         var userStore = new UserStore();
@@ -157,4 +155,19 @@ angular.module( 'photoAlbum')
             user: () => userStore.getUser()
         }
 });
+
+/**
+ * UserDataStore
+ */
+class UserDataStore extends EventEmmiter {
+    constructor() {
+        super();
+        
+    }
+}
+
+angular.module('photoAlbum')
+    .factory('userDataActions', function (dispatcher: EventEmmiter) {
+        
+    })
 })();

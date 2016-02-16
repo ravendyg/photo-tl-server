@@ -36,6 +36,8 @@ console.log(0);
             });  
          };
              
-         
+         self.refresh = function () {
+             $scope.apply();
+         }
      }
 })();

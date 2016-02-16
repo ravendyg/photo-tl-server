@@ -2,7 +2,7 @@
     <md-button class="menu" hide-gt-sm ng-click="uwCtrl.toggleList()" aria-label="Show User List">
         <md-icon md-svg-icon="menu"></md-icon>
     </md-button>
-    <h3>Angular Material - Starter App</h3>
+    <h3 ng-click="apTbCtrl.refresh()">Angular Material - Starter App</h3>
 
     <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.signIn($event)" ng-if="!apTbCtrl.loggedInUser">Sign In</md-button>
     <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.signUp()" ng-if="!apTbCtrl.loggedInUser">Sign Up</md-button>
