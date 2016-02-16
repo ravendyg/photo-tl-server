@@ -5,7 +5,7 @@
 /**
  * UserContactController
  */
-class UserContactController {
+export class UserContactController {
     private _userStore: any;
     private _user: any;
     private _$mdBottomSheet: any;
@@ -47,5 +47,5 @@ class UserContactController {
     };
 }    
 
-angular.module('photoAlbum')
-    .controller('UserContactController', UserContactController);
+// angular.module('photoAlbum')
+//     .controller('UserContactController', UserContactController);

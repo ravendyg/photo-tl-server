@@ -1,12 +1,11 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 /// <reference path="../../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
-(function(){
     
 /**
  * UserMenuController
  */
-class UserMenuController {
+export class UserMenuController {
     
     private _userStore: any;
     private _userActions: any;
@@ -35,29 +34,20 @@ class UserMenuController {
         this._userActions.selectUser(userId);
     }
 }
-angular.module('photoAlbum')
-    //  .controller('UserMenuController', [
-    //     '$scope', 'userService',
-    //     UserMenuController
-    //  ]);
-    .controller('UserMenuController', UserMenuController);
+// angular.module('photoAlbum')
+//     .controller('UserMenuController', UserMenuController);
 
-// function UserMenuController ($scope, userService) {
-//     var self = this;
+export /**
+ * userWrapperController
+ */
+class userWrapperController {
+    private _mdSidenav: any;
     
-//     $scope.usersList = [];
-//     userService.getAllUsers()
-//         .then( userList => {
-//             $scope.usersList = userList;
-//             $scope.$digest();
-//         });
-        
-//     self.selectUser = function (user) {
-//         userService.setUser(user)
-//             .then( (selectedUser) => {
-//                 $scope.selectedUser = selectedUser;
-//                 $scope.$digest();
-//             });
-//     }
-// }
-})();
+    constructor($mdSidenav) {
+        this._mdSidenav = $mdSidenav;
+    }
+    
+    public toggleList () {
+        this._mdSidenav('left').toggle();
+    }
+}

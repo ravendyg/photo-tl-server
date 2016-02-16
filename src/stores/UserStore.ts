@@ -1,52 +1,5 @@
-/// <reference path="../../typings/tsd.d.ts" />
-/// <reference path="../../typings/others.d.ts" />
-// from the new app
-(function(){
-'use strict';
-angular.module('photoAlbum')
-     .service('userService', [UserService]);    
+import {EventEmmiter} from './../EventEmmiter.ts';
 
-// Users DataService
-
-function UserService(){
-    var self = this;
-    
-    var user = null;
-
-  return {
-    loggedInUser: user
-  }
-}
-})();
-
-
-
-(function () {
-'use strict';
-
-class EventEmmiter {
-    private _listeners;
-    
-    constructor () {
-        this._listeners = [];
-    }
-    
-    public emit (event) {
-        for (var i=0; i<this._listeners.length; i++) {
-            this._listeners[i](event);    
-        }
-    }
-    
-    public addListener (listener) {
-        this._listeners.push(listener);
-        return this._listeners.length - 1;
-    }
-}
-
-angular.module( 'photoAlbum')
-    .service('dispatcher', EventEmmiter);
-
-// stores
 class UserStore extends EventEmmiter {
     private _users;
     private _selectedUser;
@@ -124,53 +77,63 @@ class UserStore extends EventEmmiter {
     }
 }
 
-angular.module('photoAlbum')
-    .factory('userActions', function (dispatcher: EventEmmiter) {
-        function selectUser (userId) {
-            dispatcher.emit({
-                type: 'SELECT_USER',
-                userId: userId 
-            });
+export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
+    var userStore = new UserStore ($q);
+        
+    dispatcher.addListener(function (action) {
+        switch (action.type) {
+            case 'SELECT_USER':
+                userStore.selectUser(action.userId)
+                    .then( () => {
+                        userStore.emitChange();
+                    });       
+            break;
         }
-            
-        return {
-            selectUser: selectUser
-        }
-    })
-    .factory('userStore', ['$q', function (dispatcher: EventEmmiter, $q) {
-        
-        var userStore = new UserStore($q);
-        
-        dispatcher.addListener(function (action) {
-            switch (action.type) {
-                case 'SELECT_USER':
-                    userStore.selectUser(action.userId)
-                        .then( () => {
-                            userStore.emitChange();
-                        });       
-                break;
-            }
-        });
-        
-        return {
-            addListener: (foo) => userStore.addListener(foo),
-            users: () => userStore.getUsers(),
-            user: () => userStore.getUser()
-        }
-}]);
-
-/**
- * UserDataStore
- */
-class UserDataStore extends EventEmmiter {
-    constructor() {
-        super();
-        
+    });
+    
+    return {
+        addListener: (foo) => userStore.addListener(foo),
+        users: () => userStore.getUsers(),
+        user: () => userStore.getUser()
     }
 }
 
-angular.module('photoAlbum')
-    .factory('userDataActions', function (dispatcher: EventEmmiter) {
+// class UserStoreFactory {
+//     // private _dispatcher: EventEmmiter;
+//     private _q: any;
+//     private _userStore: UserStore;
+    
+//     constructor (dispatcher: IEventEmmiter, $q) {
+//         // this._dispatcher = dispatcher;
+//         this._q = $q;
         
-    })
-})();
+//         this._userStore = new UserStore($q);
+        
+//         dispatcher.addListener(function (action) {
+//             switch (action.type) {
+//                 case 'SELECT_USER':
+//                     this._userStore.selectUser(action.userId)
+//                         .then( () => {
+//                             this._userStore.emitChange();
+//                         });       
+//                 break;
+//             }
+//         });
+//     }
+    
+//     public addListener (foo): void {
+//         this._userStore.addListener(foo);
+//     }
+    
+//     public getUsers () {
+//         return this._userStore.getUsers();
+//     }
+    
+//     public getUser () {
+//         return this._userStore.getUser();
+//     }
+// }
+
+// export function UserStoreFactoryFunction (dispatcher, $q) {
+//     return new UserStoreFactory(dispatcher, $q);
+// }
