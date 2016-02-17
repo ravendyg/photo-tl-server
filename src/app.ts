@@ -1,4 +1,9 @@
+/* global angular */
+/* global $mdThemingProvider */
+/* global $mdIconProvider */
+
 /// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/others.d.ts" />
 angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
     .config(function($mdThemingProvider, $mdIconProvider ){
         // Register the user `avatar` icons
@@ -55,6 +60,7 @@ angular.module('photoAlbum')
          return {
              controller: 'UserMenuController as usMenCtrl',
              templateUrl: 'components/userMenu/userMenu.html'
+            // template: require('./components/userMenu/userMenu.html')
          }
      })
      .directive('userInfo', function () {
@@ -71,6 +77,6 @@ angular.module('photoAlbum')
             templateUrl: 'components/appToolbar/appToolbar.html'
          }
      })
-     
      // server APIs
-     .service('userService', UserService);
+     .service('userService', UserService)
+     ;

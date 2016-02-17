@@ -2,7 +2,7 @@
     <md-list-item ng-repeat="u in usMenCtrl.getUsers() track by u.id">
         <md-button
             ng-click="usMenCtrl.selectUser($index)"
-            ng-class="{'selected': u === selectedUser}">
+            ng-class="{'selected': u === usMenCtrl.getUser()}">
                 <md-icon md-svg-icon="{{u.avatar}}" class="avatar"></md-icon>
                 {{u.name}}
         </md-button>

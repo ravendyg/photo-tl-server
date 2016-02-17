@@ -114,13 +114,15 @@ gulp.task('inline-teplates', ['usemin'], function () {
     }
     // output result    
     fs.writeFileSync('./build/bundle.js', output, 'utf8');
+    
+    
 });
 
 gulp.task('usemin',['jshint'], function () {
   return gulp.src('./src/index.html')
       .pipe(usemin({
         css: [minifycss(), 'concat'],
-        js: [ uglify({ mangle: false })]
+        js: [uglify({ mangle: false })] 
       }))
       .pipe(gulp.dest('build/'));
 });

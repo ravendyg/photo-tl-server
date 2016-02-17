@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "sourceMap": false,
+    "sourceMap": true,
     "outFile": "prebuild/app.js",
     "target": "es5"
   },

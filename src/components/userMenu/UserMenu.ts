@@ -9,7 +9,7 @@ export class UserMenuController {
     
     private _userStore: any;
     private _userActions: any;
-    private _notUserActions: any;
+    private _user: any;
     private _users: any [];
     private _self: any;
     
@@ -24,11 +24,16 @@ export class UserMenuController {
     }
     
     public resetItems () {
+        this._user = this._userStore.user();
         this._users = this._userStore.users();
     }
     
     public getUsers () {
         return this._users;
+    }
+    
+    public getUser () {
+        return this._user;
     }
     
     public selectUser (userId: number) {
