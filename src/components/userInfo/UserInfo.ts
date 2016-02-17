@@ -7,14 +7,10 @@ export class UserInfoController {
     private _user: any;
     private _$mdBottomSheet: any;
     
-    private _oldUser: any;
-    
     constructor(userStore, userActions, $mdBottomSheet) {
         this._userStore = userStore;
         this._userActions = userActions;
         this._$mdBottomSheet = $mdBottomSheet;
-        
-        this._oldUser = this._userStore.user();
         
         this.resetItems();
         
@@ -25,8 +21,6 @@ export class UserInfoController {
     
     public resetItems () {
         this._user = this._userStore.user();
-console.log(this._oldUser == this._user);
-this._oldUser = this._user;
     }
     
     public getUser () {

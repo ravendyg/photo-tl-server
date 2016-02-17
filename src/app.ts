@@ -16,9 +16,11 @@ import {EventEmmiter} from './EventEmmiter.ts';
 
 // stores
 import {UserStoreFactory} from './stores/UserStore.ts';
+import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
 // actions
 import {UserActions} from './actions/UserActions.ts';
+import {NotUserActions} from './actions/NotUserActions.ts';
 
 
 // component controllers
@@ -37,9 +39,11 @@ angular.module('photoAlbum')
     
     // stores
     .factory('userStore', UserStoreFactory)
+    .factory('userDataStore', UserDataStoreFactory)
     
     // actions
     .service('userActions', UserActions)
+    .service('notUserActions', NotUserActions)
     
     // component controllers
     .controller('UserMenuController', UserMenuController)
@@ -73,6 +77,3 @@ angular.module('photoAlbum')
      
      // server APIs
      .service('userService', UserService);
-     
-
-console.log(1);

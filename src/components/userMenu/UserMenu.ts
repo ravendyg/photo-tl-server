@@ -9,28 +9,23 @@ export class UserMenuController {
     
     private _userStore: any;
     private _userActions: any;
+    private _notUserActions: any;
     private _users: any [];
     private _self: any;
     
-    private _oldUsers: any [];
-    
-    constructor(userStore, userActions) {
+    constructor(userStore, userDataStore, userActions, notUserActions) {
         this._self = this;
         this._userStore = userStore;
         this._userActions = userActions;
-        
-        this._oldUsers = this._userStore.users();
+        this._notUserActions = notUserActions;
         
         this.resetItems();
         
-        userStore.addListener( () => this.resetItems() );
+        userStore.addListener( (q) => this.resetItems() );
     }
     
     public resetItems () {
         this._users = this._userStore.users();
-        
-console.log(this._oldUsers == this._users);
-this._oldUsers = this._users
     }
     
     public getUsers () {
@@ -39,6 +34,11 @@ this._oldUsers = this._users
     
     public selectUser (userId: number) {
         this._userActions.selectUser(userId);
+    }
+    
+    public deleteUser (userId: number) {
+console.log(userId);
+        this._notUserActions.deleteUser(userId);
     }
 }
 // angular.module('photoAlbum')

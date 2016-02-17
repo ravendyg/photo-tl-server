@@ -1,8 +1,18 @@
 <md-list>
     <md-list-item ng-repeat="u in usMenCtrl.getUsers() track by u.id">
-        <md-button ng-click="usMenCtrl.selectUser($index)" ng-class="{'selected': u === selectedUser}">
-            <md-icon md-svg-icon="{{u.avatar}}" class="avatar"></md-icon>
-            {{u.name}}
+        <md-button
+            ng-click="usMenCtrl.selectUser($index)"
+            ng-class="{'selected': u === selectedUser}">
+                <md-icon md-svg-icon="{{u.avatar}}" class="avatar"></md-icon>
+                {{u.name}}
+        </md-button>
+        <md-button
+            class="delete"
+            md-no-ink
+            ng-click="usMenCtrl.deleteUser(u.id)"
+            aria-label="Remove {{u.name}}">
+                <md-tooltip>Remove {{u.name}}</md-tooltip>
+                <md-icon md-svg-icon="menu"></md-icon>
         </md-button>
     </md-list-item>
 </md-list>

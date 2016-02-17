@@ -8,14 +8,7 @@ class NotUserActions {
     
     constructor(dispatcher: IEventEmmiter) {
         this._dispatcher = dispatcher;
-    }
-    
-    public selectUser (userId: number) {
-        this._dispatcher.emit({
-           type: "SELECT_USER",
-           userId: userId 
-        });
-    }    
+    }  
     
     public deleteUser (userId: number) {
         this._dispatcher.emit({

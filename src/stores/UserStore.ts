@@ -66,21 +66,25 @@ class UserStore extends EventEmmiter {
                     self._selectedUser = self._users[0];
                 }
                 deferred.resolve();
-            }, 100, this);
+            }, 1000, this);
         return deferred.promise;
     }
     
     public deleteUser (id: number) {
+        // remove user from the list
         var user = this._users.filter((i) => i.id === id )[0];
         var position = this._users.indexOf(user);
         this._users.splice(position, 1);
         
-        if (this._users.length > position) {
-            this._selectedUser = this._users[position];
-        } else if (this._users.length > 0) {
-            this._selectedUser = this._users[position-1];
-        } else {
-            this._selectedUser = {};
+        // if deleted user was the selected one, need to select a new one
+        if (this._selectedUser === user) {
+            if (this._users.length > position) {
+                this._selectedUser = this._users[position];
+            } else if (this._users.length > 0) {
+                this._selectedUser = this._users[position-1];
+            } else {
+                this._selectedUser = {};
+            }
         }
     }
     
@@ -92,25 +96,28 @@ class UserStore extends EventEmmiter {
 export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
     var userStore = new UserStore ($q);
         
-    dispatcher.addListener(function (action) {
-        switch (action.type) {
-            case 'SELECT_USER':
-                userStore.selectUser(action.userId)
-                    .then( () => {
-                        userStore.emitChange();
-                    });       
-            break;
-        }
-    });
-    
-    dispatcher.addListener(function (action) {
-        switch (action.type) {
-            case 'DELETE_USER':
-                userStore.deleteUser(action.userId);
-                userStore.emitChange();
-            break;
-        }
-    });
+    dispatcher.setToken('UserStoreDispatchToken', 
+        dispatcher.addListener(function (action) {
+            dispatcher.startHandling('UserStoreDispatchToken');
+            switch (action.type) {
+                case 'SELECT_USER':
+                    userStore.selectUser(action.userId)
+                        .then( () => {
+                            userStore.emitChange();
+                            dispatcher.stopHandling('UserStoreDispatchToken');
+                        });       
+                break;
+                case 'DELETE_USER':
+                    userStore.deleteUser(action.userId);
+                    userStore.emitChange();
+                    dispatcher.stopHandling('UserStoreDispatchToken');
+                break;
+                default:
+                    dispatcher.stopHandling('UserStoreDispatchToken');
+            }
+        })
+    );
+console.log(dispatcher.getTokens());
     
     return {
         addListener: (foo) => userStore.addListener(foo),
