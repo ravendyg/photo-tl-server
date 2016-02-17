@@ -5,7 +5,6 @@ export class EventEmmiter implements IEventEmmiter {
     private _tokens;
     private _pending;
     private _queue;
-    // private _handled;
     
     constructor () {
         this._listeners = [];

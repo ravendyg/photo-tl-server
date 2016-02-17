@@ -13,11 +13,10 @@ export class UserMenuController {
     private _users: any [];
     private _self: any;
     
-    constructor(userStore, userDataStore, userActions, notUserActions) {
+    constructor(userStore, userDataStore, userActions) {
         this._self = this;
         this._userStore = userStore;
         this._userActions = userActions;
-        this._notUserActions = notUserActions;
         
         this.resetItems();
         
@@ -37,8 +36,7 @@ export class UserMenuController {
     }
     
     public deleteUser (userId: number) {
-console.log(userId);
-        this._notUserActions.deleteUser(userId);
+        this._userActions.deleteUser(userId);
     }
 }
 // angular.module('photoAlbum')

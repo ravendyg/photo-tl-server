@@ -43,7 +43,6 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q) {
             }
         })
     );
-console.log(dispatcher.getTokens());
     
     return {
         addListener: (foo) => userDataStore.addListener(foo),

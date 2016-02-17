@@ -19,9 +19,7 @@ import {UserStoreFactory} from './stores/UserStore.ts';
 import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
 // actions
-import {UserActions} from './actions/UserActions.ts';
-import {NotUserActions} from './actions/NotUserActions.ts';
-
+import {UserActions} from './actionCreators/UserActions.ts';
 
 // component controllers
 import {UserMenuController} from './components/userMenu/UserMenu.ts';
@@ -43,7 +41,6 @@ angular.module('photoAlbum')
     
     // actions
     .service('userActions', UserActions)
-    .service('notUserActions', NotUserActions)
     
     // component controllers
     .controller('UserMenuController', UserMenuController)
