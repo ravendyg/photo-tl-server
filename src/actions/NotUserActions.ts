@@ -3,7 +3,7 @@
 export /**
  * UserActions
  */
-class UserActions {
+class NotUserActions {
     private _dispatcher: IEventEmmiter;
     
     constructor(dispatcher: IEventEmmiter) {

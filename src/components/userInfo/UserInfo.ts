@@ -3,12 +3,18 @@
 // Create and prepare the 'users' module (with its controllers and dataservices) 
 export class UserInfoController {
     private _userStore: any;
+    private _userActions: any;
     private _user: any;
     private _$mdBottomSheet: any;
     
-    constructor(userStore, $mdBottomSheet) {
+    private _oldUser: any;
+    
+    constructor(userStore, userActions, $mdBottomSheet) {
         this._userStore = userStore;
+        this._userActions = userActions;
         this._$mdBottomSheet = $mdBottomSheet;
+        
+        this._oldUser = this._userStore.user();
         
         this.resetItems();
         
@@ -19,6 +25,8 @@ export class UserInfoController {
     
     public resetItems () {
         this._user = this._userStore.user();
+console.log(this._oldUser == this._user);
+this._oldUser = this._user;
     }
     
     public getUser () {
@@ -31,6 +39,10 @@ export class UserInfoController {
             templateUrl: 'components/userContact/userContact.html',
             parent: angular.element(document.getElementById('content'))
         });
+    }
+    
+    public deleteUser (userId: number) {
+        this._userActions.deleteUser(userId);
     }
 }
     

@@ -1,7 +1,7 @@
 import {EventEmmiter} from './../EventEmmiter.ts';
 
 class UserStore extends EventEmmiter {
-    private _users;
+    private _users: any [];
     private _selectedUser;
     private _q;
     
@@ -59,7 +59,6 @@ class UserStore extends EventEmmiter {
     
     public selectUser (id: number) {
         var deferred = this._q.defer();
-        // var promise = new Promise ( (resolve, reject) => {
             setTimeout( function(self) {
                 if (id < self._users.length) {
                     self._selectedUser = self._users[id];
@@ -67,9 +66,22 @@ class UserStore extends EventEmmiter {
                     self._selectedUser = self._users[0];
                 }
                 deferred.resolve();
-            }, 1000, this);
-        // });
+            }, 100, this);
         return deferred.promise;
+    }
+    
+    public deleteUser (id: number) {
+        var user = this._users.filter((i) => i.id === id )[0];
+        var position = this._users.indexOf(user);
+        this._users.splice(position, 1);
+        
+        if (this._users.length > position) {
+            this._selectedUser = this._users[position];
+        } else if (this._users.length > 0) {
+            this._selectedUser = this._users[position-1];
+        } else {
+            this._selectedUser = {};
+        }
     }
     
     public emitChange () {
@@ -87,6 +99,15 @@ export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
                     .then( () => {
                         userStore.emitChange();
                     });       
+            break;
+        }
+    });
+    
+    dispatcher.addListener(function (action) {
+        switch (action.type) {
+            case 'DELETE_USER':
+                userStore.deleteUser(action.userId);
+                userStore.emitChange();
             break;
         }
     });

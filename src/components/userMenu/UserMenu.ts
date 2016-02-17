@@ -12,18 +12,25 @@ export class UserMenuController {
     private _users: any [];
     private _self: any;
     
+    private _oldUsers: any [];
+    
     constructor(userStore, userActions) {
         this._self = this;
         this._userStore = userStore;
         this._userActions = userActions;
         
+        this._oldUsers = this._userStore.users();
+        
         this.resetItems();
         
-        // userStore.addListener( () => this.resetItems() );
+        userStore.addListener( () => this.resetItems() );
     }
     
     public resetItems () {
         this._users = this._userStore.users();
+        
+console.log(this._oldUsers == this._users);
+this._oldUsers = this._users
     }
     
     public getUsers () {
