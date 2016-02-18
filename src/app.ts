@@ -61,14 +61,16 @@ angular.module('photoAlbum')
     .directive('userMenu', function () {
          return {
              controller: 'UserMenuController as usMenCtrl',
-             templateUrl: 'components/userMenu/userMenu.html'
+             templateUrl: 'components/userMenu/userMenu.html',
+             scope: {}
             // template: require('./components/userMenu/userMenu.html')
          }
      })
      .directive('userInfo', function () {
          return {
              controller: 'UserInfoController as usInfCtrl',
-             templateUrl: 'components/userInfo/userInfo.html'
+             templateUrl: 'components/userInfo/userInfo.html',
+             scope: {}
          }
      })
      .directive('appToolbar', function () {
@@ -76,7 +78,8 @@ angular.module('photoAlbum')
             restrict: 'E',
             replace: true,
             controller: 'AppToolbarController as apTbCtrl',
-            templateUrl: 'components/appToolbar/appToolbar.html'
+            templateUrl: 'components/appToolbar/appToolbar.html',
+            scope: {}
          }
      })
      

@@ -1,14 +1,16 @@
 import {EventEmmiter} from './../EventEmmiter.ts';
-import {config} from './../config.ts';
 
 class UserDataStore extends EventEmmiter {
     private _message: string;
     private _loggedinUser: IUser;
+    private _userService: any;
     
-    constructor () {
+    constructor (userService) {
         super();
         
-        this._loggedinUser = JSON.parse(localStorage.getItem('photoUser'));
+        this._userService = userService;
+        
+        this._loggedinUser = this._userService.getUserFromMemory();
         if (!this._loggedinUser || !this._loggedinUser.name) {
             // no user in the local storage
             this._loggedinUser = {
@@ -37,14 +39,10 @@ class UserDataStore extends EventEmmiter {
         
     }
     
-    public signup (user: IUser, ajax) {
-        return ajax({
-                    method: 'POST',
-                    url: config('url'),
-                    data: user
-                })
-                .then(  () => console.log('success'),
-                        () => {
+    public signup (user: IUser) {
+        return this._userService.signup(user)
+                .then(  (resp) => console.log('success'),
+                        (resp) => {
                             this._loggedinUser = {
                                 name: '',
                                 pas: '',
@@ -52,9 +50,9 @@ class UserDataStore extends EventEmmiter {
                                 rem: false,
                                 error: 'Отказ сервера'
                             };
-                            console.log('failed');
+                            console.log(resp);
                         }
-                );    
+                ); 
     }
     
     public emitChange () {
@@ -62,8 +60,8 @@ class UserDataStore extends EventEmmiter {
     }
 }
 
-export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, $http) {
-    var userDataStore = new UserDataStore ();
+export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, userService) {
+    var userDataStore = new UserDataStore(userService);
         
     dispatcher.setToken('UserDataStoreDispatchToken', 
         dispatcher.addListener(function (action) {
@@ -82,7 +80,7 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, $http) {
                 break;
                 
                 case 'SIGNUP_USER':
-                    userDataStore.signup(action.newUser, $http)
+                    userDataStore.signup(action.newUser)
                         .then( () => {
                             userDataStore.emitChange();
                             dispatcher.stopHandling('UserDataStoreDispatchToken');

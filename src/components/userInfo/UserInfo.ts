@@ -22,6 +22,8 @@ export class UserInfoController {
         $scope.$on('$destroy', () => {
             userStore.removeListener(this._listenerId);
         });
+        
+        
     }
     
     private resetItems () {

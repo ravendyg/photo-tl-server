@@ -13,22 +13,23 @@
       <div class="md-dialog-content">
         <md-input-container layout="row">
             <label>Логин</label>
-            <input name="login" ng-model="lgCtrl._user.name">
+            <input name="login" ng-model="lgCtrl._userInput.name">
         </md-input-container>
         <md-input-container layout="row">
             <label>Пароль</label>
-            <input type="password" name="password" ng-model="lgCtrl._user.pas">
+            <input type="password" name="password" ng-model="lgCtrl._userInput.pas">
         </md-input-container>
         <md-input-container layout="row" ng-if="lgCtrl.getSubmitText() !== 'Войти'">
             <label>Подтверждение пароля</label>
-            <input ype="password" name="passwordConfirmation" ng-model="lgCtrl._user.pas2">
+            <input type="password" name="passwordConfirmation" ng-model="lgCtrl._userInput.pas2">
         </md-input-container layout="row">
         <md-checkbox
-            ng-model="lgCtrl._user.rem"
+            ng-model="lgCtrl._userInput.rem"
             class="md-primary"
             aria-label="Remember on this computer"">
                 Запомнить
         </md-checkbox>
+        <p class="error-message">{{lgCtrl._userInput.error}}</p>
       </div>
     </md-dialog-content>
     <md-dialog-actions id="login-actions" layout="row">

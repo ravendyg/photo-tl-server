@@ -1,8 +1,10 @@
-export function config (param: string): any {
+export function config (param: string): string {
     switch (param) {
         case 'url':
-            return 'localhost';
+            return 'http://localhost';
         case 'port':
-            return 8080;
+            return ':8080';
+        case 'userDriver':
+            return '/user-processor'
     }
 }
