@@ -6,20 +6,25 @@ export class UserInfoController {
     private _userActions: any;
     private _user: any;
     private _$mdBottomSheet: any;
+    private _listenerId: number;
     
-    constructor(userStore, userActions, $mdBottomSheet) {
+    constructor(userStore, userActions, $mdBottomSheet, $scope) {
         this._userStore = userStore;
         this._userActions = userActions;
         this._$mdBottomSheet = $mdBottomSheet;
         
         this.resetItems();
         
-        userStore.addListener( () => {
-            this.resetItems();
-        });  
+        // register with the dispatcher
+        this._listenerId = userStore.addListener( () => { this.resetItems(); } );  
+        
+        // unregister
+        $scope.$on('$destroy', () => {
+            userStore.removeListener(this._listenerId);
+        });
     }
     
-    public resetItems () {
+    private resetItems () {
         this._user = this._userStore.user();
     }
     
@@ -39,6 +44,3 @@ export class UserInfoController {
         this._userActions.deleteUser(userId);
     }
 }
-    
-// angular.module('photoAlbum')
-//     .controller('UserInfoController', UserInfoController);

@@ -8,3 +8,11 @@ interface IEventEmmiter {
     stopHandling (tokenName: string): void;
     waitFor (tokens: string [], promise: any, owner: string): any;
 }
+
+interface IUser {
+    name: string,
+    pas: string,
+    pas2?: string,
+    rem?: boolean,
+    error?: string
+}

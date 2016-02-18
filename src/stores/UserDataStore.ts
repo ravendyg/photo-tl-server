@@ -1,10 +1,24 @@
 import {EventEmmiter} from './../EventEmmiter.ts';
+import {config} from './../config.ts';
 
 class UserDataStore extends EventEmmiter {
     private _message: string;
+    private _loggedinUser: IUser;
     
     constructor () {
         super();
+        
+        this._loggedinUser = JSON.parse(localStorage.getItem('photoUser'));
+        if (!this._loggedinUser || !this._loggedinUser.name) {
+            // no user in the local storage
+            this._loggedinUser = {
+                name: '',
+                pas: '',
+                pas2: '',
+                rem: false,
+                error: ''
+            }
+        }
     }
     
     public getMessage (): string {
@@ -15,12 +29,40 @@ class UserDataStore extends EventEmmiter {
         this._message = message;
     }
     
+    public getLoggedInUser (): IUser {
+        return this._loggedinUser;   
+    }
+    
+    public signin (user: IUser): void {
+        
+    }
+    
+    public signup (user: IUser, ajax) {
+        return ajax({
+                    method: 'POST',
+                    url: config('url'),
+                    data: user
+                })
+                .then(  () => console.log('success'),
+                        () => {
+                            this._loggedinUser = {
+                                name: '',
+                                pas: '',
+                                pas2: '',
+                                rem: false,
+                                error: 'Отказ сервера'
+                            };
+                            console.log('failed');
+                        }
+                );    
+    }
+    
     public emitChange () {
         this.emit('change');
     }
 }
 
-export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q) {
+export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, $http) {
     var userDataStore = new UserDataStore ();
         
     dispatcher.setToken('UserDataStoreDispatchToken', 
@@ -38,6 +80,14 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q) {
                             dispatcher.stopHandling('UserDataStoreDispatchToken');        
                         });                    
                 break;
+                
+                case 'SIGNUP_USER':
+                    userDataStore.signup(action.newUser, $http)
+                        .then( () => {
+                            userDataStore.emitChange();
+                            dispatcher.stopHandling('UserDataStoreDispatchToken');
+                        }); 
+                break;
                 default:
                     dispatcher.stopHandling('UserDataStoreDispatchToken');
             }
@@ -46,6 +96,9 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q) {
     
     return {
         addListener: (foo) => userDataStore.addListener(foo),
+        removeListener: (listenerId: number) => userDataStore.removeListener(listenerId),
+        
+        getLoggedInUser: () => userDataStore.getLoggedInUser(),
         message: () => userDataStore.getMessage()
     }
 }

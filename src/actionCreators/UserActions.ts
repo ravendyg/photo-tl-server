@@ -23,4 +23,11 @@ class UserActions {
            userId: userId 
         });
     }
+    
+    public signup (user: IUser) {
+        this._dispatcher.emit({
+           type: "SIGNUP_USER",
+           newUser: user 
+        });
+    }
 }

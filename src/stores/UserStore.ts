@@ -122,6 +122,7 @@ export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
     return {
         addListener: (foo) => userStore.addListener(foo),
         removeListener: (listenerId: number) => userStore.removeListener(listenerId),
+        
         users: () => userStore.getUsers(),
         user: () => userStore.getUser()
     }

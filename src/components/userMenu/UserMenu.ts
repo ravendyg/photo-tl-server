@@ -13,8 +13,9 @@ export class UserMenuController {
     private _user: any;
     private _users: any [];
     private _self: any;
+    private _listenerId: number;
     
-    constructor(userStore, userDataStore, userActions) {
+    constructor(userStore, userDataStore, userActions, $scope) {
         this._self = this;
         this._userStore = userStore;
         this._userDataStore = userDataStore;
@@ -22,10 +23,16 @@ export class UserMenuController {
         
         this.resetItems();
         
-        userStore.addListener( (q) => this.resetItems() );
+        // register with the dispatcher
+        this._listenerId = userStore.addListener( () => this.resetItems() );
+        
+        // unregister
+        $scope.$on('$destroy', () => {
+            userStore.removeListener(this._listenerId);
+        });
     }
     
-    public resetItems () {
+    private resetItems () {
         this._user = this._userStore.user();
         this._users = this._userStore.users();
     }
@@ -45,22 +52,5 @@ export class UserMenuController {
     
     public deleteUser (userId: number) {
         this._userActions.deleteUser(userId);
-    }
-}
-// angular.module('photoAlbum')
-//     .controller('UserMenuController', UserMenuController);
-
-export /**
- * userWrapperController
- */
-class userWrapperController {
-    private _mdSidenav: any;
-    
-    constructor($mdSidenav) {
-        this._mdSidenav = $mdSidenav;
-    }
-    
-    public toggleList () {
-        this._mdSidenav('left').toggle();
     }
 }

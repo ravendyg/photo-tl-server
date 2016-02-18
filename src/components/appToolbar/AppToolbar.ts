@@ -14,22 +14,55 @@ class AppToolbarController {
     private _mdDialog: any;
     private _mdMedia: any;
     private _userService: any;
-    private _loggedInUser: any;
+    private _loggedInUser: IUser;
     
-    constructor($scope, $mdDialog, $mdMedia, userService) {
+    private _userDataStore: any;
+    private _listenerId: number;
+    
+    private _originatorEv: any;
+    
+    constructor($scope, $mdDialog, $mdMedia, userService, userDataStore) {
         this._scope = $scope;
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
         this._userService = userService;
         
-        this._loggedInUser = this._userService.loggedInUser;
+        this._userDataStore = userDataStore;
+        
+        // this._loggedInUser = this._userService.loggedInUser;
+        this.resetUserInfo();
+        
+        // registen with the dispatcher
+        this._listenerId = this._userDataStore.addListener( () => {
+            this.resetUserInfo();
+        });
+        
+        // unregister
+        $scope.$on('$destroy', () => {
+            this._userDataStore.removeListener(this._listenerId);
+        });
+    }
+    
+    private resetUserInfo () {
+        this._loggedInUser = this._userDataStore.getLoggedInUser();
+console.log(this._loggedInUser);
     }
     
     public getLoggedInUser () {
         return this._loggedInUser;
     }
     
-    public signIn ($event) {
+    public openUserMenu ($mdOpenMenu, ev) {
+        this._originatorEv = ev;
+        $mdOpenMenu(ev);
+    }
+    
+    public logOut () {
+console.log('logged out');
+    }
+    
+    public sign ($event: any, mode: string) {
+        $event._mode = mode;
         var useFullScreen = (this._mdMedia('sm') || this._mdMedia('xs'))  && this._scope.customFullscreen;
         this._mdDialog.show({
             controller: 'LogInController as lgCtrl',
@@ -37,7 +70,10 @@ class AppToolbarController {
             parent: angular.element(document.body),
             targetEvent: $event,
             clickOutsideToClose:true,
-            fullscreen: useFullScreen
+            fullscreen: useFullScreen,
+            locals: {
+                mode: mode
+            }
         })
             .then( (answer) => {
                 this._scope.status = 'You said the information was "' + answer + '".';

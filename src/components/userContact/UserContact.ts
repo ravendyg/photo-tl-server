@@ -13,24 +13,22 @@ export class UserContactController {
     
         
     constructor(userStore, $mdBottomSheet, $scope) {
-console.log('contact controller created');
         this._userStore = userStore;
         this._$mdBottomSheet = $mdBottomSheet;
         
         
         this.resetItems();
         
-        this._listenerId = userStore.addListener( () => {
-            this.resetItems();
-        });
+        // registen with the dispatcher
+        this._listenerId = userStore.addListener( () => { this.resetItems(); });
         
+        // unregister
         $scope.$on('$destroy', () => {
-console.log('contact controller destroyed');
             userStore.removeListener(this._listenerId);
         });
     }
     
-    public resetItems () {
+    private resetItems () {
         this._user = this._userStore.user();      
     }
     
@@ -51,7 +49,4 @@ console.log('contact controller destroyed');
     public contactUser = function (action) {
         this._$mdBottomSheet.hide(action);
     };
-}    
-
-// angular.module('photoAlbum')
-//     .controller('UserContactController', UserContactController);
+}

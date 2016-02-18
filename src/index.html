@@ -17,6 +17,7 @@
     <div flex layout="row">
 
         <md-sidenav md-is-locked-open="$mdMedia('gt-sm')"
+            ng-if="uwCtrl.getLoggedInUser().name"
             md-component-id="left"
             class="md-whiteframe-z2"
             ng-click="uwCtrl.toggleList()" >
@@ -24,7 +25,7 @@
         </md-sidenav>
 
         <md-content flex id="content">
-            <user-info></user-info>
+            <user-info ng-if="uwCtrl.getLoggedInUser().name"></user-info>
         </md-content>
 
     </div>

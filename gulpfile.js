@@ -27,10 +27,10 @@ var fs = require('fs');
 
 // watch
 gulp.task('watch', function () {
-    gulp.watch(['./src/**/*.ts'], ['compileTs']);
+    // gulp.watch(['./src/**/*.ts'], ['compileTs']);
 //    gulp.watch('./*.ts', ['compileTs']);
 //    gulp.watch('src/styles/*.sass', ['styles']);
-    gulp.watch(['./prebuild/app.js'], ['jshint']);
+    // gulp.watch(['./prebuild/app.js'], ['jshint']);
 //    gulp.watch('./*.js', ['jshint']);
     gulp.watch('./src/css/*.scss', ['sass']);
 });

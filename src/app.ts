@@ -30,7 +30,7 @@ import {UserActions} from './actionCreators/UserActions.ts';
 
 // component controllers
 import {UserMenuController} from './components/userMenu/UserMenu.ts';
-import {userWrapperController} from './components/userMenu/UserMenu.ts';
+import {WrapperController} from './WrapperController.ts';
 import {UserInfoController} from './components/userInfo/UserInfo.ts';
 import {UserContactController} from './components/userContact/UserContact.ts';
 import {LogInController} from './components/logIn/LogIn.ts';
@@ -51,7 +51,7 @@ angular.module('photoAlbum')
     
     // component controllers
     .controller('UserMenuController', UserMenuController)
-    .controller('UserWrapperController', userWrapperController)
+    .controller('UserWrapperController', WrapperController)
     .controller('UserInfoController', UserInfoController)
     .controller('UserContactController', UserContactController)
     .controller('LogInController', LogInController)

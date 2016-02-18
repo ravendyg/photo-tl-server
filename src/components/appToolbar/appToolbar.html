@@ -1,10 +1,49 @@
 <md-toolbar layout="row" >
-    <md-button class="menu" hide-gt-sm ng-click="uwCtrl.toggleList()" aria-label="Show User List">
-        <md-icon md-svg-icon="menu"></md-icon>
+<!--menu button-->
+    <md-button
+        ng-if="apTbCtrl.getLoggedInUser().name"
+        class="menu"
+        hide-gt-sm
+        ng-click="uwCtrl.toggleList()"
+        aria-label="Show User List">
+            <md-icon md-svg-icon="menu"></md-icon>
     </md-button>
+<!--\menu button-->
+    
+<!--header-->
     <h3 ng-click="apTbCtrl.refresh()">Angular Material - Starter App</h3>
+<!--\header-->
 
-    <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.signIn($event)" ng-if="!apTbCtrl.loggedInUser">Sign In</md-button>
-    <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.signUp()" ng-if="!apTbCtrl.loggedInUser">Sign Up</md-button>
-    <span ng-if="apTbCtrl.loggedInUser">{{apTbCtrl.loggedInUser.name}}</span>
+<!--new user-->
+    <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.sign($event, 'in')" ng-if="!apTbCtrl.getLoggedInUser().name">Sign In</md-button>
+    <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.sign($event, 'up')" ng-if="!apTbCtrl.getLoggedInUser().name">Sign Up</md-button>
+<!--\new user-->
+    
+<!--user alreday logged in-->
+    <md-menu ng-if="apTbCtrl.getLoggedInUser().name">   
+        <!--class="md-primary"-->
+        <md-button
+            aria-label="Open phone interactions menu"
+            md-hue-1
+            ng-click="apTbCtrl.openUserMenu($mdOpenMenu, $event)">
+                {{apTbCtrl.getLoggedInUser().name}}
+        </md-button>
+        <md-menu-content width="4">
+        <md-menu-item>
+            <md-button ng-click="">
+            <!--<md-icon md-svg-icon="call:dialpad" md-menu-align-target></md-icon>-->
+            Do smth
+            </md-button>
+        </md-menu-item>
+        <md-menu-divider></md-menu-divider>
+        <md-menu-item>
+            <md-button ng-click="apTbCtrl.logOut()">
+            <!--<md-icon md-svg-icon="social:notifications-{{ctrl.notificationsEnabled ? 'off' : 'on'}}"></md-icon>-->
+            Выйти
+            </md-button>
+        </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+<!--\user alreday logged in-->
+    
 </md-toolbar>
