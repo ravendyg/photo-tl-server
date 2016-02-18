@@ -1,6 +1,7 @@
 interface IEventEmmiter {
     emit (event: any): void;
     addListener (listener: any): number;
+    removeListener (listenerId: number): void;
     setToken (tokenName: string, listenerId: number);
     getTokens (): any;
     startHandling (tokenName: string): void;

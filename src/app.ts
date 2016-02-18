@@ -4,6 +4,8 @@
 
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="../typings/others.d.ts" />
+
+'use strict';
 angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
     .config(function($mdThemingProvider, $mdIconProvider ){
         // Register the user `avatar` icons
@@ -23,7 +25,7 @@ import {EventEmmiter} from './EventEmmiter.ts';
 import {UserStoreFactory} from './stores/UserStore.ts';
 import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
-// actions
+// action creators
 import {UserActions} from './actionCreators/UserActions.ts';
 
 // component controllers
@@ -77,6 +79,7 @@ angular.module('photoAlbum')
             templateUrl: 'components/appToolbar/appToolbar.html'
          }
      })
+     
      // server APIs
      .service('userService', UserService)
      ;

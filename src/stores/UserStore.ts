@@ -95,7 +95,7 @@ class UserStore extends EventEmmiter {
 
 export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
     var userStore = new UserStore ($q);
-        
+      
     dispatcher.setToken('UserStoreDispatchToken', 
         dispatcher.addListener(function (action) {
             dispatcher.startHandling('UserStoreDispatchToken');
@@ -117,10 +117,11 @@ export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
             }
         })
     );
-console.log(dispatcher.getTokens());
+// console.log(dispatcher.getTokens());
     
     return {
         addListener: (foo) => userStore.addListener(foo),
+        removeListener: (listenerId: number) => userStore.removeListener(listenerId),
         users: () => userStore.getUsers(),
         user: () => userStore.getUser()
     }

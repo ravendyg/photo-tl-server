@@ -1,27 +1,40 @@
 /// <reference path="./interfaces.d.ts" />
 
 export class EventEmmiter implements IEventEmmiter {
-    private _listeners;
-    private _tokens;
-    private _pending;
-    private _queue;
+    private _lastListenerId: number;
+    private _listenersCounter: number;
+    private _listeners: any;
+    private _tokens: any;
+    private _pending: any;
+    private _queue: any;
     
     constructor () {
-        this._listeners = [];
+        this._lastListenerId = 0;
+        this._listenersCounter = 0;
+        this._listeners = {};
         this._tokens = {};
         this._pending = {};
         this._queue = {};
     }
     
     public emit (event): void {
-        for (var i=0; i<this._listeners.length; i++) {
-            this._listeners[i](event);    
+        // for (var i=0; i<this._listeners.length; i++) {
+        //     this._listeners[i](event);    
+        // }
+        for (var key in this._listeners) {
+            this._listeners[key](event);
         }
     }
     
-    public addListener (listener): number {
-        this._listeners.push(listener);
-        return this._listeners.length - 1;
+    public addListener (listener: any): number {
+        // this._listeners.push(listener);
+        this._listeners[++this._lastListenerId] = listener;
+        return ++this._listenersCounter;
+    }
+    
+    public removeListener (listenerId: number): void {
+        // this._listeners[listenerId] = null;
+        delete this._listeners[listenerId];
     }
     
     public setToken (tokenName: string, listenerId: number): void {
@@ -36,12 +49,12 @@ export class EventEmmiter implements IEventEmmiter {
     
     public startHandling (tokenName: string): void {
         this._pending[tokenName] = true;
-console.log('start ' + tokenName);
+// console.log('start ' + tokenName);
     }
     
     public stopHandling (tokenName: string): void {
         this._pending[tokenName] = false;
-console.log('stop ' + tokenName);
+// console.log('stop ' + tokenName);
     }
     
     public waitFor (tokenNames: string [], deferred: any, owner: string): any {

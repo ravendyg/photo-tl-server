@@ -8,6 +8,7 @@
 export class UserMenuController {
     
     private _userStore: any;
+    private _userDataStore: any;
     private _userActions: any;
     private _user: any;
     private _users: any [];
@@ -16,6 +17,7 @@ export class UserMenuController {
     constructor(userStore, userDataStore, userActions) {
         this._self = this;
         this._userStore = userStore;
+        this._userDataStore = userDataStore;
         this._userActions = userActions;
         
         this.resetItems();
@@ -38,6 +40,7 @@ export class UserMenuController {
     
     public selectUser (userId: number) {
         this._userActions.selectUser(userId);
+        this._userDataStore.message('selected: ' + userId);
     }
     
     public deleteUser (userId: number) {

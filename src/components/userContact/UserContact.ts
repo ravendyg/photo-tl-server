@@ -9,23 +9,29 @@ export class UserContactController {
     private _userStore: any;
     private _user: any;
     private _$mdBottomSheet: any;
+    private _listenerId: number;
     
         
-    constructor(userStore, $mdBottomSheet) {
+    constructor(userStore, $mdBottomSheet, $scope) {
+console.log('contact controller created');
         this._userStore = userStore;
         this._$mdBottomSheet = $mdBottomSheet;
         
         
         this.resetItems();
         
-        userStore.addListener( () => {
+        this._listenerId = userStore.addListener( () => {
             this.resetItems();
-        });   
+        });
+        
+        $scope.$on('$destroy', () => {
+console.log('contact controller destroyed');
+            userStore.removeListener(this._listenerId);
+        });
     }
     
     public resetItems () {
-        this._user = this._userStore.user();
-        
+        this._user = this._userStore.user();      
     }
     
     public getUser () {
