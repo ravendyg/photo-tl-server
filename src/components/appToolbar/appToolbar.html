@@ -20,9 +20,10 @@
 <!--\new user-->
     
 <!--user alreday logged in-->
-    <md-menu ng-if="apTbCtrl.getLoggedInUser().name">   
+    <md-menu ng-if="apTbCtrl.getLoggedInUser().name" md-position-mode="target-right target" id="user-menu">   
         <!--class="md-primary"-->
         <md-button
+            class="md-raised"
             aria-label="Open phone interactions menu"
             md-hue-1
             ng-click="apTbCtrl.openUserMenu($mdOpenMenu, $event)">

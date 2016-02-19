@@ -4,6 +4,7 @@ class UserDataStore extends EventEmmiter {
     private _message: string;
     private _loggedinUser: IUser;
     private _userService: any;
+    private _serverDirectory;
     
     constructor (userService) {
         super();
@@ -12,6 +13,7 @@ class UserDataStore extends EventEmmiter {
         
         // by default not logged in
         this._loggedinUser = {name: ''};
+        this._serverDirectory = '';
         
         // can be logged in -> check cookies if any verify on the server
         // when done, if a user name received, use it and trigger change
@@ -37,21 +39,50 @@ class UserDataStore extends EventEmmiter {
         return this._loggedinUser;   
     }
     
-    public signin (user: IUser): void {
-        
+    public signin (user: IUser) {
+        return this._userService.signin(user)
+            .then( (resp) => {
+console.log(resp);
+                        this._loggedinUser = {
+                                name: resp.data.name,
+                                pas: '',
+                                pas2: '',
+                                rem: false,
+                                error: ''
+                            };
+                            this._serverDirectory = resp.data.dir;
+                    },
+                    (resp) => {
+                        console.log(resp);
+                        if (resp.data) {
+                            switch (resp.data.error) {
+                                case 'wrong password':
+                                    this._loggedinUser.error = 'Неверный пароль';
+                                break;
+                                case 'wrong username':
+                                    this._loggedinUser.error = 'Неверное имя пользователя';
+                                break;
+                            }
+                        } else {
+                            this._loggedinUser.error = 'Неизвестная ошибка';
+                        }
+                    }
+                
+            );
     }
     
-    // clear current user, clear cookie, remove any information associated with the user
-    public signout (user: IUser): void {
-        this._loggedinUser = {name: ''};
-        this._userService.signout(user);
-        /** ? */
-    }
-    
+    // 
     public signup (user: IUser) {
         return this._userService.signup(user)
                 .then(  (resp) => {
-                            console.log('success')
+                            this._loggedinUser = {
+                                name: resp.config.data.name,
+                                pas: '',
+                                pas2: '',
+                                rem: false,
+                                error: ''
+                            };
+                            this._serverDirectory = resp.data.dir;
                         },
                         (resp) => {
                             this._loggedinUser = {
@@ -61,9 +92,15 @@ class UserDataStore extends EventEmmiter {
                                 rem: false,
                                 error: resp.status === 403 ? 'Такой пользователь существует' : 'Ошибка сервера'
                             };
-                            console.log(resp);
                         }
                 ); 
+    }
+    
+    // clear current user, clear cookie, remove any information associated with the user
+    public signout (user: IUser): void {
+        this._loggedinUser = {name: ''};
+        this._userService.signout(user);
+        /** ? */
     }
     
     public emitChange () {
@@ -88,6 +125,14 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, userService
                             console.log(userDataStore.getMessage());
                             dispatcher.stopHandling('UserDataStoreDispatchToken');        
                         });                    
+                break;
+                
+                case 'SIGNIN_USER':
+                    userDataStore.signin(action.user)
+                        .then( () => {
+                            userDataStore.emitChange();
+                            dispatcher.stopHandling('UserDataStoreDispatchToken');
+                        }); 
                 break;
                 
                 case 'SIGNUP_USER':

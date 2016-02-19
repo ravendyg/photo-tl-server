@@ -76,14 +76,16 @@ console.log('logged out');
             clickOutsideToClose:true,
             fullscreen: useFullScreen,
             locals: {
-                mode: mode
+                mode: mode,
+                self: this._mdDialog
             }
         })
-            .then( (answer) => {
-                this._scope.status = 'You said the information was "' + answer + '".';
-            }, () => {
-                this._scope.status = 'You cancelled the dialog.';
-            });
+            // .then( (answer) => {
+            //     console.log('You said the information was "' + answer + '".');
+            // }, () => {
+            //     console.log('You cancelled the dialog.');
+            // })
+            ;
             
             this._scope.$watch( () => {
                 return this._mdMedia('xs') || this._mdMedia('sm');

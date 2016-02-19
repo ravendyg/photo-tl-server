@@ -14,14 +14,16 @@ class LogInController {
     private _userActions: any;
     private _listenerId: number;
     private _errorMessage: string;
+    private _mdDialog: any;
     
     // public loginForm: any;
     
-    constructor ($scope: any, $mdDialog: any, mode: string,
+    constructor ($scope: any, $mdDialog: any, mode: string, self: any,
                 userDataStore: any, userActions: any) {
         // set up vars
         this._userDataStore = userDataStore;
         this._userActions = userActions;
+        this._mdDialog = $mdDialog;
         
         // set up view
         if (mode === 'in') {
@@ -43,12 +45,11 @@ class LogInController {
     
     private _resetUser () {
         this._user = this._userDataStore.getLoggedInUser();
-        this._userInput = {name: '', pas: '', pas2: '', rem: false, error: ''};
-        if (this._user.error) {
-            // report an error, but only once
-            window.alert(this._user.error);
-            this._user.error = '';
+        if (this._user.name && !this._user.error) {
+            this._mdDialog.hide();
         }
+        this._userInput = {name: '', pas: '', pas2: '', rem: false, error: this._user.error};
+        this._user.error = '';
     }
     
     public getUser (): IUser {
@@ -69,19 +70,23 @@ class LogInController {
             this._userInput.error = 'Имя пользователя не может быть пустым';
             return;
         }
+        if (this._userInput.pas.match(/^\s*$/)) {
+            this._userInput.error = 'Пароль не может быть пустым';
+            return;
+        }
         if (this._verifyInput()) {
             // proceed
             if (this._submitText === 'Войти') {
                 // send login request
-                this._userActions.signin();
+                this._userActions.signin({
+                    name: this._userInput.name,
+                    pas: this._userInput.pas,
+                    rem: this._userInput.rem
+                });
             } else {
                 //send signup request
                 if (this._userInput.pas !== this._userInput.pas2) {
                     this._userInput.error = 'Пароли не совпадают';
-                    return;
-                }
-                if (this._userInput.pas.match(/^\s*$/)) {
-                    this._userInput.error = 'Пароль не может быть пустым';
                     return;
                 }
                 this._userActions.signup({

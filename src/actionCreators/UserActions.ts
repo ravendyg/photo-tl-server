@@ -24,6 +24,13 @@ class UserActions {
         });
     }
     
+    public signin (user: IUser) {
+        this._dispatcher.emit({
+           type: "SIGNIN_USER",
+           user: user 
+        });
+    }
+    
     public signup (user: IUser) {
         this._dispatcher.emit({
            type: "SIGNUP_USER",
@@ -37,4 +44,5 @@ class UserActions {
             user: user
         });
     }
+    
 }

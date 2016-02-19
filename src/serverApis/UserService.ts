@@ -36,6 +36,14 @@ export class UserService {
         return deferred.promise;
     }
     
+    public signin (user: IUser) {
+        return this._http({
+                    method: 'GET',
+                    url: config('url') + config('port') + config('userDriver') + '/sign-in',
+                    params: user
+                });           
+    }
+    
     public signup (user: IUser) {
         return this._http({
                     method: 'POST',

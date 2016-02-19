@@ -21,6 +21,7 @@ export class UserInfoController {
         // unregister
         $scope.$on('$destroy', () => {
             userStore.removeListener(this._listenerId);
+            this._$mdBottomSheet.hide();
         });
         
         
