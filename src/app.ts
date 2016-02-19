@@ -32,7 +32,7 @@ import {UserActions} from './actionCreators/UserActions.ts';
 // import {ServerActions} from './actionCreators/ServerActions.ts';
 
 // component controllers
-import {UserMenuController} from './components/userMenu/UserMenu.ts';
+// import {UserMenuController} from './components/userMenu/UserMenu.ts';
 import {WrapperController} from './WrapperController.ts';
 import {UserInfoController} from './components/userInfo/UserInfo.ts';
 import {UserContactController} from './components/userContact/UserContact.ts';
@@ -54,7 +54,7 @@ angular.module('photoAlbum')
     // .service('serverActions', ServerActions)
     
     // component controllers
-    .controller('UserMenuController', UserMenuController)
+    // .controller('UserMenuController', UserMenuController)
     .controller('UserWrapperController', WrapperController)
     .controller('UserInfoController', UserInfoController)
     .controller('UserContactController', UserContactController)
@@ -62,14 +62,14 @@ angular.module('photoAlbum')
     .controller('AppToolbarController', AppToolbarController)
     
     // component directives
-    .directive('userMenu', function () {
-         return {
-             controller: 'UserMenuController as usMenCtrl',
-             templateUrl: 'components/userMenu/userMenu.html',
-             scope: {}
-            // template: require('./components/userMenu/userMenu.html')
-         }
-     })
+    // .directive('userMenu', function () {
+    //      return {
+    //          controller: 'UserMenuController as usMenCtrl',
+    //          templateUrl: 'components/userMenu/userMenu.html',
+    //          scope: {}
+    //         // template: require('./components/userMenu/userMenu.html')
+    //      }
+    //  })
      .directive('userInfo', function () {
          return {
              controller: 'UserInfoController as usInfCtrl',
