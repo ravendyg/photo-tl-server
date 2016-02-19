@@ -11,7 +11,7 @@ interface IEventEmmiter {
 
 interface IUser {
     name: string,
-    pas: string,
+    pas?: string,
     pas2?: string,
     rem?: boolean,
     error?: string

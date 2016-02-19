@@ -10,6 +10,12 @@
     },
     "jquery/jquery.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "node/node.d.ts": {
+      "commit": "f3803c43d6e1476397beba97fcce1a1a55931cea"
+    },
+    "mongodb/mongodb.d.ts": {
+      "commit": "24c1fbefac6201f31e3fa1e2537e09d99ccdaf69"
     }
   }
 }

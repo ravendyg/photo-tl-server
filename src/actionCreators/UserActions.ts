@@ -30,4 +30,11 @@ class UserActions {
            newUser: user 
         });
     }
+    
+    public signout (user: IUser) {
+        this._dispatcher.emit({
+            type: 'SIGNOUT_USER',
+            user: user
+        });
+    }
 }

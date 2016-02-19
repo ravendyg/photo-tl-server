@@ -19,15 +19,18 @@ class AppToolbarController {
     private _userDataStore: any;
     private _listenerId: number;
     
+    private _userActions: any;
+    
     private _originatorEv: any;
     
-    constructor($scope, $mdDialog, $mdMedia, userService, userDataStore) {
+    constructor($scope, $mdDialog, $mdMedia, userService, userDataStore, userActions) {
         this._scope = $scope;
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
         this._userService = userService;
         
         this._userDataStore = userDataStore;
+        this._userActions = userActions;
         
         // this._loggedInUser = this._userService.loggedInUser;
         this.resetUserInfo();
@@ -59,6 +62,7 @@ console.log(this._loggedInUser);
     
     public logOut () {
 console.log('logged out');
+        this._userActions.signout(this._loggedInUser);
     }
     
     public sign ($event: any, mode: string) {

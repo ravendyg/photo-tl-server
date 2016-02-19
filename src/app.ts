@@ -7,7 +7,7 @@
 
 'use strict';
 angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
-    .config(function($mdThemingProvider, $mdIconProvider ){
+    .config(function($mdThemingProvider, $mdIconProvider, $httpProvider){
         // Register the user `avatar` icons
         $mdIconProvider
             .icon("share", "./assets/svg/share.svg", 24)
@@ -17,6 +17,8 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
         $mdThemingProvider.theme('default')
             .primaryPalette('green')
             .accentPalette('red');
+            
+            // $httpProvider.defaults.withCredentials = true;
     });
     
 import {EventEmmiter} from './EventEmmiter.ts';
@@ -27,6 +29,7 @@ import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
 // action creators
 import {UserActions} from './actionCreators/UserActions.ts';
+// import {ServerActions} from './actionCreators/ServerActions.ts';
 
 // component controllers
 import {UserMenuController} from './components/userMenu/UserMenu.ts';
@@ -48,6 +51,7 @@ angular.module('photoAlbum')
     
     // actions
     .service('userActions', UserActions)
+    // .service('serverActions', ServerActions)
     
     // component controllers
     .controller('UserMenuController', UserMenuController)

@@ -45,7 +45,7 @@ class LogInController {
         this._user = this._userDataStore.getLoggedInUser();
         this._userInput = {name: '', pas: '', pas2: '', rem: false, error: ''};
         if (this._user.error) {
-            // report an error, but only oonce
+            // report an error, but only once
             window.alert(this._user.error);
             this._user.error = '';
         }

@@ -21,14 +21,12 @@ app.disable('x-powered-by');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, config.get('src'))));
-
 console.log(path.join(__dirname, config.get('src')));
 
 // connect to db
 MongoClient.connect('mongodb://localhost:27017/test', function (err, db) {
-
-    // interaction with users
+    
+    // sigin-up-out interaction with users
     app.use('/user-processor', userProcessor(db));
 
     // index
@@ -42,6 +40,9 @@ MongoClient.connect('mongodb://localhost:27017/test', function (err, db) {
             }
         });
     });
+    
+    // common static stuff
+    app.use(express.static(path.join(__dirname, config.get('src'))));
 
     // default NOT_FOUND
     app.use('*', function (req, webRes, next) {

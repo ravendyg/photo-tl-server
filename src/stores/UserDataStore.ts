@@ -10,17 +10,19 @@ class UserDataStore extends EventEmmiter {
         
         this._userService = userService;
         
-        this._loggedinUser = this._userService.getUserFromMemory();
-        if (!this._loggedinUser || !this._loggedinUser.name) {
-            // no user in the local storage
-            this._loggedinUser = {
-                name: '',
-                pas: '',
-                pas2: '',
-                rem: false,
-                error: ''
-            }
-        }
+        // by default not logged in
+        this._loggedinUser = {name: ''};
+        
+        // can be logged in -> check cookies if any verify on the server
+        // when done, if a user name received, use it and trigger change
+        this._userService.getUserFromMemory()
+            .then( (name) => {
+                console.log(name);
+                if (name) {
+                    this._loggedinUser = {name: name };
+                    this.emitChange();
+                }  
+            });
     }
     
     public getMessage (): string {
@@ -31,7 +33,7 @@ class UserDataStore extends EventEmmiter {
         this._message = message;
     }
     
-    public getLoggedInUser (): IUser {
+    public getLoggedInUser () {
         return this._loggedinUser;   
     }
     
@@ -39,16 +41,25 @@ class UserDataStore extends EventEmmiter {
         
     }
     
+    // clear current user, clear cookie, remove any information associated with the user
+    public signout (user: IUser): void {
+        this._loggedinUser = {name: ''};
+        this._userService.signout(user);
+        /** ? */
+    }
+    
     public signup (user: IUser) {
         return this._userService.signup(user)
-                .then(  (resp) => console.log('success'),
+                .then(  (resp) => {
+                            console.log('success')
+                        },
                         (resp) => {
                             this._loggedinUser = {
                                 name: '',
                                 pas: '',
                                 pas2: '',
                                 rem: false,
-                                error: 'Отказ сервера'
+                                error: resp.status === 403 ? 'Такой пользователь существует' : 'Ошибка сервера'
                             };
                             console.log(resp);
                         }
@@ -86,6 +97,13 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, userService
                             dispatcher.stopHandling('UserDataStoreDispatchToken');
                         }); 
                 break;
+                
+                case 'SIGNOUT_USER':
+                    userDataStore.signout(action.user);
+                    userDataStore.emitChange();
+                    dispatcher.stopHandling('UserDataStoreDispatchToken');
+                break;
+                
                 default:
                     dispatcher.stopHandling('UserDataStoreDispatchToken');
             }
