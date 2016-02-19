@@ -1,15 +1,5 @@
 <md-toolbar layout="row" >
-<!--menu button-->
-    <!--<md-button
-        ng-if="apTbCtrl.getLoggedInUser().name"
-        class="menu"
-        hide-gt-sm
-        ng-click="uwCtrl.toggleList()"
-        aria-label="Show User List">
-            <md-icon md-svg-icon="menu"></md-icon>
-    </md-button>-->
-<!--\menu button-->
-    
+   
     <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.sign($event, 'in')" ng-if="apTbCtrl.getLoggedInUser().name">All photos</md-button>
     <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.sign($event, 'up')" ng-if="apTbCtrl.getLoggedInUser().name">My photos</md-button>
     
@@ -35,15 +25,13 @@
         <md-menu-content width="4">
         <md-menu-item>
             <md-button ng-click="">
-            <!--<md-icon md-svg-icon="call:dialpad" md-menu-align-target></md-icon>-->
-            Do smth
+                Профиль
             </md-button>
         </md-menu-item>
         <md-menu-divider></md-menu-divider>
         <md-menu-item>
             <md-button ng-click="apTbCtrl.logOut()">
-            <!--<md-icon md-svg-icon="social:notifications-{{ctrl.notificationsEnabled ? 'off' : 'on'}}"></md-icon>-->
-            Выйти
+                Выйти
             </md-button>
         </md-menu-item>
         </md-menu-content>

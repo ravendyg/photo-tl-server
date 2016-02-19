@@ -1,38 +1,41 @@
-<!--<md-icon md-svg-icon="{{selectedUser.avatar}}" class="avatar" ng-click="usInfCtrl.show()"></md-icon>
-<h2>{{selectedUser.name}}</h2>
-<p>{{selectedUser.content}}</p>
+<div layout="column">
 
-<md-button class="contact" md-no-ink ng-click="usInfCtrl.makeContact()"
-    aria-label="Share with {{selectedUser.name}}">
-    <md-tooltip>Contact {{selectedUser.name}}</md-tooltip>
-    <md-icon md-svg-icon="share"></md-icon>
-</md-button>-->
+    <md-toolbar layout="row" >
+        <form>
+            <label>
+                <input type="radio" name="order" value="new">
+                New first
+            </label>
+            <label>
+                <input type="radio" name="order" value="popular">
+                Popular first
+            </label>
+        </form>
+    </md-toolbar>
 
-<md-icon
-    md-svg-icon="{{usInfCtrl.getUser().avatar}}"
-    class="avatar"
-    ng-click="usInfCtrl.show()"
-    ng-if="usInfCtrl.getUser().id !== undefined">
-</md-icon>
-<h2>{{usInfCtrl.getUser().name}}</h2>
-<p>{{usInfCtrl.getUser().content}}</p>
+    <md-content flex id="content">
 
-<!--<md-button
-    class="contact"
-    md-no-ink
-    ng-click="usInfCtrl.makeContact()"
-    aria-label="Share with {{usInfCtrl.getUser().name}}"
-    ng-if="usInfCtrl.getUser().id !== undefined">
-        <md-tooltip>Contact {{usInfCtrl.getUser().name}}</md-tooltip>
-        <md-icon md-svg-icon="share"></md-icon>
-</md-button>-->
 
-<md-button
-    class="delete"
-    md-no-ink
-    ng-click="usInfCtrl.deleteUser(usInfCtrl.getUser().id)"
-    aria-label="Remove {{usInfCtrl.getUser().name}}"
-    ng-if="usInfCtrl.getUser().id !== undefined">
-        <md-tooltip>Remove {{usInfCtrl.getUser().name}}</md-tooltip>
-        <md-icon md-svg-icon="menu"></md-icon>
-</md-button>
+
+        <md-icon
+            md-svg-icon="{{usInfCtrl.getUser().avatar}}"
+            class="avatar"
+            ng-click="usInfCtrl.show()"
+            ng-if="usInfCtrl.getUser().id !== undefined">
+        </md-icon>
+        <h2>{{usInfCtrl.getUser().name}}</h2>
+        <p>{{usInfCtrl.getUser().content}}</p>
+
+        <md-button
+            class="delete"
+            md-no-ink
+            ng-click="usInfCtrl.deleteUser(usInfCtrl.getUser().id)"
+            aria-label="Remove {{usInfCtrl.getUser().name}}"
+            ng-if="usInfCtrl.getUser().id !== undefined">
+                <md-tooltip>Remove {{usInfCtrl.getUser().name}}</md-tooltip>
+                <md-icon md-svg-icon="menu"></md-icon>
+        </md-button>
+
+    </md-content>
+
+</div>

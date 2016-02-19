@@ -13,8 +13,10 @@
     <body ng-app="photoAlbum" ng-cloack layout="column" ng-controller="UserWrapperController as uwCtrl">
 
     <app-toolbar></app-toolbar>
+    
 
-    <div flex layout="row">
+
+    <div flex layout="row" user-info  ng-if="uwCtrl.getLoggedInUser().name"></div>
 
         <!--<md-sidenav md-is-locked-open="$mdMedia('gt-sm')"
             ng-if="uwCtrl.getLoggedInUser().name"
@@ -24,11 +26,11 @@
             <user-menu></user-menu>
         </md-sidenav>-->
 
-        <md-content flex id="content">
-            <user-info ng-if="uwCtrl.getLoggedInUser().name"></user-info>
+        <!--<md-content flex id="content">
+            <user-info></user-info>
         </md-content>
 
-    </div>
+    </div>-->
     <!--<user-wrapper></user-wrapper>-->
     
 <!-- build:js vendor.js -->

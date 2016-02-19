@@ -72,6 +72,7 @@ angular.module('photoAlbum')
     //  })
      .directive('userInfo', function () {
          return {
+             restrict: 'A',
              controller: 'UserInfoController as usInfCtrl',
              templateUrl: 'components/userInfo/userInfo.html',
              scope: {}
