@@ -5,13 +5,15 @@ export class UserInfoController {
     private _userStore: any;
     private _userActions: any;
     private _user: any;
-    private _$mdBottomSheet: any;
+    // private _$mdBottomSheet: any;
     private _listenerId: number;
     
-    constructor(userStore, userActions, $mdBottomSheet, $scope) {
+    constructor(userStore, userActions,
+                // $mdBottomSheet,
+                $scope) {
         this._userStore = userStore;
         this._userActions = userActions;
-        this._$mdBottomSheet = $mdBottomSheet;
+        // this._$mdBottomSheet = $mdBottomSheet;
         
         this.resetItems();
         
@@ -21,7 +23,7 @@ export class UserInfoController {
         // unregister
         $scope.$on('$destroy', () => {
             userStore.removeListener(this._listenerId);
-            this._$mdBottomSheet.hide();
+            // this._$mdBottomSheet.hide();
         });
         
         
@@ -35,13 +37,13 @@ export class UserInfoController {
         return this._user;
     }
     
-    public makeContact () {
-        this._$mdBottomSheet.show({
-            controller: 'UserContactController as ucCtrl',
-            templateUrl: 'components/userContact/userContact.html',
-            parent: angular.element(document.getElementById('content'))
-        });
-    }
+    // public makeContact () {
+    //     this._$mdBottomSheet.show({
+    //         controller: 'UserContactController as ucCtrl',
+    //         templateUrl: 'components/userContact/userContact.html',
+    //         parent: angular.element(document.getElementById('content'))
+    //     });
+    // }
     
     public deleteUser (userId: number) {
         this._userActions.deleteUser(userId);
