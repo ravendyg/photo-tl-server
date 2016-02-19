@@ -55,10 +55,10 @@ console.log(this._loggedInUser);
         return this._loggedInUser;
     }
     
-    public openUserMenu ($mdOpenMenu, ev) {
-        this._originatorEv = ev;
-        $mdOpenMenu(ev);
-    }
+    // public openUserMenu ($mdOpenMenu, ev) {
+    //     this._originatorEv = ev;
+    //     $mdOpenMenu(ev);
+    // }
     
     public logOut () {
 console.log('logged out');
