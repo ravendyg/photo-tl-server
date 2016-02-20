@@ -30,7 +30,6 @@ class WrapperController {
         
         // watch for direct access attempts
         $scope.$on('$stateChangeSuccess', () => {
-            console.log($state);
             if ($state.current.name !== 'photo' && !this._loggedInUser.name) {
                 // for loggedout only 'photo'
                 this._state.go('photo');

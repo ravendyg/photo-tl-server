@@ -20,11 +20,14 @@ interface IUser {
 }
 
 interface IImage {
+    id: number,
     src: string,
     title: string,
     description: string,
-    uploaded: Date,
-    changed: Date,
+    uploadedNum: number,
+    changedNum: number,
+    uploaded?: string,
+    changed?: string,
     rating: number,
     myRating: number,
     views: number,
@@ -32,4 +35,13 @@ interface IImage {
         userName: string,
         text: string
     } []
+}
+
+interface IImageService {
+    getImageData (): any;
+    deleteImage (id: number): void;
+}
+
+interface IUtils {
+    transformDate (num: number): string;
 }

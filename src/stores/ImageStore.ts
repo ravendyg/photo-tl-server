@@ -1,16 +1,47 @@
 /// <reference path="./../interfaces.d.ts" />
 
 import {EventEmmiter} from './../EventEmmiter.ts';
+import Utils = require('./../Utils.ts');
 
 class ImageStore extends EventEmmiter {
-    private _imageService: any;
+    private _imageService: IImageService;
     private _images: IImage [];
     
-    constructor (imageService) {
+    constructor (imageService: IImageService) {
         super();
         
         this._imageService = imageService;
         
+        // start loading image data
+        this._loadImages();
+        
+    }
+    
+    // load image data from the server
+    private _loadImages () {
+        this._imageService.getImageData()
+            .then( (imagesData) => {
+                    this._images = imagesData;
+                    // transform date
+                    for (var i=0; i<this._images.length; i++) {
+                        this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
+                    }
+                    this.emitChange();
+                }, () => {
+                    console.error('imageService failed');
+                }
+            )
+        ;
+    }
+    
+    // getter for image data
+    public getImages () {
+        return this._images;
+    }
+    // removes specified images
+    public filterImageOut (id: number) {
+        this._images = this._images.filter( (obj) => obj.id !== id );
+        this._imageService.deleteImage(id);
     }
     
     public emitChange () {
@@ -18,49 +49,21 @@ class ImageStore extends EventEmmiter {
     }
 }
 
-export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService) {
+export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService) {
     var imageStore = new ImageStore(imageService);
         
-    dispatcher.setToken('UserDataStoreDispatchToken', 
+    dispatcher.setToken('ImageStoreDispatchToken', 
         dispatcher.addListener(function (action) {
-            dispatcher.startHandling('UserDataStoreDispatchToken');
-            switch (action.type) {
-                case 'SELECT_USER':
-                    // in order to use angular promise, but keep EventEmmiter able to process any type of promises
-                    // without injecting $q directly
-                    var deferred = $q.defer();
-                    dispatcher.waitFor(['UserStoreDispatchToken'], deferred, 'UserDataStoreDispatchToken')
-                        .then( () => {
-                            userDataStore.setMessage('Selected: ' + action.userId);
-                            console.log(userDataStore.getMessage());
-                            dispatcher.stopHandling('UserDataStoreDispatchToken');        
-                        });                    
-                break;
-                
-                case 'SIGNIN_USER':
-                    userDataStore.signin(action.user)
-                        .then( () => {
-                            userDataStore.emitChange();
-                            dispatcher.stopHandling('UserDataStoreDispatchToken');
-                        }); 
-                break;
-                
-                case 'SIGNUP_USER':
-                    userDataStore.signup(action.newUser)
-                        .then( () => {
-                            userDataStore.emitChange();
-                            dispatcher.stopHandling('UserDataStoreDispatchToken');
-                        }); 
-                break;
-                
-                case 'SIGNOUT_USER':
-                    userDataStore.signout(action.user);
-                    userDataStore.emitChange();
-                    dispatcher.stopHandling('UserDataStoreDispatchToken');
+            dispatcher.startHandling('ImageStoreDispatchToken');
+            switch (action.type) {                
+                case 'DELETE_PHOTO':
+                    imageStore.filterImageOut(action.photoId);
+                    imageStore.emitChange();
+                    dispatcher.stopHandling('ImageStoreDispatchToken');
                 break;
                 
                 default:
-                    dispatcher.stopHandling('UserDataStoreDispatchToken');
+                    dispatcher.stopHandling('ImageStoreDispatchToken');
             }
         })
     );
@@ -69,7 +72,6 @@ export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService) {
         addListener: (foo) => imageStore.addListener(foo),
         removeListener: (listenerId: number) => imageStore.removeListener(listenerId),
         
-        getLoggedInUser: () => userDataStore.getLoggedInUser(),
-        message: () => userDataStore.getMessage()
+        getImages: () => imageStore.getImages()
     }
 }

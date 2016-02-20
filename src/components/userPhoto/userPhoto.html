@@ -1,6 +1,3 @@
-<div flex layout="row">
-     <!--ng-if="uwCtrl.getLoggedInUser().name">-->
-
 <div layout="column">
 
     <md-toolbar layout="row" >
@@ -18,40 +15,41 @@
 
     <md-content flex id="content">
         
-        <md-card>
-        <img ng-src="{{imagePath}}" class="md-card-image" alt="Washed Out">
-        <md-card-title>
-          <md-card-title-text>
-            <span class="md-headline">In-card mixed actions</span>
-          </md-card-title-text>
-        </md-card-title>
-        <md-card-actions layout="row" layout-align="start center">
-          <!--<md-card-icon-actions>
+        <md-button ng-click="usPhCtrl.consoleImages()">
+            console.log(images)
+        </md-button>
+        
+        <md-card ng-repeat="photo in usPhCtrl._images track by photo.id">
+            <img ng-src="{{'/users_data/images/'+photo.src}}" class="md-card-image">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">{{photo.title}}</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="start center">
+            <!--<md-card-icon-actions>
             <md-button class="md-icon-button" aria-label="Favorite">
-              <md-icon md-svg-icon="menu"></md-icon>
+                <md-icon md-svg-icon="menu"></md-icon>
             </md-button>
             <md-button class="md-icon-button" aria-label="Share">
-              <md-icon md-svg-icon="share"></md-icon>
+                <md-icon md-svg-icon="share"></md-icon>
             </md-button>
-          </md-card-icon-actions>-->
-            <md-button>
-                <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
-                Редактировать
-            </md-button>
-            <md-button>
-                <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
-                Удалить
-            </md-button>
-        </md-card-actions>
-        <md-card-content>
-          <p>
-            The titles of Washed Out's breakthrough song and the first single from Paracosm share the
-            two most important words in Ernest Greene's musical language: feel it. It's a simple request, as well...
-          </p>
-        </md-card-content>
-      </md-card>
-
-
+            </md-card-icon-actions>-->
+                <md-button>
+                    <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
+                    Редактировать
+                </md-button>
+                <md-button ng-click="usPhCtrl.deletePhoto(photo.id)">
+                    <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
+                    Удалить
+                </md-button>
+            </md-card-actions>
+            <md-card-content>
+                <p>Добавил: {{photo.uploadedBy}} - {{photo.uploaded}}</p>
+                <p ng-if="photo.changed">Изменил: {{photo.changedBy}} - {{photo.changed}}</p>
+                <p>{{photo.description}}</p>
+            </md-card-content>
+        </md-card>
 
         <md-icon
             md-svg-icon="{{usPhCtrl.getUser().avatar}}"
@@ -73,7 +71,5 @@
         </md-button>
 
     </md-content>
-
-</div>
 
 </div>
