@@ -7,13 +7,15 @@ export class UserInfoController {
     private _user: any;
     // private _$mdBottomSheet: any;
     private _listenerId: number;
+    private _state: any;
     
     constructor(userStore, userActions,
                 // $mdBottomSheet,
-                $scope) {
+                $scope, $state) {
         this._userStore = userStore;
         this._userActions = userActions;
         // this._$mdBottomSheet = $mdBottomSheet;
+        this._state = $state;
         
         this.resetItems();
         
@@ -26,11 +28,14 @@ export class UserInfoController {
             // this._$mdBottomSheet.hide();
         });
         
-        
     }
     
     private resetItems () {
         this._user = this._userStore.user();
+        if (!this._user.name) {
+            console.log('loggedout');
+            this._state.transitionTo('photo');    
+        } 
     }
     
     public getUser () {

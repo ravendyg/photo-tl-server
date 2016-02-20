@@ -7,7 +7,7 @@
 
 'use strict';
 angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
-    .config(function($mdThemingProvider, $mdIconProvider, $httpProvider){
+    .config(function($mdThemingProvider, $mdIconProvider, $httpProvider, $stateProvider, $urlRouterProvider){
         // Register the user `avatar` icons
         $mdIconProvider
             .icon("share", "./assets/svg/share.svg", 24)
@@ -17,6 +17,40 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
         $mdThemingProvider.theme('default')
             .primaryPalette('green')
             .accentPalette('red');
+        $stateProvider
+            .state('photo', {
+                url: '/',
+                views: {
+                    'toolbar': {
+                        templateUrl: 'components/appToolbar/appToolbar.html',
+                        controller: 'AppToolbarController as apTbCtrl'
+                    },
+                    'content': {
+                        templateUrl: 'components/noUser/noUser.html',
+                        controller: 'NoUserController as noCtrl'
+                    }
+                }
+            })
+            // .state('photo.loggedout', {
+            //     url: 'loggedout',
+            //     views: {
+            //         'content@': {
+            //             templateUrl: 'components/noUser/noUser.html',
+            //             controller: 'NoUserController as noCtrl'
+            //         }
+            //     }
+            // })
+            .state('photo.loggedin', {
+                url: 'loggedin',
+                views: {
+                    'content@': {
+                        templateUrl: 'components/userInfo/userInfo.html',
+                        controller: 'UserInfoController as usInfCtrl'
+                    }
+                }
+            });
+            
+        $urlRouterProvider.otherwise('/');
             
             // $httpProvider.defaults.withCredentials = true;
     });
@@ -35,6 +69,7 @@ import {UserActions} from './actionCreators/UserActions.ts';
 // import {UserMenuController} from './components/userMenu/UserMenu.ts';
 import {WrapperController} from './WrapperController.ts';
 import {UserInfoController} from './components/userInfo/UserInfo.ts';
+import {NoUserController} from './components/noUser/noUser.ts';
 // import {UserContactController} from './components/userContact/UserContact.ts';
 import {LogInController} from './components/logIn/LogIn.ts';
 import {AppToolbarController} from './components/appToolbar/AppToolbar.ts';
@@ -55,8 +90,9 @@ angular.module('photoAlbum')
     
     // component controllers
     // .controller('UserMenuController', UserMenuController)
-    .controller('UserWrapperController', WrapperController)
+    .controller('WrapperController', WrapperController)
     .controller('UserInfoController', UserInfoController)
+    .controller('NoUserController', NoUserController)
     // .controller('UserContactController', UserContactController)
     .controller('LogInController', LogInController)
     .controller('AppToolbarController', AppToolbarController)
@@ -70,23 +106,23 @@ angular.module('photoAlbum')
     //         // template: require('./components/userMenu/userMenu.html')
     //      }
     //  })
-     .directive('userInfo', function () {
-         return {
-             restrict: 'A',
-             controller: 'UserInfoController as usInfCtrl',
-             templateUrl: 'components/userInfo/userInfo.html',
-             scope: {}
-         }
-     })
-     .directive('appToolbar', function () {
-         return {
-            restrict: 'E',
-            replace: true,
-            controller: 'AppToolbarController as apTbCtrl',
-            templateUrl: 'components/appToolbar/appToolbar.html',
-            scope: {}
-         }
-     })
+    //  .directive('userInfo', function () {
+    //      return {
+    //          restrict: 'A',
+    //          controller: 'UserInfoController as usInfCtrl',
+    //          templateUrl: 'components/userInfo/userInfo.html',
+    //          scope: {}
+    //      }
+    //  })
+    //  .directive('appToolbar', function () {
+    //      return {
+    //         restrict: 'E',
+    //         replace: true,
+    //         controller: 'AppToolbarController as apTbCtrl',
+    //         templateUrl: 'components/appToolbar/appToolbar.html',
+    //         scope: {}
+    //      }
+    //  })
      
      // server APIs
      .service('userService', UserService)
