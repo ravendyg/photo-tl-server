@@ -44,8 +44,8 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
                 url: 'loggedin/photo',
                 views: {
                     'content@': {
-                        templateUrl: 'components/userInfo/userInfo.html',
-                        controller: 'UserInfoController as usInfCtrl'
+                        templateUrl: 'components/userPhoto/userPhoto.html',
+                        controller: 'UserPhotoController as usPhCtrl'
                     }
                 }
             })
@@ -77,7 +77,7 @@ import {UserActions} from './actionCreators/UserActions.ts';
 // component controllers
 // import {UserMenuController} from './components/userMenu/UserMenu.ts';
 import {WrapperController} from './WrapperController.ts';
-import {UserInfoController} from './components/userInfo/UserInfo.ts';
+import {UserPhotoController} from './components/userPhoto/UserPhoto.ts';
 import {NoUserController} from './components/noUser/noUser.ts';
 import {UserDataController} from './components/userData/UserData.ts';
 import {LogInController} from './components/logIn/LogIn.ts';
@@ -100,7 +100,7 @@ angular.module('photoAlbum')
     // component controllers
     // .controller('UserMenuController', UserMenuController)
     .controller('WrapperController', WrapperController)
-    .controller('UserInfoController', UserInfoController)
+    .controller('UserPhotoController', UserPhotoController)
     .controller('NoUserController', NoUserController)
     .controller('UserDataController', UserDataController)
     .controller('LogInController', LogInController)

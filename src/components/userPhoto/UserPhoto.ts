@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 /// <reference path="../../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
-export class UserInfoController {
+export class UserPhotoController {
     private _userStore: any;
     private _userActions: any;
     private _user: any;
