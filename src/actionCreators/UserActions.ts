@@ -9,21 +9,7 @@ class UserActions {
     constructor(dispatcher: IEventEmmiter) {
         this._dispatcher = dispatcher;
     }
-    
-    public selectUser (userId: number) {
-        this._dispatcher.emit({
-           type: "SELECT_USER",
-           userId: userId 
-        });
-    }    
-    
-    public deleteUser (userId: number) {
-        this._dispatcher.emit({
-           type: "DELETE_USER",
-           userId: userId 
-        });
-    }
-    
+       
     public signin (user: IUser) {
         this._dispatcher.emit({
            type: "SIGNIN_USER",

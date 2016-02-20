@@ -8,17 +8,17 @@
 'use strict';
 angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
     .config(function($mdThemingProvider, $mdIconProvider, $httpProvider, $stateProvider, $urlRouterProvider){
-        // Register the user `avatar` icons
         $mdIconProvider
             .icon("share", "./assets/svg/share.svg", 24)
             .icon("menu", "./assets/svg/menu.svg", 24)
             .icon("create", "./assets/svg/create.svg", 24)
             .icon("remove", "./assets/svg/remove.svg", 24)
-            .defaultIconSet("./assets/svg/avatars.svg", 128);
+            .icon("preloader", "./assets/svg/preloader.svg", 48);
             
         $mdThemingProvider.theme('default')
             .primaryPalette('green')
             .accentPalette('red');
+            
         $stateProvider
             .state('photo', {
                 url: '/',
@@ -59,7 +59,6 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
 import {EventEmmiter} from './EventEmmiter.ts';
 
 // stores
-import {UserStoreFactory} from './stores/UserStore.ts';
 import {ImageStoreFactory} from './stores/ImageStore.ts';
 import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
@@ -69,7 +68,6 @@ import {ImageActions} from './actionCreators/ImageActions.ts';
 // import {ServerActions} from './actionCreators/ServerActions.ts';
 
 // component controllers
-// import {UserMenuController} from './components/userMenu/UserMenu.ts';
 import {WrapperController} from './WrapperController.ts';
 import {UserPhotoController} from './components/userPhoto/UserPhoto.ts';
 import {NoUserController} from './components/noUser/noUser.ts';
@@ -85,7 +83,6 @@ angular.module('photoAlbum')
     .service('dispatcher', EventEmmiter)
     
     // stores
-    .factory('userStore', UserStoreFactory)
     .factory('imageStore', ImageStoreFactory)
     .factory('userDataStore', UserDataStoreFactory)
     
@@ -95,40 +92,12 @@ angular.module('photoAlbum')
     // .service('serverActions', ServerActions)
     
     // component controllers
-    // .controller('UserMenuController', UserMenuController)
     .controller('WrapperController', WrapperController)
     .controller('UserPhotoController', UserPhotoController)
     .controller('NoUserController', NoUserController)
     .controller('UserDataController', UserDataController)
     .controller('LogInController', LogInController)
     .controller('AppToolbarController', AppToolbarController)
-    
-    // component directives
-    // .directive('userMenu', function () {
-    //      return {
-    //          controller: 'UserMenuController as usMenCtrl',
-    //          templateUrl: 'components/userMenu/userMenu.html',
-    //          scope: {}
-    //         // template: require('./components/userMenu/userMenu.html')
-    //      }
-    //  })
-    //  .directive('userInfo', function () {
-    //      return {
-    //          restrict: 'A',
-    //          controller: 'UserInfoController as usInfCtrl',
-    //          templateUrl: 'components/userInfo/userInfo.html',
-    //          scope: {}
-    //      }
-    //  })
-    //  .directive('appToolbar', function () {
-    //      return {
-    //         restrict: 'E',
-    //         replace: true,
-    //         controller: 'AppToolbarController as apTbCtrl',
-    //         templateUrl: 'components/appToolbar/appToolbar.html',
-    //         scope: {}
-    //      }
-    //  })
      
      // server APIs
      .service('userService', UserService)
