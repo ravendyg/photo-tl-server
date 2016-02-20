@@ -12,6 +12,8 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
         $mdIconProvider
             .icon("share", "./assets/svg/share.svg", 24)
             .icon("menu", "./assets/svg/menu.svg", 24)
+            .icon("create", "./assets/svg/create.svg", 24)
+            .icon("remove", "./assets/svg/remove.svg", 24)
             .defaultIconSet("./assets/svg/avatars.svg", 128);
             
         $mdThemingProvider.theme('default')
@@ -31,15 +33,6 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
                     }
                 }
             })
-            // .state('photo.loggedout', {
-            //     url: 'loggedout',
-            //     views: {
-            //         'content@': {
-            //             templateUrl: 'components/noUser/noUser.html',
-            //             controller: 'NoUserController as noCtrl'
-            //         }
-            //     }
-            // })
             .state('photo.loggedin', {
                 url: 'loggedin/photo',
                 views: {
@@ -60,14 +53,14 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
             });
             
         $urlRouterProvider.otherwise('/');
-            
-            // $httpProvider.defaults.withCredentials = true;
+
     });
     
 import {EventEmmiter} from './EventEmmiter.ts';
 
 // stores
 import {UserStoreFactory} from './stores/UserStore.ts';
+import {ImageStoreFactory} from './stores/ImageStore.ts';
 import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
 // action creators
@@ -85,12 +78,14 @@ import {AppToolbarController} from './components/appToolbar/AppToolbar.ts';
 
 // server APIs
 import {UserService} from './serverApis/UserService.ts';
+import {ImageService} from './serverApis/ImageService.ts';
 
 angular.module('photoAlbum')
     .service('dispatcher', EventEmmiter)
     
     // stores
     .factory('userStore', UserStoreFactory)
+    .factory('imageStore', ImageStoreFactory)
     .factory('userDataStore', UserDataStoreFactory)
     
     // actions
@@ -135,4 +130,5 @@ angular.module('photoAlbum')
      
      // server APIs
      .service('userService', UserService)
+     .service('imageService', ImageService)
      ;

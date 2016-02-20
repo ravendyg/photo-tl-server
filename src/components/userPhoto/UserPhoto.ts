@@ -42,14 +42,6 @@ export class UserPhotoController {
         return this._user;
     }
     
-    // public makeContact () {
-    //     this._$mdBottomSheet.show({
-    //         controller: 'UserContactController as ucCtrl',
-    //         templateUrl: 'components/userContact/userContact.html',
-    //         parent: angular.element(document.getElementById('content'))
-    //     });
-    // }
-    
     public deleteUser (userId: number) {
         this._userActions.deleteUser(userId);
     }

@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 console.log(path.join(__dirname, config.get('src')));
 
 // connect to db
-MongoClient.connect('mongodb://localhost:27017/test', function (err, db) {
+MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     
     // sigin-up-out interaction with users
     app.use('/user-processor', userProcessor(db));

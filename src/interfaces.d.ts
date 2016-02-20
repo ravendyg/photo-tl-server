@@ -1,3 +1,5 @@
+/// <reference path="../typings/others.d.ts" />
+
 interface IEventEmmiter {
     emit (event: any): void;
     addListener (listener: any): number;
@@ -15,4 +17,19 @@ interface IUser {
     pas2?: string,
     rem?: boolean,
     error?: string
+}
+
+interface IImage {
+    src: string,
+    title: string,
+    description: string,
+    uploaded: Date,
+    changed: Date,
+    rating: number,
+    myRating: number,
+    views: number,
+    comments: {
+        userName: string,
+        text: string
+    } []
 }
