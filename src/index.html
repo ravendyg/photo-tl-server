@@ -16,7 +16,9 @@
     
     <div ui-view="toolbar"></div>
 
-    <div ui-view="content"></div>
+    <div flex layout="row">
+        <div ui-view="content"></div>
+    </div>
     <!--<div flex layout="row" user-info  ng-if="uwCtrl.getLoggedInUser().name"></div>-->
 
         <!--<md-sidenav md-is-locked-open="$mdMedia('gt-sm')"

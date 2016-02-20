@@ -1,7 +1,7 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 /// <reference path="../../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
-export class NoUserController {
+export class UserDataController {
     
     // private _state: any;
     // private _userDataStore: any;
@@ -25,6 +25,10 @@ export class NoUserController {
         //     this._userDataStore.removeListener(this._listenerId);
         // });
     }
+    
+    // public backToPhoto () {
+    //     this._state.go('photo.loggedin');
+    // }
     
     // private resetUserInfo () {
     //     this._userName = this._userDataStore.getLoggedInUser().name;

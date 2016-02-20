@@ -33,10 +33,10 @@ class WrapperController {
             console.log($state);
             if ($state.current.name !== 'photo' && !this._loggedInUser.name) {
                 // for loggedout only 'photo'
-                this._state.transitionTo('photo');
+                this._state.go('photo');
             } else if ($state.current.name === 'photo' && this._loggedInUser.name) {
                 // don't show 'please login' if already logged in
-                this._state.transitionTo('photo.loggedin');
+                this._state.go('photo.loggedin');
             }
         });
         
@@ -45,9 +45,9 @@ class WrapperController {
     private resetUserInfo () {
         this._loggedInUser = this._userDataStore.getLoggedInUser();
         if (this._loggedInUser.name) {
-            this._state.transitionTo('photo.loggedin');
+            this._state.go('photo.loggedin');
         } else {
-            this._state.transitionTo('photo');
+            this._state.go('photo');
         }
     }
     

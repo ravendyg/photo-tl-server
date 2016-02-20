@@ -41,11 +41,20 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
             //     }
             // })
             .state('photo.loggedin', {
-                url: 'loggedin',
+                url: 'loggedin/photo',
                 views: {
                     'content@': {
                         templateUrl: 'components/userInfo/userInfo.html',
                         controller: 'UserInfoController as usInfCtrl'
+                    }
+                }
+            })
+            .state('photo.user-data', {
+                url: 'loggedin/user-data',
+                views: {
+                    'content@': {
+                        templateUrl: 'components/userData/userData.html',
+                        controller: 'UserDataController as usDatCtrl'
                     }
                 }
             });
@@ -70,7 +79,7 @@ import {UserActions} from './actionCreators/UserActions.ts';
 import {WrapperController} from './WrapperController.ts';
 import {UserInfoController} from './components/userInfo/UserInfo.ts';
 import {NoUserController} from './components/noUser/noUser.ts';
-// import {UserContactController} from './components/userContact/UserContact.ts';
+import {UserDataController} from './components/userData/UserData.ts';
 import {LogInController} from './components/logIn/LogIn.ts';
 import {AppToolbarController} from './components/appToolbar/AppToolbar.ts';
 
@@ -93,7 +102,7 @@ angular.module('photoAlbum')
     .controller('WrapperController', WrapperController)
     .controller('UserInfoController', UserInfoController)
     .controller('NoUserController', NoUserController)
-    // .controller('UserContactController', UserContactController)
+    .controller('UserDataController', UserDataController)
     .controller('LogInController', LogInController)
     .controller('AppToolbarController', AppToolbarController)
     

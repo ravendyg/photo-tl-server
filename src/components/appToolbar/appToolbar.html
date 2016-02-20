@@ -23,9 +23,14 @@
                 {{apTbCtrl.getLoggedInUser().name}}
         </md-button>
         <md-menu-content width="4">
-        <md-menu-item>
-            <md-button ng-click="">
+        <md-menu-item ng-if="apTbCtrl._toDataDisplayed">
+            <md-button ng-click="apTbCtrl.toUserData()">
                 Профиль
+            </md-button>
+        </md-menu-item>
+        <md-menu-item ng-if="!apTbCtrl._toDataDisplayed">
+            <md-button ng-click="apTbCtrl.toPhoto()">
+                Фотографии
             </md-button>
         </md-menu-item>
         <md-menu-divider></md-menu-divider>

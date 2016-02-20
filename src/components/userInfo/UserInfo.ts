@@ -34,7 +34,7 @@ export class UserInfoController {
         this._user = this._userStore.user();
         if (!this._user.name) {
             console.log('loggedout');
-            this._state.transitionTo('photo');    
+            this._state.tgo('photo');    
         } 
     }
     
