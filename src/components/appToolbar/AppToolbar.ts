@@ -60,19 +60,9 @@ class AppToolbarController {
         return this._loggedInUser;
     }
     
-    // public openUserMenu ($mdOpenMenu, ev) {
-    //     this._originatorEv = ev;
-    //     $mdOpenMenu(ev);
-    // }
-    
-    public toUserData () {
-        this._state.go('photo.user-data')
-            .then(() => { this._toDataDisplayed = false; });
-    }
-    
-    public toPhoto () {
-        this._state.go('photo.loggedin')
-            .then(() => { this._toDataDisplayed = true; });
+    public openUserMenu ($mdOpenMenu, ev) {
+        this._originatorEv = ev;
+        $mdOpenMenu(ev);
     }
     
     public toUserData () {
