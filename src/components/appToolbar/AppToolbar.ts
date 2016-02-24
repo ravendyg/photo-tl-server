@@ -75,6 +75,16 @@ class AppToolbarController {
             .then(() => { this._toDataDisplayed = true; });
     }
     
+    public toUserData () {
+        this._state.go('photo.user-data')
+            .then(() => { this._toDataDisplayed = false; });
+    }
+    
+    public toPhoto () {
+        this._state.go('photo.loggedin')
+            .then(() => { this._toDataDisplayed = true; });
+    }
+    
     public logOut () {
         this._userActions.signout(this._loggedInUser);
         this._toDataDisplayed = true;
