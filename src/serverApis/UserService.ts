@@ -11,6 +11,7 @@ export class UserService {
         this._http = $http;
         this._q = $q;
         this._socketService = socketService;
+window.socketService = socketService;
     }
     
     public getUserFromMemory () {
@@ -28,7 +29,6 @@ export class UserService {
             }).then( (response) => {
                 deferred.resolve(response.data.name);
                 this._socketService.connect(config('url') + config('port'));
-console.log(this._socketService);
             }, (response) => {
                 // no confirmatin from the server
                 deferred.resolve('');
@@ -54,6 +54,7 @@ console.log(this._socketService);
         this._http(options).then( (resp) => {
             loggedInUser.name = resp.data.name;
             deferred.resolve(loggedInUser);
+            this._socketService.connect(config('url') + config('port'));
         },
         (resp) => {
             console.log(resp);
@@ -97,5 +98,6 @@ console.log(this._socketService);
             method: 'DELETE',
             url: config('url') + config('port') + config('userDriver') + '/sign-out?name=' + user.name
         });
+        this._socketService.disconnect();;
     }
 }

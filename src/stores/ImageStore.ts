@@ -42,7 +42,7 @@ class ImageStore extends EventEmmiter {
     // removes specified images
     public filterImageOut (id: number) {
         this._images = this._images.filter( (obj) => obj.id !== id );
-        this._imageService.deleteImage(id);
+        // this._imageService.deleteImage(id);
     }
     
     public emitChange () {
@@ -50,17 +50,19 @@ class ImageStore extends EventEmmiter {
     }
 }
 
-export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService) {
+export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService, $timeout) {
     var imageStore = new ImageStore(imageService);
         
     dispatcher.setToken('ImageStoreDispatchToken', 
         dispatcher.addListener(function (action) {
             dispatcher.startHandling('ImageStoreDispatchToken');
             switch (action.type) {                
-                case 'DELETE_PHOTO':
+                case 'DELETE_PHOTO_SERVER':
                     imageStore.filterImageOut(action.photoId);
                     imageStore.emitChange();
                     dispatcher.stopHandling('ImageStoreDispatchToken');
+                    // gotta use angular timeout to trigger digest on all clients
+                    $timeout(()=>{});
                 break;
                 
                 default:

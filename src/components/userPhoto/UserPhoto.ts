@@ -7,19 +7,28 @@ export class UserPhotoController {
     
     private _images: IImage;
     
+    private _addPhotoFormDisplayed: boolean;
+    
     // private _$mdBottomSheet: any;
     private _listenerIds: number [];
     private _state: any;
+    
+    private _imageService: IImageService;
+    private _socketService: ISocketService;
     
     public imagesLoaded: boolean;   
     
     constructor(imageStore, imageActions,
                 // $mdBottomSheet,
-                $scope, $state) {
+                $scope, $state, imageService, socketService) {
         this._imageStore = imageStore;
         this._imageActions = imageActions;
+        
+        this._imageService = imageService;
+        this._socketService = socketService;
         // this._$mdBottomSheet = $mdBottomSheet;
         this._state = $state;
+        this._addPhotoFormDisplayed = false;
         
         // initialize
         this._resetImages();
@@ -43,9 +52,34 @@ export class UserPhotoController {
     }
     
     // trigger delete photo action ->
-    // remove it from the store and send a request to the server
-    public deletePhoto (id: number) {
-        this._imageActions.deletePhoto(id);
+    // send a request to the server, when and if it's been executed, server would issue an event through sockets
+    public deletePhoto (id: string) {
+        this._socketService.removePhoto(id);
     }
-
+    
+    
+    
+    // show add photo form
+    public startAddingPhoto () {
+        this._addPhotoFormDisplayed = true;
+    }
+    // hide add photo form
+    public cancelAddingPhoto () {
+        this._addPhotoFormDisplayed = false;
+    }
+    
+    // upload file to the server
+    public uploadPhoto () {
+        // selected file
+        var form = document.getElementById(`newPhoto`);
+        var file = form.querySelector('[name="file"]');
+        var title = form.querySelector('[name="title"]').textContent;
+        var text = form.querySelector('[name="text"]').textContent;
+        this._imageService.uploadPhoto(file)
+            .then( (filename) => {
+                        console.log(filename, title, text); 
+                    }, () => { console.error('error');});
+        
+        // this._socketService.uploadPhoto(id);
+    }
 }

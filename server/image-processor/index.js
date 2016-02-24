@@ -16,7 +16,7 @@ api.use(cookieParser());
 /**
  * @db - connection to the db
  */
-module.exports = function (db) {
+module.exports = function (db, dir) {
     // request to create a new user
     api.get('/all-images', function (req, webRes, next) {
 // console.log(req.body);
@@ -44,7 +44,47 @@ module.exports = function (db) {
         } else {
             webRes.status(status.FORBIDDEN).json({ error: 'no session' }); 
         }
- 
+    });
+    
+    // uploading iamge
+    api.post('/upload-image', function (req, webRes, next) {
+console.log('uploading file');
+        if (req.cookies.uId) {
+                    db.collection('users').findOne({
+                        cookies: {$elemMatch: {$eq: req.cookies.uId}}
+                    }, function (err, doc) {
+                        if (err) { utils.serverError(err, webRes); }
+                        else {
+                            if (doc) {
+                                // found the user
+                                var filename = crypto.randomBytes(20).toString('hex');
+                                var fileStream = fs.WriteStream(path.join('users_data',
+                                        'images', `${filename}.jpg`));
+                                req.pipe(fileStream);
+                                
+                                // connection aborted - remove output
+                                req.on('close', function () {
+                                    console.log('aborted');
+                                    // remove partialy loaded file
+                                    fs.unlink(path.join('users_data', 'images', `${filename}.jpg`), function (err) {
+                                        if (err) console.error(err.message);
+                                        webRes.status(503).send('aborted');
+                                    });
+                                });
+                                
+                                // uploaded
+                                fileStream.on('finish', function () {
+                                    console.log('file finished');
+                                    webRes.json({filename: `${filename}.jpg`});
+                                });
+                            } else {
+                        webRes.status(status.FORBIDDEN).json({ error: 'expired' }); 
+                    }
+                }
+            });   
+        } else {
+            webRes.status(status.FORBIDDEN).json({ error: 'no session' }); 
+        } 
     });
  
     // default not found

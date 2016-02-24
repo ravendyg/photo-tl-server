@@ -5,7 +5,6 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     db.collection('photos').remove({}, function (err, docs) {
         console.log('removed');
         db.collection('photos').insert([{
-                id: 1,
                 src: 'image1.jpg',
                 title: 'Image 1',
                 description: 'Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережи',
@@ -24,7 +23,6 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                     text: 'bla-bla-bla-bla'
                 }]
             },{
-                id: 2,
                 src: 'image2.jpg',
                 title: 'Image 2',
                 description: 'Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережи',
@@ -42,7 +40,6 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                     text: 'bla-bla-bla-bla-bla'
                 }]
             },{
-                id: 3,
                 src: 'image3.jpg',
                 title: 'Image 3',
                 description: 'Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережи',

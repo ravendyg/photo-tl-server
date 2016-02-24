@@ -8,12 +8,13 @@ class ServerActions {
     
     constructor(dispatcher: IEventEmmiter) {
         this._dispatcher = dispatcher;
+        console.log('server actions');
     }
     
-    // public signup (user: IUser) {
-    //     this._dispatcher.emit({
-    //        type: "CONFIRM_USER",
-    //        user: user 
-    //     });
-    // }
+    public deletePhoto (photoId: number) {
+        this._dispatcher.emit({
+           type: "DELETE_PHOTO_SERVER",
+           photoId: photoId 
+        });
+    }
 }

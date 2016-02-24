@@ -21,7 +21,7 @@ interface IUser {
 }
 
 interface IImage {
-    id: number,
+    _id: string,
     src: string,
     title: string,
     description: string,
@@ -40,7 +40,7 @@ interface IImage {
 
 interface IImageService {
     getImageData (): any;
-    deleteImage (id: number): void;
+    uploadPhoto (file: any): any;
 }
 
 interface IUtils {
@@ -49,6 +49,8 @@ interface IUtils {
 
 interface ISocketService {
     connect (url: string): void;
+    disconnect (): void;
     getConnection (): any;
-    removePhoto (id: number): void;
+    removePhoto (_id: string): void;
+    uploaPhoto (filename: string, title: string, text: string): void;
 }

@@ -65,7 +65,7 @@ import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 // action creators
 import {UserActions} from './actionCreators/UserActions.ts';
 import {ImageActions} from './actionCreators/ImageActions.ts';
-// import {ServerActions} from './actionCreators/ServerActions.ts';
+import {ServerActions} from './actionCreators/ServerActions.ts';
 
 // component controllers
 import {WrapperController} from './WrapperController.ts';
@@ -90,6 +90,7 @@ angular.module('photoAlbum')
     // actions
     .service('userActions', UserActions)
     .service('imageActions', ImageActions)
+    .service('serverActions', ServerActions)
     // .service('serverActions', ServerActions)
     
     // component controllers

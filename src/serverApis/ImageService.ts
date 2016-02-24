@@ -13,7 +13,7 @@ export class ImageService implements IImageService {
         this._timeout = $timeout;
     }
     
-    public getImageData () {
+    public getImageData (): void {
         // real call to the server
         return this._http({
             method: 'GET',
@@ -21,12 +21,35 @@ export class ImageService implements IImageService {
         });
     }
     
-    // sends a request to the server to delete specified image1// to be implemented
-    public deleteImage (id: number): void {
-console.log('server delete image');
-        // this._http({
-        //     method: 'DELETE',
-        //     url: ''
-        // })
+    public uploadPhoto (file: HTMLInputElement): any {
+        // promise for controller
+        var deferred = this._q.defer();
+        
+        // ajax
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', config('url') + config('port') + config('imageDriver') + '/upload-image');
+        
+        xhr.onload = function () {
+            deferred.resolve(xhr.responseText);
+        };
+        
+        xhr.onreadystatechange = function() {
+            console.log(xhr.status);
+        };
+        
+        xhr.onerror = function (err) {
+            console.error(err);
+            deferred.reject();
+        };
+        
+        xhr.upload.onprogress = function (e) {
+            console.log(e.total);
+            console.log(e.loaded / e.total);
+        };
+        
+        xhr.send(file.files[0]);
+        
+        return deferred.promise;
     }
+
 }

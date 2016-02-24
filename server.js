@@ -23,7 +23,8 @@ app.disable('x-powered-by');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-console.log(path.join(__dirname, config.get('src')));
+var _path = path.join(__dirname, config.get('src'));
+console.log(_path);
 
 // connect to db
 MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
@@ -32,7 +33,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     require('./server/sockets')(server, db);
   
     // sigin-up-out interaction with users
-    app.use('/user-processor', userProcessor(db));
+    app.use('/user-processor', userProcessor(db, _path));
     
     // image processor
     app.use('/image-processor', imageProcessor(db));

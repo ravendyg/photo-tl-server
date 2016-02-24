@@ -20,7 +20,7 @@ api.use(cookieParser());
 module.exports = function (db) {
     // request to create a new user
     api.post('/new-user', function (req, webRes, next) {
-console.log(req.body);
+// console.log(req.body);
         
         // check input for correctness
         // assume that it was checked on the client side, therefore any error is likely to be due to

@@ -18,7 +18,28 @@
             <md-icon md-menu-align-target md-svg-icon="preloader"></md-icon>
         </div>
         
-        <md-card ng-repeat="photo in usPhCtrl._images track by photo.id">
+        <md-button ng-click="usPhCtrl.startAddingPhoto()">
+            <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
+            Добавить фотографию
+        </md-button>
+        
+        <div ng-if="usPhCtrl._addPhotoFormDisplayed">
+            <form id="newPhoto" name="newPhoto">
+                <label>Название: <input type="text" name="title"></label>
+                <label>Файл: <input type="file" name="file"></label>
+                <label>Описание: <textarea name="text"></textarea></label>
+            </form>
+            <md-button ng-click="usPhCtrl.cancelAddingPhoto()">
+                <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
+                Отмена
+            </md-button>
+            <md-button ng-click="usPhCtrl.uploadPhoto()">
+                <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
+                Отправить
+            </md-button>
+        </div>
+        
+        <md-card ng-repeat="photo in usPhCtrl._images track by photo._id">
             <img ng-src="{{'/users_data/images/'+photo.src}}" class="md-card-image">
             <md-card-title>
                 <md-card-title-text>
@@ -26,11 +47,11 @@
                 </md-card-title-text>
             </md-card-title>
             <md-card-actions layout="row" layout-align="start center">
-                <md-button>
+                <md-button ng-click="usPhCtrl.editPhoto(photo._id)">
                     <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
                     Редактировать
                 </md-button>
-                <md-button ng-click="usPhCtrl.deletePhoto(photo.id)">
+                <md-button ng-click="usPhCtrl.deletePhoto(photo._id)">
                     <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
                     Удалить
                 </md-button>
