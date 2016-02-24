@@ -3,6 +3,7 @@ var express = require('express'),
     app = express(),
     status = require('http-status'),
 	bodyParser = require('body-parser');
+var server = require('http').Server(app);
 var fs = require('fs');
 var path = require('path');
 var MongoClient = require('mongodb').MongoClient;
@@ -54,7 +55,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     })
 
     // start server
-    app.listen(app.get('port'));
+    server.listen(app.get('port'));
     console.log('Listen on ' + config.get('port'));
     
     // exit and errors

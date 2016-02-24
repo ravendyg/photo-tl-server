@@ -12,6 +12,7 @@ class ImageStore extends EventEmmiter {
         
         this._imageService = imageService;
         
+        this._images = [];
         // start loading image data
         this._loadImages();
         
