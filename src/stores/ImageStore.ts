@@ -21,7 +21,7 @@ class ImageStore extends EventEmmiter {
     private _loadImages () {
         this._imageService.getImageData()
             .then( (imagesData) => {
-                    this._images = imagesData;
+                    this._images = imagesData.data;
                     // transform date
                     for (var i=0; i<this._images.length; i++) {
                         this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
