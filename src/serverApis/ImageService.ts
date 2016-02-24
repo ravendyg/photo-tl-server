@@ -19,16 +19,6 @@ export class ImageService implements IImageService {
             method: 'GET',
             url: config('url') + config('port') + config('imageDriver') + '/all-images'
         });
-        
-//         // mock data
-//         var deferred = this._q.defer();
-        
-//         this._timeout( function () {
-// // db.photos.insert(
-//             deferred.resolve();
-//             }, 1000);
-        
-//         return deferred.promise;
     }
     
     // sends a request to the server to delete specified image1// to be implemented

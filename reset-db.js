@@ -62,6 +62,8 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                 }]
             }], function (err, docs) {
                 console.log('inserted');
-            });
+                
+                process.exit(0);
+            });       
     });
 });
