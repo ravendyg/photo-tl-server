@@ -5,6 +5,8 @@ export function config (param: string): string {
         case 'port':
             return ':8080';
         case 'userDriver':
-            return '/user-processor'
+            return '/user-processor';
+        case 'imageDriver':
+            return '/image-processor';
     }
 }

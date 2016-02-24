@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="photoAlbum">
 <head>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 <!-- build:css vendor.css -->
@@ -10,11 +10,16 @@
     <link rel="stylesheet" href="../prebuild/b-app.css"/>
 <!-- endbuild -->
 </head>
-    <body ng-app="photoAlbum" ng-cloack layout="column" ng-controller="UserWrapperController as uwCtrl">
+    <body ng-cloack layout="column" ng-controller="WrapperController as wCtrl">
 
-    <app-toolbar></app-toolbar>
+    <!--<app-toolbar></app-toolbar>-->
+    
+    <div ui-view="toolbar"></div>
 
     <div flex layout="row">
+        <div ui-view="content" layout="column" flex="100"></div>
+    </div>
+    <!--<div flex layout="row" user-info  ng-if="uwCtrl.getLoggedInUser().name"></div>-->
 
         <!--<md-sidenav md-is-locked-open="$mdMedia('gt-sm')"
             ng-if="uwCtrl.getLoggedInUser().name"
@@ -24,11 +29,11 @@
             <user-menu></user-menu>
         </md-sidenav>-->
 
-        <md-content flex id="content">
-            <user-info ng-if="uwCtrl.getLoggedInUser().name"></user-info>
+        <!--<md-content flex id="content">
+            <user-info></user-info>
         </md-content>
 
-    </div>
+    </div>-->
     <!--<user-wrapper></user-wrapper>-->
     
 <!-- build:js vendor.js -->

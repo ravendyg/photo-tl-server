@@ -8,7 +8,8 @@ var path = require('path');
 var MongoClient = require('mongodb').MongoClient;
 
 var config = require('./server/config');
-var userProcessor = require('./server/user-processor')
+var userProcessor = require('./server/user-processor');
+var imageProcessor = require('./server/image-processor');
 
 
 app.disable('x-powered-by');
@@ -24,10 +25,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 console.log(path.join(__dirname, config.get('src')));
 
 // connect to db
-MongoClient.connect('mongodb://localhost:27017/test', function (err, db) {
-    
+MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
+  
     // sigin-up-out interaction with users
     app.use('/user-processor', userProcessor(db));
+    
+    // image processor
+    app.use('/image-processor', imageProcessor(db));
 
     // index
     app.get('/', function (req, webRes, next) {

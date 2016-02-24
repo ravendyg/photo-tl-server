@@ -18,3 +18,13 @@
 #user-menu {
     margin-right: 0;
 }
+
+.preloader-bar {
+    display: flex;
+    flex-direction: row;
+    background-color: transparent;
+    md-icon {
+        width: 48px;
+        height: 48px;
+    }
+}

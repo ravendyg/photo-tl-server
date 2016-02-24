@@ -1,4 +1,5 @@
 <md-toolbar layout="row" >
+<<<<<<< HEAD
 <!--menu button-->
     <!--<md-button
         ng-if="apTbCtrl.getLoggedInUser().name"
@@ -9,6 +10,11 @@
             <md-icon md-svg-icon="menu"></md-icon>
     </md-button>-->
 <!--\menu button-->
+=======
+   
+    <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.sign($event, 'in')" ng-if="apTbCtrl.getLoggedInUser().name">All photos</md-button>
+    <md-button class="md-raised bmd-sign-btn" ng-click="apTbCtrl.sign($event, 'up')" ng-if="apTbCtrl.getLoggedInUser().name">My photos</md-button>
+>>>>>>> remove-menu
     
 <!--header-->
     <h3 ng-click="apTbCtrl.refresh()">Angular Material - Starter App</h3>
@@ -30,17 +36,20 @@
                 {{apTbCtrl.getLoggedInUser().name}}
         </md-button>
         <md-menu-content width="4">
-        <md-menu-item>
-            <md-button ng-click="">
-            <!--<md-icon md-svg-icon="call:dialpad" md-menu-align-target></md-icon>-->
-            Do smth
+        <md-menu-item ng-if="apTbCtrl._toDataDisplayed">
+            <md-button ng-click="apTbCtrl.toUserData()">
+                Профиль
+            </md-button>
+        </md-menu-item>
+        <md-menu-item ng-if="!apTbCtrl._toDataDisplayed">
+            <md-button ng-click="apTbCtrl.toPhoto()">
+                Фотографии
             </md-button>
         </md-menu-item>
         <md-menu-divider></md-menu-divider>
         <md-menu-item>
             <md-button ng-click="apTbCtrl.logOut()">
-            <!--<md-icon md-svg-icon="social:notifications-{{ctrl.notificationsEnabled ? 'off' : 'on'}}"></md-icon>-->
-            Выйти
+                Выйти
             </md-button>
         </md-menu-item>
         </md-menu-content>

@@ -1,3 +1,5 @@
+/// <reference path="../typings/others.d.ts" />
+
 interface IEventEmmiter {
     emit (event: any): void;
     addListener (listener: any): number;
@@ -15,4 +17,31 @@ interface IUser {
     pas2?: string,
     rem?: boolean,
     error?: string
+}
+
+interface IImage {
+    id: number,
+    src: string,
+    title: string,
+    description: string,
+    uploadedNum: number,
+    changedNum: number,
+    uploaded?: string,
+    changed?: string,
+    rating: number,
+    myRating: number,
+    views: number,
+    comments: {
+        userName: string,
+        text: string
+    } []
+}
+
+interface IImageService {
+    getImageData (): any;
+    deleteImage (id: number): void;
+}
+
+interface IUtils {
+    transformDate (num: number): string;
 }

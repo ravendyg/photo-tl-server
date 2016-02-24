@@ -13,6 +13,7 @@ class AppToolbarController {
     private _scope: any;
     private _mdDialog: any;
     private _mdMedia: any;
+    private _state: any;
     private _userService: any;
     private _loggedInUser: IUser;
     
@@ -23,14 +24,19 @@ class AppToolbarController {
     
     private _originatorEv: any;
     
-    constructor($scope, $mdDialog, $mdMedia, userService, userDataStore, userActions) {
+    private _toDataDisplayed: boolean;
+    
+    constructor($scope, $mdDialog, $mdMedia, $state, userService, userDataStore, userActions) {
         this._scope = $scope;
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
+        this._state = $state;
         this._userService = userService;
         
         this._userDataStore = userDataStore;
         this._userActions = userActions;
+        
+        this._toDataDisplayed = true;
         
         // this._loggedInUser = this._userService.loggedInUser;
         this.resetUserInfo();
@@ -48,7 +54,6 @@ class AppToolbarController {
     
     private resetUserInfo () {
         this._loggedInUser = this._userDataStore.getLoggedInUser();
-console.log(this._loggedInUser);
     }
     
     public getLoggedInUser () {
@@ -60,9 +65,19 @@ console.log(this._loggedInUser);
     //     $mdOpenMenu(ev);
     // }
     
+    public toUserData () {
+        this._state.go('photo.user-data')
+            .then(() => { this._toDataDisplayed = false; });
+    }
+    
+    public toPhoto () {
+        this._state.go('photo.loggedin')
+            .then(() => { this._toDataDisplayed = true; });
+    }
+    
     public logOut () {
-console.log('logged out');
         this._userActions.signout(this._loggedInUser);
+        this._toDataDisplayed = true;
     }
     
     public sign ($event: any, mode: string) {
@@ -97,4 +112,5 @@ console.log('logged out');
     public refresh () {
          this._scope.apply();
     }
+
 }

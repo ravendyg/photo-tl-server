@@ -1,0 +1,45 @@
+
+    <md-toolbar layout="row" >
+        <form>
+            <label>
+                <input type="radio" name="order" value="new">
+                New first
+            </label>
+            <label>
+                <input type="radio" name="order" value="popular">
+                Popular first
+            </label>
+        </form>
+    </md-toolbar>
+
+    <md-content flex id="content">
+        
+        <div class="preloader-bar" ng-if="usPhCtrl.imagesLoaded">
+            <md-icon md-menu-align-target md-svg-icon="preloader"></md-icon>
+        </div>
+        
+        <md-card ng-repeat="photo in usPhCtrl._images track by photo.id">
+            <img ng-src="{{'/users_data/images/'+photo.src}}" class="md-card-image">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">{{photo.title}}</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="start center">
+                <md-button>
+                    <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
+                    Редактировать
+                </md-button>
+                <md-button ng-click="usPhCtrl.deletePhoto(photo.id)">
+                    <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
+                    Удалить
+                </md-button>
+            </md-card-actions>
+            <md-card-content>
+                <p>Добавил: {{photo.uploadedBy}} - {{photo.uploaded}}</p>
+                <p ng-if="photo.changed">Изменил: {{photo.changedBy}} - {{photo.changed}}</p>
+                <p>{{photo.description}}</p>
+            </md-card-content>
+        </md-card>
+
+    </md-content>
