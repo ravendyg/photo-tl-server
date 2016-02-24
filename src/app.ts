@@ -78,6 +78,7 @@ import {AppToolbarController} from './components/appToolbar/AppToolbar.ts';
 // server APIs
 import {UserService} from './serverApis/UserService.ts';
 import {ImageService} from './serverApis/ImageService.ts';
+import {SocketService} from './serverApis/socket-service.ts';
 
 angular.module('photoAlbum')
     .service('dispatcher', EventEmmiter)
@@ -102,4 +103,5 @@ angular.module('photoAlbum')
      // server APIs
      .service('userService', UserService)
      .service('imageService', ImageService)
+     .service('socketService', SocketService)
      ;

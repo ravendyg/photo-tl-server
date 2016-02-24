@@ -2,7 +2,6 @@
 
 declare var __dirname: string;
 declare var process: NodeJS.Process;
-declare var Promise: any;
 declare var PromiseConstructorLike: any;
 
 // declare function require(string): string;

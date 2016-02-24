@@ -16,7 +16,8 @@ interface IUser {
     pas?: string,
     pas2?: string,
     rem?: boolean,
-    error?: string
+    error?: string,
+    then?: any
 }
 
 interface IImage {
@@ -44,4 +45,10 @@ interface IImageService {
 
 interface IUtils {
     transformDate (num: number): string;
+}
+
+interface ISocketService {
+    connect (url: string): void;
+    getConnection (): any;
+    removePhoto (id: number): void;
 }

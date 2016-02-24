@@ -1,13 +1,16 @@
+/// <reference path="./../interfaces.d.ts" />
 import {config} from './../config.ts';
 
 export class UserService {
     private _http: any;
     private _q: any;
+    private _socketService: ISocketService;
     private _loggedInUser: any;
     
-    constructor ($http, $q) {
+    constructor ($http, $q, socketService) {
         this._http = $http;
         this._q = $q;
+        this._socketService = socketService;
     }
     
     public getUserFromMemory () {
@@ -17,13 +20,15 @@ export class UserService {
         var name = cookies.filter( (obj) => obj.indexOf('uId=') > -1 )[0];
         if (name) {
             // already logged in
-            //verify
+            // verify
             this._http({
                 method: 'GET',
                 url: config('url') + config('port') + config('userDriver') + '/verify-user',
                 params: {name: name.split('%7C')[0].split('=')[1]}
             }).then( (response) => {
                 deferred.resolve(response.data.name);
+                this._socketService.connect(config('url') + config('port'));
+console.log(this._socketService);
             }, (response) => {
                 // no confirmatin from the server
                 deferred.resolve('');
@@ -36,20 +41,54 @@ export class UserService {
         return deferred.promise;
     }
     
+    // generic sign up or in operation
+    private _signUpIn (user: IUser, options) {
+        var deferred = this._q.defer();
+        var loggedInUser =  {
+                    name: '',
+                    pas: '',
+                    pas2: '',
+                    rem: false,
+                    error: ''
+                };
+        this._http(options).then( (resp) => {
+            loggedInUser.name = resp.data.name;
+            deferred.resolve(loggedInUser);
+        },
+        (resp) => {
+            console.log(resp);
+            if (resp.data) {
+                switch (resp.data.error) {
+                    case 'wrong password':
+                        loggedInUser.error = 'Неверный пароль';
+                    break;
+                    case 'wrong username':
+                        loggedInUser.error = 'Неверное имя пользователя';
+                    break;
+                }
+            } else {
+                loggedInUser.error = 'Неизвестная ошибка';
+            }
+            deferred.resolve(loggedInUser);
+        });
+                
+        return deferred.promise;
+    }
+    
     public signin (user: IUser) {
-        return this._http({
+        return this._signUpIn(user, {
                     method: 'GET',
                     url: config('url') + config('port') + config('userDriver') + '/sign-in',
                     params: user
-                });           
+                });
     }
     
     public signup (user: IUser) {
-        return this._http({
+        return this._signUpIn(user, {
                     method: 'POST',
                     url: config('url') + config('port') + config('userDriver') + '/new-user',
                     data: user
-                });           
+                });         
     }
     
     // remove cookie

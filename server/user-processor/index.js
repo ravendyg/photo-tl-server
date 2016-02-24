@@ -20,7 +20,7 @@ api.use(cookieParser());
 module.exports = function (db) {
     // request to create a new user
     api.post('/new-user', function (req, webRes, next) {
-// console.log(req.body);
+console.log(req.body);
         
         // check input for correctness
         // assume that it was checked on the client side, therefore any error is likely to be due to
@@ -31,7 +31,7 @@ module.exports = function (db) {
         } else {
             // check whether a user with this name already exists
             db.collection('users').findOne({name: req.body.name}, function (err, doc) {
-                if (err) { utils.serverError(webRes, err); }
+                if (err) { utils.serverError(err, webRes); }
                 else {
                     if (!doc) {
                         // create new user
@@ -49,21 +49,16 @@ module.exports = function (db) {
                             // use dir as the first cookie
                             cookies: [ req.body.name+'|'+dir ]
                         }, function (err, doc) {
-                            if (err) { utils.serverError(webRes, err); }
+                            if (err) { utils.serverError(err, webRes); }
                             else {
-                                fs.mkdir(path.join(__dirname, '..', '..', 'users_data', dir), function (err) {
-                                   if (err) { utils.serverError(webRes, err); }
-                                   else {
-                                        var dateNow = new Date();
-                                        var expiration = (req.body.rem == 'true')
-                                                        ? (new Date( (dateNow.setDate(dateNow.getDate() + 10)) ) )
-                                                        : 0;
-                                        webRes.cookie('uId', req.body.name+'|'+dir, {expires: expiration});
-                                        webRes.json({
-                                            result: 'user created',
-                                            dir: dir
-                                        });
-                                   }
+                                var dateNow = new Date();
+                                var expiration = (req.body.rem == 'true')
+                                                ? (new Date( (dateNow.setDate(dateNow.getDate() + 10)) ) )
+                                                : 0;
+                                webRes.cookie('uId', req.body.name+'|'+dir, {expires: expiration});
+                                webRes.json({
+                                    result: 'user created',
+                                    name: req.body.name
                                 });
                             }
                         });
@@ -98,8 +93,9 @@ module.exports = function (db) {
                     webRes.cookie('uId', req.query.name+'|'+newCookie, {expires: expiration});
                     webRes.json({
                         result: 'logedin',
-                        name: req.query.name,
-                        dir: doc.dir
+                        name: req.query.name
+                        // ,
+                        // dir: doc.dir
                     });
                     // update cookies in db
                     db.collection('users').updateOne({name: req.query.name}, {$push: {cookies: req.query.name+'|'+newCookie}},
@@ -121,7 +117,7 @@ module.exports = function (db) {
             name: req.query.name,
             cookies: {$elemMatch: {$eq: req.cookies.uId}}
         }, function (err, doc) {
-            if (err) { utils.serverError(webRes, err); }
+            if (err) { utils.serverError(err, webRes); }
             else {
                 if (doc && doc.name === req.query.name) {
                     // found the user, checked his name
@@ -137,7 +133,7 @@ module.exports = function (db) {
     api.delete('/sign-out', function (req, webRes, next) {
         db.collection('users').updateOne({name: req.query.name}, {$pull: {cookies: req.cookies.uId}},
             function (err, doc) {
-                if (err) { utils.serverError(webRes, err); }
+                if (err) { utils.serverError(err, webRes); }
                 else {                  
                     if (doc) {
                         webRes.json({result: 'signed out'});

@@ -27,6 +27,9 @@ console.log(path.join(__dirname, config.get('src')));
 
 // connect to db
 MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
+    
+    // set up web sockets - inject listeneres
+    require('./server/sockets')(server, db);
   
     // sigin-up-out interaction with users
     app.use('/user-processor', userProcessor(db));

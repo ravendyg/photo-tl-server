@@ -25,12 +25,12 @@ module.exports = function (db) {
             db.collection('users').findOne({
                 cookies: {$elemMatch: {$eq: req.cookies.uId}}
             }, function (err, doc) {
-                if (err) { utils.serverError(webRes, err); }
+                if (err) { utils.serverError(err, webRes); }
                 else {
                     if (doc) {
                         // found the user
                         db.collection('photos').find({}).toArray(function (err, docs) {
-                            if (err) { utils.serverError(webRes, err); }
+                            if (err) { utils.serverError(err, webRes); }
                             else {
 // console.log(docs);
                                 webRes.json(docs);

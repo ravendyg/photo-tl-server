@@ -1,18 +1,16 @@
 /// <reference path="../typings/tsd.d.ts" />
-/// <reference path="../typings/others.d.ts" />
+/// <reference path="./interfaces.d.ts" />
 
 export /**
  * WrapperController
  */
 class WrapperController {
-    private _mdSidenav: any;
     private _userDataStore: any;
     private _loggedInUser: IUser;
     private _listenerId: number;
     private _state: any;
     
-    constructor($scope, $mdSidenav, $state, userDataStore) {
-        this._mdSidenav = $mdSidenav;
+    constructor($scope, $state, userDataStore) {
         this._userDataStore = userDataStore;
         this._state = $state;
         
@@ -52,11 +50,5 @@ class WrapperController {
     
     public getLoggedInUser () {
         return this._loggedInUser;
-    }
-    
-    
-    
-    public toggleList () {
-        this._mdSidenav('left').toggle();
     }
 }

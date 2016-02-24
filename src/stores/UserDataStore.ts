@@ -40,60 +40,24 @@ class UserDataStore extends EventEmmiter {
     }
     
     public signin (user: IUser) {
+        // ask user service for data
+        // keep promise for data
+        // pass deferred further
         return this._userService.signin(user)
-            .then( (resp) => {
-console.log(resp);
-                        this._loggedinUser = {
-                                name: resp.data.name,
-                                pas: '',
-                                pas2: '',
-                                rem: false,
-                                error: ''
-                            };
-                            this._serverDirectory = resp.data.dir;
-                    },
-                    (resp) => {
-                        console.log(resp);
-                        if (resp.data) {
-                            switch (resp.data.error) {
-                                case 'wrong password':
-                                    this._loggedinUser.error = 'Неверный пароль';
-                                break;
-                                case 'wrong username':
-                                    this._loggedinUser.error = 'Неверное имя пользователя';
-                                break;
-                            }
-                        } else {
-                            this._loggedinUser.error = 'Неизвестная ошибка';
-                        }
-                    }
-                
-            );
+            .then( (user) => {
+                this._loggedinUser = user;
+            });
     }
     
     // 
     public signup (user: IUser) {
+        // ask user service for data
+        // keep promise for data
+        // pass deferred further
         return this._userService.signup(user)
-                .then(  (resp) => {
-                            this._loggedinUser = {
-                                name: resp.config.data.name,
-                                pas: '',
-                                pas2: '',
-                                rem: false,
-                                error: ''
-                            };
-                            this._serverDirectory = resp.data.dir;
-                        },
-                        (resp) => {
-                            this._loggedinUser = {
-                                name: '',
-                                pas: '',
-                                pas2: '',
-                                rem: false,
-                                error: resp.status === 403 ? 'Такой пользователь существует' : 'Ошибка сервера'
-                            };
-                        }
-                ); 
+            .then( (user) => {
+                this._loggedinUser = user;
+            }); 
     }
     
     // clear current user, clear cookie, remove any information associated with the user
