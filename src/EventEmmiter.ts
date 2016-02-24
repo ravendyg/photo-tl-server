@@ -7,6 +7,7 @@ export class EventEmmiter implements IEventEmmiter {
     private _tokens: any;
     private _pending: any;
     private _queue: any;
+    private _probes: any [];
     
     constructor () {
         this._lastListenerId = 0;
@@ -15,6 +16,7 @@ export class EventEmmiter implements IEventEmmiter {
         this._tokens = {};
         this._pending = {};
         this._queue = {};
+        this._probes = [];
     }
     
     public emit (event): void {
@@ -24,6 +26,10 @@ export class EventEmmiter implements IEventEmmiter {
         for (var key in this._listeners) {
             this._listeners[key](event);
         }
+        // try to execute waiting functions if any
+        if (this._probes.length) {
+            this._probe();    
+        }        
     }
     
     public addListener (listener: any): number {
@@ -74,22 +80,55 @@ export class EventEmmiter implements IEventEmmiter {
             }
         }
         
-        // no circular links
-        var pending;
-        // regularly check thet all store dependencies reported 'done'
-        var probe = setInterval( () => {
-            pending = false;
-            for (var i=0; i<tokenNames.length; i++) {
-                console.log(tokenNames[i] + ' pending: ' + this._pending[tokenNames[i]]);
-                pending = pending || this._pending[tokenNames[i]];
+        // no circular links, register a probe
+        this._probes.push({
+            tokenNames,
+            deferred,
+            started: Date.now()
+        });
+        // var pending;
+        // // regularly check thet all store dependencies reported 'done'
+        // var probe = setInterval( () => {
+        //     pending = false;
+        //     for (var i=0; i<tokenNames.length; i++) {
+        //         console.log(tokenNames[i] + ' pending: ' + this._pending[tokenNames[i]]);
+        //         pending = pending || this._pending[tokenNames[i]];
+        //     }
+        //     // all conditions were satisfied
+        //     if (!pending) {
+        //         clearInterval(probe);
+        //         deferred.resolve();
+        //     }     
+        // }, 200);
+
+        return promise;
+    }
+    
+    /** checks for all specified dependencies to be fulfilled 
+     * called from emit()
+     * if positive resolves provided promise
+     * and removes executed probe from the array
+     * if awaiting time is more that 10 secs report an error an remove the probe
+     */
+    private _probe () {
+        var i = 0;
+        while (i<this._probes.length) {
+            var pending = false;
+            for (var i=0; i<this._probes[i].tokenNames.length; i++) {
+                console.log(this._probes[i].tokenNames[i] + ' pending: ' + this._pending[this._probes[i].tokenNames[i]]);
+                pending = pending || this._pending[this._probes[i].tokenNames[i]];
             }
             // all conditions were satisfied
             if (!pending) {
-                clearInterval(probe);
-                deferred.resolve();
-            }     
-        }, 200);
-
-        return promise;
+                this._probes[i].deferred.resolve();
+                this._probes.splice(i,1);
+            } else {
+                if (this._probes[i].started + 10000 > Date.now()) {
+                    console.error(`Timeout on callback waiting for:`);
+                    console.error(this._probes[i].tokenNames);
+                    this._probes.splice(i,1);
+                }
+            }
+        }    
     }
 }

@@ -13,6 +13,7 @@ class AppToolbarController {
     private _scope: any;
     private _mdDialog: any;
     private _mdMedia: any;
+    private _timeout: any;
     private _state: any;
     private _userService: any;
     private _loggedInUser: IUser;
@@ -26,10 +27,11 @@ class AppToolbarController {
     
     private _toDataDisplayed: boolean;
     
-    constructor($scope, $mdDialog, $mdMedia, $state, userService, userDataStore, userActions) {
+    constructor($scope, $mdDialog, $mdMedia, $timeout, $state, userService, userDataStore, userActions) {
         this._scope = $scope;
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
+        this._timeout = $timeout;
         this._state = $state;
         this._userService = userService;
         
@@ -67,12 +69,14 @@ class AppToolbarController {
     
     public toUserData () {
         this._state.go('photo.user-data')
-            .then(() => { this._toDataDisplayed = false; });
+            // change menu buttons, withou timeout user would see the change
+            .then(() => { this._timeout( () => {this._toDataDisplayed = false; }, 500); });
     }
     
     public toPhoto () {
         this._state.go('photo.loggedin')
-            .then(() => { this._toDataDisplayed = true; });
+            // change menu buttons, withou timeout user would see the change
+            .then(() => { this._timeout( () => {this._toDataDisplayed = true; }, 500); });
     }
     
     public logOut () {
@@ -107,10 +111,6 @@ class AppToolbarController {
             }, (wantsFullScreen) => {
                 this._scope.customFullscreen = (wantsFullScreen === true);
             });
-    }
-    
-    public refresh () {
-         this._scope.apply();
     }
 
 }
