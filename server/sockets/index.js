@@ -42,17 +42,28 @@ console.log('user disconnected');
         });
         
         socket.on('remove-photo', function (data) {
-console.log(data);
-console.log(`remove image ${data._id}`);
-            db.collection('photos').deleteOne({_id: ObjectId(data._id)}, function (err, result) {
+// console.log(data);
+// console.log(`remove image ${data._id}`);
+            // find record to be deleted to get filename
+            db.collection('photos').findOne({_id: ObjectId(data._id)}, function (err, doc) {
                 if (err) utils.serverSocketAuthError(err, null);
-                else if (result.result.n) {
-                    // send to everyone except the source
-                    socket.broadcast.emit('remove-photo', data);
-                    // send to the source
-                    socket.emit('remove-photo', data);
+                else {
+                    db.collection('photos').deleteOne({_id: ObjectId(data._id)}, function (err, result) {
+                        if (err) utils.serverSocketAuthError(err, null);
+                        else if (result.result.n) {
+                            // remove file
+console.log(`remove: ${doc.src}`);
+                            fs.unlink(path.join('users_data', 'images', `${doc.src}`), function (err) {
+                                if (err) console.error(err.message);
+                            });
+                            // send to everyone except the source
+                            socket.broadcast.emit('remove-photo', data);
+                            // send to the source
+                            socket.emit('remove-photo', data);
+                        }
+                    });
                 }
-            });  
+            });     
         });
         
         socket.on('upload-photo', function (data) {
