@@ -72,6 +72,7 @@ import {WrapperController} from './WrapperController.ts';
 import {UserPhotoController} from './components/userPhoto/UserPhoto.ts';
 import {NoUserController} from './components/noUser/noUser.ts';
 import {UserDataController} from './components/userData/UserData.ts';
+import {NewPhotoController} from './components/new-photo/new-photo.ts';
 import {LogInController} from './components/logIn/LogIn.ts';
 import {AppToolbarController} from './components/appToolbar/AppToolbar.ts';
 
@@ -99,6 +100,7 @@ angular.module('photoAlbum')
     .controller('NoUserController', NoUserController)
     .controller('UserDataController', UserDataController)
     .controller('LogInController', LogInController)
+    .controller('NewPhotoController', NewPhotoController)
     .controller('AppToolbarController', AppToolbarController)
      
      // server APIs

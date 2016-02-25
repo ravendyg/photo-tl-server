@@ -5,12 +5,14 @@ export class UserService {
     private _http: any;
     private _q: any;
     private _socketService: ISocketService;
+    private _userActions: IUserActions;
     private _loggedInUser: any;
     
-    constructor ($http, $q, socketService) {
+    constructor ($http, $q, socketService, userActions: IUserActions) {
         this._http = $http;
         this._q = $q;
         this._socketService = socketService;
+        this._userActions = userActions;
 window.socketService = socketService;
     }
     
@@ -29,6 +31,7 @@ window.socketService = socketService;
             }).then( (response) => {
                 deferred.resolve(response.data.name);
                 this._socketService.connect(config('url') + config('port'));
+                this._userActions.confirmed();
             }, (response) => {
                 // no confirmatin from the server
                 deferred.resolve('');

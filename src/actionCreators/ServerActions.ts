@@ -8,7 +8,6 @@ class ServerActions {
     
     constructor(dispatcher: IEventEmmiter) {
         this._dispatcher = dispatcher;
-        console.log('server actions');
     }
     
     public deletePhoto (photoId: string) {

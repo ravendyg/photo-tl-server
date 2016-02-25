@@ -2,8 +2,15 @@
 /// <reference path="../../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
 export class UserPhotoController {
+    private _scope: any;
+    private _mdDialog: any;
+    private _mdMedia: any;
+    private _state: any;
+    
     private _imageStore: any;
     private _imageActions: any;
+    private _imageService: IImageService;
+    private _socketService: ISocketService;
     
     private _images: IImage;
     private _uploadedImage: any;
@@ -12,23 +19,24 @@ export class UserPhotoController {
     
     // private _$mdBottomSheet: any;
     private _listenerIds: number [];
-    private _state: any;
-    
-    private _imageService: IImageService;
-    private _socketService: ISocketService;
-    
+
     public imagesLoaded: boolean;   
     
-    constructor(imageStore, imageActions,
+    constructor($scope, $mdDialog, $mdMedia, $state,
+                imageStore, imageActions, imageService, socketService
                 // $mdBottomSheet,
-                $scope, $state, imageService, socketService) {
+                ) {
+        this._scope = $scope;
+        this._mdDialog = $mdDialog;
+        this._mdMedia = $mdMedia;
+        this._state = $state;
+        
         this._imageStore = imageStore;
         this._imageActions = imageActions;
-        
         this._imageService = imageService;
         this._socketService = socketService;
         // this._$mdBottomSheet = $mdBottomSheet;
-        this._state = $state;
+        
         this._addPhotoFormDisplayed = false;
         
         // initialize
@@ -63,31 +71,49 @@ export class UserPhotoController {
         this._socketService.removePhoto(id);
     }
     
-    
-    
     // show add photo form
-    public startAddingPhoto () {
-        console.log(this._addPhotoFormDisplayed);
-        this._addPhotoFormDisplayed = true;
+    public startAddingPhoto ($event: any) {
+        var useFullScreen = (this._mdMedia('sm') || this._mdMedia('xs'))  && this._scope.customFullscreen;
+        this._mdDialog.show({
+            controller: 'NewPhotoController as nPhCtrl',
+            templateUrl: 'components/new-photo/new-photo.html',
+            parent: angular.element(document.body),
+            targetEvent: $event,
+            clickOutsideToClose:true,
+            fullscreen: useFullScreen,
+            locals: {
+                self: this._mdDialog
+            }
+        });
+            
+        this._scope.$watch( () => {
+            return this._mdMedia('xs') || this._mdMedia('sm');
+        }, (wantsFullScreen) => {
+            this._scope.customFullscreen = (wantsFullScreen === true);
+        });
     }
+        
+        // console.log(this._addPhotoFormDisplayed);
+        // this._addPhotoFormDisplayed = true;
+    // }
     // hide add photo form
     public cancelAddingPhoto () {
         this._addPhotoFormDisplayed = false;
     }
     
-    // upload file to the server
-    public uploadPhoto () {
-        // selected file
-        var form = document.getElementById(`newPhoto`);
-        this._uploadedImage.file = form.querySelector('[name="file"]').files[0];
-        if (this._uploadedImage.file && this._uploadedImage.file.type.match(/image/)) {
-            // check file existence and it's type
-            this._imageService.uploadPhoto(this._uploadedImage.file)
-            .then( (filename) => {
-                        console.log(filename)
-                        console.log(this._uploadedImage.title, this._uploadedImage.text);
-                        this._socketService.uploadPhoto(filename, this._uploadedImage.title, this._uploadedImage.text);
-                    }, () => { console.error('error');});
-        }
-    }
+    // // upload file to the server
+    // public uploadPhoto () {
+    //     // selected file
+    //     var form = document.getElementById(`newPhoto`);
+    //     this._uploadedImage.file = form.querySelector('[name="file"]').files[0];
+    //     if (this._uploadedImage.file && this._uploadedImage.file.type.match(/image/)) {
+    //         // check file existence and it's type
+    //         this._imageService.uploadPhoto(this._uploadedImage.file)
+    //         .then( (filename) => {
+    //                     console.log(filename)
+    //                     console.log(this._uploadedImage.title, this._uploadedImage.text);
+    //                     this._socketService.uploadPhoto(filename, this._uploadedImage.title, this._uploadedImage.text);
+    //                 }, () => { console.error('error');});
+    //     }
+    // }
 }

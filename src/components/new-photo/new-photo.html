@@ -1,0 +1,31 @@
+<md-dialog aria-label="Add photo form"  ng-cloak>
+  <form name="nPhCtrl.newPhotoForm">
+    <md-dialog-content>
+      <div class="md-dialog-content" style="text-align: center;">
+        <img style="margin: auto; max-width: 265px; max-height: 256px;" alt="no image" ng-src="{{nPhCtrl._newPhoto.src}}">
+        <md-input-container layout="row">
+            <input type="file" name="file" id="newPhotoFile" aria-label="Загрузить фотографию">
+        </md-input-container>
+        <md-input-container layout="row">
+            <label>Название</label>
+            <input name="title" ng-model="nPhCtrl._newPhoto.title">
+        </md-input-container>
+        <md-input-container layout="row" ng-if="lgCtrl.getSubmitText() !== 'Войти'">
+            <label>Описание изображения</label>
+            <textarea name="text" ng-model="nPhCtrl._newPhoto.text"></textarea>
+        </md-input-container layout="row">
+        <p class="error-message">{{nPhCtrl._newPhoto.error}}</p>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions id="login-actions" layout="row">
+        <md-button
+            ng-click="nPhCtrl.cancel()">
+                Отмена
+        </md-button>
+        <md-button
+            ng-click="nPhCtrl.doSubmit()">
+                Загрузить
+        </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

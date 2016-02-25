@@ -98,19 +98,13 @@ class AppToolbarController {
                 mode: mode,
                 self: this._mdDialog
             }
-        })
-            // .then( (answer) => {
-            //     console.log('You said the information was "' + answer + '".');
-            // }, () => {
-            //     console.log('You cancelled the dialog.');
-            // })
-            ;
+        });
             
-            this._scope.$watch( () => {
-                return this._mdMedia('xs') || this._mdMedia('sm');
-            }, (wantsFullScreen) => {
-                this._scope.customFullscreen = (wantsFullScreen === true);
-            });
+        this._scope.$watch( () => {
+            return this._mdMedia('xs') || this._mdMedia('sm');
+        }, (wantsFullScreen) => {
+            this._scope.customFullscreen = (wantsFullScreen === true);
+        });
     }
 
 }

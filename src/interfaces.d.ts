@@ -54,3 +54,10 @@ interface ISocketService {
     removePhoto (_id: string): void;
     uploadPhoto (filename: string, title: string, text: string): void;
 }
+
+interface IUserActions {
+    signin (user: IUser): void;
+    signup (user: IUser): void;
+    signout (user: IUser): void;
+    confirmed (): void;
+}

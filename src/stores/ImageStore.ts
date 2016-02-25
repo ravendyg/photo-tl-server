@@ -14,12 +14,14 @@ class ImageStore extends EventEmmiter {
         
         this._images = [];
         // start loading image data
-        this._loadImages();
+        // if server already confirmed user's permission it will get data
+        // if not 'user_confirmed' will be triggered to run this method second time
+        this.loadImages();
         
     }
     
     // load image data from the server
-    private _loadImages () {
+    public loadImages (promise?: any) {
         this._imageService.getImageData()
             .then( (imagesData) => {
                     this._images = imagesData.data;
@@ -27,12 +29,16 @@ class ImageStore extends EventEmmiter {
                     for (var i=0; i<this._images.length; i++) {
                         this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
                     }
-                    this.emitChange();
+                    // this.emitChange();
+                    if (promise) promise.resolve();
+                    else this.emitChange();
                 }, () => {
                     console.error('imageService failed');
+                    if (promise) promise.reject();
                 }
-            )
-        ;
+            );
+            
+       return (promise) ? promise.promise || promise : undefined;
     }
     
     // getter for image data
@@ -55,13 +61,29 @@ class ImageStore extends EventEmmiter {
     }
 }
 
-export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService, $timeout) {
+export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService, $timeout, $q) {
     var imageStore = new ImageStore(imageService);
         
     dispatcher.setToken('ImageStoreDispatchToken', 
         dispatcher.addListener(function (action) {
             dispatcher.startHandling('ImageStoreDispatchToken');
-            switch (action.type) {                
+            switch (action.type) {   
+                case 'USER_CONFIRMED':
+                    // now we are sure that the user has signedin and the server won't reject our request for photos
+                    if (!imageStore.getImages) {
+                        // images not loaded
+                        var deferred = $q.defer();
+                        imageStore.loadImages(deferred)
+                            .then( () => {
+                                imageStore.emitChange();
+                                dispatcher.stopHandling('ImageStoreDispatchToken');
+                            });    
+                    } else {
+                        // already loaded, do nothing
+                        dispatcher.stopHandling('ImageStoreDispatchToken');
+                    }
+                break;
+                
                 case 'DELETE_PHOTO_SERVER':
                     imageStore.filterImageOut(action.photoId);
                     imageStore.emitChange();

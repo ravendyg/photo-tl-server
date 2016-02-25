@@ -31,4 +31,10 @@ class UserActions {
         });
     }
     
+    public confirmed () {
+        this._dispatcher.emit({
+            type: 'USER_CONFIRMED'
+        });
+    }
+    
 }

@@ -11,7 +11,7 @@ class LogInController {
     private _mode: string;
     private _submitText: string;
     private _userDataStore: any;
-    private _userActions: any;
+    private _userActions: IUserActions;
     private _listenerId: number;
     private _errorMessage: string;
     private _mdDialog: any;
@@ -19,7 +19,7 @@ class LogInController {
     // public loginForm: any;
     
     constructor ($scope: any, $mdDialog: any, mode: string, self: any,
-                userDataStore: any, userActions: any) {
+                userDataStore: any, userActions: IUserActions) {
         // set up vars
         this._userDataStore = userDataStore;
         this._userActions = userActions;

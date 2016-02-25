@@ -19,7 +19,6 @@ class UserDataStore extends EventEmmiter {
         // when done, if a user name received, use it and trigger change
         this._userService.getUserFromMemory()
             .then( (name) => {
-                console.log(name);
                 if (name) {
                     this._loggedinUser = {name: name };
                     this.emitChange();
@@ -79,17 +78,17 @@ export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, userService
         dispatcher.addListener(function (action) {
             dispatcher.startHandling('UserDataStoreDispatchToken');
             switch (action.type) {
-                case 'SELECT_USER':
-                    // in order to use angular promise, but keep EventEmmiter able to process any type of promises
-                    // without injecting $q directly
-                    var deferred = $q.defer();
-                    dispatcher.waitFor(['UserStoreDispatchToken'], deferred, 'UserDataStoreDispatchToken')
-                        .then( () => {
-                            userDataStore.setMessage('Selected: ' + action.userId);
-                            console.log(userDataStore.getMessage());
-                            dispatcher.stopHandling('UserDataStoreDispatchToken');        
-                        });                    
-                break;
+                // case 'SELECT_USER':
+                //     // in order to use angular promise, but keep EventEmmiter able to process any type of promises
+                //     // without injecting $q directly
+                //     var deferred = $q.defer();
+                //     dispatcher.waitFor(['UserStoreDispatchToken'], deferred, 'UserDataStoreDispatchToken')
+                //         .then( () => {
+                //             userDataStore.setMessage('Selected: ' + action.userId);
+                //             console.log(userDataStore.getMessage());
+                //             dispatcher.stopHandling('UserDataStoreDispatchToken');        
+                //         });                    
+                // break;
                 
                 case 'SIGNIN_USER':
                     userDataStore.signin(action.user)
