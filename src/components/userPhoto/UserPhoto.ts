@@ -8,12 +8,9 @@ export class UserPhotoController extends AbstractPhotoController {
     private _userName: string;
      
     
-    constructor($scope, $mdDialog, $mdMedia, $state,
-                imageStore, imageActions, imageService, socketService,
-                userDataStore
-                ) {
-        super ($scope, $mdDialog, $mdMedia, $state,
-                imageStore, imageActions, imageService, socketService);
+    constructor($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore ) {
+        
+        super ($scope, $state, imageStore, imageActions, imageService, socketService);
 console.log(`user photo`);
         
         this._userDataStore = userDataStore;

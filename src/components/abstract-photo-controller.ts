@@ -2,9 +2,9 @@
 /// <reference path="../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
 export class AbstractPhotoController {
-    private _scope: any;
-    private _mdDialog: any;
-    private _mdMedia: any;
+    
+    protected _scope: any;
+    
     private _state: any;
     
     protected _imageStore: any;
@@ -15,28 +15,20 @@ export class AbstractPhotoController {
     protected _images: IImage;
     private _uploadedImage: any;
     
-    private _addPhotoFormDisplayed: boolean;
-    
     // private _$mdBottomSheet: any;
     private _listenerIds: number [];
 
     public imagesLoaded: boolean;   
     
-    constructor($scope, $mdDialog, $mdMedia, $state,
-                imageStore, imageActions, imageService, socketService
-                ) {
+    constructor($scope, $state, imageStore, imageActions, imageService, socketService) {
 
         this._scope = $scope;
-        this._mdDialog = $mdDialog;
-        this._mdMedia = $mdMedia;
         this._state = $state;
         
         this._imageStore = imageStore;
         this._imageActions = imageActions;
         this._imageService = imageService;
         this._socketService = socketService;
-        
-        this._addPhotoFormDisplayed = false;
         
         // initialize
         // this.resetImages();
@@ -70,8 +62,4 @@ export class AbstractPhotoController {
         this._socketService.removePhoto(id);
     }
  
-    // hide add photo form
-    public cancelAddingPhoto () {
-        this._addPhotoFormDisplayed = false;
-    }
 }
