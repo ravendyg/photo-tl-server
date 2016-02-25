@@ -1,14 +1,13 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 /// <reference path="../../../typings/others.d.ts" />
 // Create and prepare the 'users' module (with its controllers and dataservices) 
-export class UserPhotoController {
+export class AllPhotoController {
     private _scope: any;
     private _mdDialog: any;
     private _mdMedia: any;
     private _state: any;
     
     private _imageStore: any;
-    private _userDataStore: any;
     private _imageActions: any;
     private _imageService: IImageService;
     private _socketService: ISocketService;
@@ -17,7 +16,6 @@ export class UserPhotoController {
     private _uploadedImage: any;
     
     private _addPhotoFormDisplayed: boolean;
-    private _userName: string;
     
     // private _$mdBottomSheet: any;
     private _listenerIds: number [];
@@ -25,16 +23,16 @@ export class UserPhotoController {
     public imagesLoaded: boolean;   
     
     constructor($scope, $mdDialog, $mdMedia, $state,
-                userDataStore, imageStore, imageActions, imageService, socketService
+                imageStore, imageActions, imageService, socketService
                 // $mdBottomSheet,
                 ) {
-console.log(`user photo`);
+                    
+console.log(`all photo`);
         this._scope = $scope;
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
         this._state = $state;
         
-        this._userDataStore = userDataStore;
         this._imageStore = imageStore;
         this._imageActions = imageActions;
         this._imageService = imageService;
@@ -42,7 +40,6 @@ console.log(`user photo`);
         // this._$mdBottomSheet = $mdBottomSheet;
         
         this._addPhotoFormDisplayed = false;
-        this._userName = this._userDataStore.getLoggedInUser().name;
         
         // initialize
         this._resetImages();
@@ -66,7 +63,7 @@ console.log(`user photo`);
     
     // process 'change' on image store
     private _resetImages () {
-        this._images = this._imageStore.getImages(this._userName);
+        this._images = this._imageStore.getImages();
         this.imagesLoaded = (typeof this._images) === 'undefined';
     }
     
@@ -76,27 +73,27 @@ console.log(`user photo`);
         this._socketService.removePhoto(id);
     }
     
-    // // show add photo form
-    // public startAddingPhoto ($event: any) {
-    //     var useFullScreen = (this._mdMedia('sm') || this._mdMedia('xs'))  && this._scope.customFullscreen;
-    //     this._mdDialog.show({
-    //         controller: 'NewPhotoController as nPhCtrl',
-    //         templateUrl: 'components/new-photo/new-photo.html',
-    //         parent: angular.element(document.body),
-    //         targetEvent: $event,
-    //         clickOutsideToClose:true,
-    //         fullscreen: useFullScreen,
-    //         locals: {
-    //             self: this._mdDialog
-    //         }
-    //     });
+    // show add photo form
+    public startAddingPhoto ($event: any) {
+        var useFullScreen = (this._mdMedia('sm') || this._mdMedia('xs'))  && this._scope.customFullscreen;
+        this._mdDialog.show({
+            controller: 'NewPhotoController as nPhCtrl',
+            templateUrl: 'components/new-photo/new-photo.html',
+            parent: angular.element(document.body),
+            targetEvent: $event,
+            clickOutsideToClose:true,
+            fullscreen: useFullScreen,
+            locals: {
+                self: this._mdDialog
+            }
+        });
             
-    //     this._scope.$watch( () => {
-    //         return this._mdMedia('xs') || this._mdMedia('sm');
-    //     }, (wantsFullScreen) => {
-    //         this._scope.customFullscreen = (wantsFullScreen === true);
-    //     });
-    // }
+        this._scope.$watch( () => {
+            return this._mdMedia('xs') || this._mdMedia('sm');
+        }, (wantsFullScreen) => {
+            this._scope.customFullscreen = (wantsFullScreen === true);
+        });
+    }
         
         // console.log(this._addPhotoFormDisplayed);
         // this._addPhotoFormDisplayed = true;

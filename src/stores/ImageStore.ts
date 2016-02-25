@@ -25,10 +25,10 @@ class ImageStore extends EventEmmiter {
         this._imageService.getImageData()
             .then( (imagesData) => {
                     this._images = imagesData.data;
-                    // transform date
-                    for (var i=0; i<this._images.length; i++) {
-                        this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
-                    }
+                    // // transform date
+                    // for (var i=0; i<this._images.length; i++) {
+                    //     this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
+                    // }
                     // this.emitChange();
                     if (promise) promise.resolve();
                     else this.emitChange();
@@ -42,8 +42,13 @@ class ImageStore extends EventEmmiter {
     }
     
     // getter for image data
-    public getImages () {
-        return this._images;
+    public getImages (userName?: string) {
+        if (userName) {
+            return this._images.filter( (obj) => obj.uploadedBy === userName );    
+        } else {
+            return this._images;
+        }
+        
     }
     
     // add image
@@ -110,6 +115,6 @@ export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IIma
         addListener: (foo) => imageStore.addListener(foo),
         removeListener: (listenerId: number) => imageStore.removeListener(listenerId),
         
-        getImages: () => imageStore.getImages()
+        getImages: (userName) => imageStore.getImages(userName)
     }
 }

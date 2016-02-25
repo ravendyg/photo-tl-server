@@ -42,7 +42,7 @@ class WrapperController {
     private resetUserInfo () {
         this._loggedInUser = this._userDataStore.getLoggedInUser();
         if (this._loggedInUser.name) {
-            this._state.go('photo.loggedin');
+            this._state.go('photo.loggedin-all');
         } else {
             this._state.go('photo');
         }

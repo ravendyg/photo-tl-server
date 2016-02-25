@@ -26,6 +26,7 @@ class AppToolbarController {
     private _originatorEv: any;
     
     private _toDataDisplayed: boolean;
+    private _userPhotoDisplayed: boolean;
     
     constructor($scope, $mdDialog, $mdMedia, $timeout, $state, userService, userDataStore, userActions) {
         this._scope = $scope;
@@ -39,6 +40,13 @@ class AppToolbarController {
         this._userActions = userActions;
         
         this._toDataDisplayed = true;
+        
+        // what buttons to display
+        if (this._state.current.name === `photo.loggedin-my`) {
+            this._userPhotoDisplayed = true;
+        } else if (this._state.current.name == `photo.loggedin-all`) {
+            this._userPhotoDisplayed = false;
+        }
         
         // this._loggedInUser = this._userService.loggedInUser;
         this.resetUserInfo();
@@ -62,21 +70,38 @@ class AppToolbarController {
         return this._loggedInUser;
     }
     
+    /** menu */
     public openUserMenu ($mdOpenMenu, ev) {
         this._originatorEv = ev;
         $mdOpenMenu(ev);
-    }
-    
+    } 
+    // menu element
     public toUserData () {
         this._state.go('photo.user-data')
             // change menu buttons, withou timeout user would see the change
             .then(() => { this._timeout( () => {this._toDataDisplayed = false; }, 500); });
     }
-    
+    // menu element
     public toPhoto () {
-        this._state.go('photo.loggedin')
-            // change menu buttons, withou timeout user would see the change
-            .then(() => { this._timeout( () => {this._toDataDisplayed = true; }, 500); });
+        if (this._userPhotoDisplayed) {
+            this._state.go('photo.loggedin-my')
+                // change menu buttons, withou timeout user would see the change
+                .then(() => { this._timeout( () => {this._toDataDisplayed = true; }, 500); });
+        } else {
+            this._state.go('photo.loggedin-all')
+                // change menu buttons, withou timeout user would see the change
+                .then(() => { this._timeout( () => {this._toDataDisplayed = true; }, 500); });
+        }  
+    }
+    
+    public toAllPhotos () {
+        this._state.go('photo.loggedin-all')
+            .then( () => { this._userPhotoDisplayed = false;} );
+    }
+    
+    public toUserPhotos () {
+        this._state.go('photo.loggedin-my')
+            .then( () => { this._userPhotoDisplayed = true;} );
     }
     
     public logOut () {

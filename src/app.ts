@@ -33,12 +33,21 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
                     }
                 }
             })
-            .state('photo.loggedin', {
-                url: 'loggedin/photo',
+            .state('photo.loggedin-my', {
+                url: 'loggedin/my-photo',
                 views: {
                     'content@': {
                         templateUrl: 'components/userPhoto/userPhoto.html',
                         controller: 'UserPhotoController as usPhCtrl'
+                    }
+                }
+            })
+            .state('photo.loggedin-all', {
+                url: 'loggedin/all-photo',
+                views: {
+                    'content@': {
+                        templateUrl: 'components/all-photo/all-photo.html',
+                        controller: 'AllPhotoController as alPhCtrl'
                     }
                 }
             })
@@ -70,6 +79,7 @@ import {ServerActions} from './actionCreators/ServerActions.ts';
 // component controllers
 import {WrapperController} from './WrapperController.ts';
 import {UserPhotoController} from './components/userPhoto/UserPhoto.ts';
+import {AllPhotoController} from './components/all-photo/all-photo.ts';
 import {NoUserController} from './components/noUser/noUser.ts';
 import {UserDataController} from './components/userData/UserData.ts';
 import {NewPhotoController} from './components/new-photo/new-photo.ts';
@@ -97,6 +107,7 @@ angular.module('photoAlbum')
     // component controllers
     .controller('WrapperController', WrapperController)
     .controller('UserPhotoController', UserPhotoController)
+    .controller('AllPhotoController', AllPhotoController)
     .controller('NoUserController', NoUserController)
     .controller('UserDataController', UserDataController)
     .controller('LogInController', LogInController)

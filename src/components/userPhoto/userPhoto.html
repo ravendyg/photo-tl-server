@@ -18,27 +18,6 @@
             <md-icon md-menu-align-target md-svg-icon="preloader"></md-icon>
         </div>
         
-        <md-button ng-click="usPhCtrl.startAddingPhoto($event)">
-            <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
-            Добавить фотографию
-        </md-button>
-        
-        <!--<div ng-if="usPhCtrl._addPhotoFormDisplayed">
-            <form id="newPhoto" name="newPhoto">
-                <label>Название: <input type="text" name="title" ng-model="usPhCtrl._uploadedImage.title"></label>
-                <label>Файл: <input type="file" name="file" ng-model="usPhCtrl._uploadedImage.file"></label>
-                <label>Описание: <textarea name="text" ng-model="usPhCtrl._uploadedImage.text"></textarea></label>
-            </form>
-            <md-button ng-click="usPhCtrl.cancelAddingPhoto()">
-                <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
-                Отмена
-            </md-button>
-            <md-button ng-click="usPhCtrl.uploadPhoto()">
-                <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
-                Отправить
-            </md-button>
-        </div>-->
-        
         <md-card ng-repeat="photo in usPhCtrl._images track by photo._id">
             <img ng-src="{{'/users_data/images/'+photo.src}}" class="md-card-image">
             <md-card-title>
