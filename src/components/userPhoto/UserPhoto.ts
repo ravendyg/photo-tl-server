@@ -19,12 +19,12 @@ console.log(`user photo`);
         this._userDataStore = userDataStore;
         this._userName = this._userDataStore.getLoggedInUser().name;
         
-        this.resetImages();
+        this._resetImages();
         
     }
     
     // process 'change' on image store
-    public resetImages () {
+    protected _resetImages () {
         this._images = this._imageStore.getImages(this._userName);
         this.imagesLoaded = (typeof this._images) === 'undefined';
     }

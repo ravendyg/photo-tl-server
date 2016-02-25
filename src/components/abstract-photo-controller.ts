@@ -48,7 +48,7 @@ export class AbstractPhotoController {
         
         // register with the dispatcher
         this._listenerIds = [];
-        this._listenerIds.push(imageStore.addListener( () => { this.resetImages(); } ))
+        this._listenerIds.push(imageStore.addListener( () => { this._resetImages(); } ))
         
         // unregister
         $scope.$on('$destroy', () => {
@@ -59,7 +59,7 @@ export class AbstractPhotoController {
     }
     
     // process 'change' on image store
-    public resetImages () {
+    protected _resetImages () {
         this._images = this._imageStore.getImages();
         this.imagesLoaded = (typeof this._images) === 'undefined';
     }

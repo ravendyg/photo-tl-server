@@ -10,7 +10,7 @@ export class AllPhotoController extends AbstractPhotoController {
                 ) {
         super ($scope, $mdDialog, $mdMedia, $state,
                 imageStore, imageActions, imageService, socketService);
-        this.resetImages();
+        this._resetImages();
 console.log(`all photo`); 
     }
 }
