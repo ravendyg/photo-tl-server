@@ -1,3 +1,4 @@
+const ObjectId = require('mongodb').ObjectID;
 const fs = require('fs');
 const path = require('path');
 const utils = require('./../utils');
@@ -41,8 +42,9 @@ console.log('user disconnected');
         });
         
         socket.on('remove-photo', function (data) {
-console.log(`remove image ${data.id}`);
-            db.collection('photos').deleteOne({id: data.id}, function (err, result) {
+console.log(data);
+console.log(`remove image ${data._id}`);
+            db.collection('photos').deleteOne({_id: ObjectId(data._id)}, function (err, result) {
                 if (err) utils.serverSocketAuthError(err, null);
                 else if (result.result.n) {
                     // send to everyone except the source
@@ -54,31 +56,39 @@ console.log(`remove image ${data.id}`);
         });
         
         socket.on('upload-photo', function (data) {
+console.log(data);
            // check that file exists
            fs.exists(path.join('users_data', 'images', `${data.filename}`), function (exists) {
               if (exists) {
                 // find user
                 var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
                 // user id exists
+console.log(user);
                 if (user) {
                     user = user.slice(4, user.length).split('%7C')[0];
-                    db.collection('photos').insert({
+                    var newPhoto = {
                         src: data.filename,
                         title: data.title,
                         description: data.text,
                         uploadedBy: user,
-                        uploadedNum: Date.now(),
+                        uploaded: new Date(),
                         changedBy: undefined,
-                        changedNum: undefined,
+                        changed: undefined,
                         rating: 0,
                         myRating: 0,
                         views: 0,
                         comments: []
-                    }, function (err, doc) {
+                    };
+                    db.collection('photos').insert(newPhoto, function (err, doc) {
                         if (err) utils.serverSocketAuthError(err, null);
                         else {
-                            console.log(doc);
-                            // here! //
+                            if (doc.result.n) {
+                                // uploaded and added to db
+                                // send to everyone except the source
+                                socket.broadcast.emit('upload-photo', newPhoto);
+                                // send to the source
+                                socket.emit('upload-photo', newPhoto);
+                            }
                         }
                     });
                 }

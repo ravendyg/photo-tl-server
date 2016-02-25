@@ -30,7 +30,7 @@ export class ImageService implements IImageService {
         xhr.open('POST', config('url') + config('port') + config('imageDriver') + '/upload-image');
         
         xhr.onload = function () {
-            deferred.resolve(xhr.responseText);
+            deferred.resolve(JSON.parse(xhr.responseText).filename);
         };
         
         xhr.onreadystatechange = function() {
@@ -47,7 +47,7 @@ export class ImageService implements IImageService {
             console.log(e.loaded / e.total);
         };
         
-        xhr.send(file.files[0]);
+        xhr.send(file);
         
         return deferred.promise;
     }

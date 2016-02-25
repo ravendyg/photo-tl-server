@@ -25,9 +25,9 @@
         
         <div ng-if="usPhCtrl._addPhotoFormDisplayed">
             <form id="newPhoto" name="newPhoto">
-                <label>Название: <input type="text" name="title"></label>
-                <label>Файл: <input type="file" name="file"></label>
-                <label>Описание: <textarea name="text"></textarea></label>
+                <label>Название: <input type="text" name="title" ng-model="usPhCtrl._uploadedImage.title"></label>
+                <label>Файл: <input type="file" name="file" ng-model="usPhCtrl._uploadedImage.file"></label>
+                <label>Описание: <textarea name="text" ng-model="usPhCtrl._uploadedImage.text"></textarea></label>
             </form>
             <md-button ng-click="usPhCtrl.cancelAddingPhoto()">
                 <md-icon md-menu-align-target md-svg-icon="create"></md-icon>

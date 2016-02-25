@@ -39,9 +39,14 @@ class ImageStore extends EventEmmiter {
     public getImages () {
         return this._images;
     }
+    
+    // add image
+    public addImage (newImage: IImage) {
+        this._images.push(newImage);
+    }
     // removes specified images
-    public filterImageOut (id: number) {
-        this._images = this._images.filter( (obj) => obj.id !== id );
+    public filterImageOut (id: string) {
+        this._images = this._images.filter( (obj) => obj._id !== id );
         // this._imageService.deleteImage(id);
     }
     
@@ -59,6 +64,14 @@ export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IIma
             switch (action.type) {                
                 case 'DELETE_PHOTO_SERVER':
                     imageStore.filterImageOut(action.photoId);
+                    imageStore.emitChange();
+                    dispatcher.stopHandling('ImageStoreDispatchToken');
+                    // gotta use angular timeout to trigger digest on all clients
+                    $timeout(()=>{});
+                break;
+                
+                case 'UPLOAD_PHOTO_SERVER':
+                    imageStore.addImage(action.image);
                     imageStore.emitChange();
                     dispatcher.stopHandling('ImageStoreDispatchToken');
                     // gotta use angular timeout to trigger digest on all clients

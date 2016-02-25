@@ -52,5 +52,5 @@ interface ISocketService {
     disconnect (): void;
     getConnection (): any;
     removePhoto (_id: string): void;
-    uploaPhoto (filename: string, title: string, text: string): void;
+    uploadPhoto (filename: string, title: string, text: string): void;
 }

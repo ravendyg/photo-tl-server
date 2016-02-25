@@ -31,8 +31,8 @@ export class SocketService {
     }
     
     // tell the server to remove specified photo
-    public removePhoto (id: number) {
-        this._socket.emit('remove-photo', {id});
+    public removePhoto (_id: number) {
+        this._socket.emit('remove-photo', {_id});
     }
     
     // tell the server information about uploaded file
@@ -44,13 +44,19 @@ export class SocketService {
         
     // start listen
     private _listen () {
+        // photo deleted
         this._socket.on('remove-photo', (data) => {
-            this._serverActions.deletePhoto(data.id);
+            this._serverActions.deletePhoto(data._id);
+        });
+        // new photo uploaded
+        this._socket.on('upload-photo', (data) => {
+            this._serverActions.uploadPhoto(data);
         });
     }
     // stop listen
     private _stopListen () {
         // walk around this issues
         this._socket._callbacks['$remove-photo'] = [];
+        this._socket._callbacks['$upload-photo'] = [];
     }
 }

@@ -6,6 +6,7 @@ export class UserPhotoController {
     private _imageActions: any;
     
     private _images: IImage;
+    private _uploadedImage: any;
     
     private _addPhotoFormDisplayed: boolean;
     
@@ -32,6 +33,11 @@ export class UserPhotoController {
         
         // initialize
         this._resetImages();
+        this._uploadedImage = {
+            title: '',
+            text: '',
+            // file: null
+        };
         
         // register with the dispatcher
         this._listenerIds = [];
@@ -61,6 +67,7 @@ export class UserPhotoController {
     
     // show add photo form
     public startAddingPhoto () {
+        console.log(this._addPhotoFormDisplayed);
         this._addPhotoFormDisplayed = true;
     }
     // hide add photo form
@@ -72,14 +79,15 @@ export class UserPhotoController {
     public uploadPhoto () {
         // selected file
         var form = document.getElementById(`newPhoto`);
-        var file = form.querySelector('[name="file"]');
-        var title = form.querySelector('[name="title"]').textContent;
-        var text = form.querySelector('[name="text"]').textContent;
-        this._imageService.uploadPhoto(file)
+        this._uploadedImage.file = form.querySelector('[name="file"]').files[0];
+        if (this._uploadedImage.file && this._uploadedImage.file.type.match(/image/)) {
+            // check file existence and it's type
+            this._imageService.uploadPhoto(this._uploadedImage.file)
             .then( (filename) => {
-                        console.log(filename, title, text); 
+                        console.log(filename)
+                        console.log(this._uploadedImage.title, this._uploadedImage.text);
+                        this._socketService.uploadPhoto(filename, this._uploadedImage.title, this._uploadedImage.text);
                     }, () => { console.error('error');});
-        
-        // this._socketService.uploadPhoto(id);
+        }
     }
 }

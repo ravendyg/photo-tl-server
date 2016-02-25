@@ -11,10 +11,17 @@ class ServerActions {
         console.log('server actions');
     }
     
-    public deletePhoto (photoId: number) {
+    public deletePhoto (photoId: string) {
         this._dispatcher.emit({
            type: "DELETE_PHOTO_SERVER",
-           photoId: photoId 
+           photoId 
+        });
+    }
+    
+    public uploadPhoto (image: IImage) {
+        this._dispatcher.emit({
+           type: "UPLOAD_PHOTO_SERVER",
+           image 
         });
     }
 }
