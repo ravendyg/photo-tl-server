@@ -85,6 +85,8 @@ import {UserDataController} from './components/userData/UserData.ts';
 import {NewPhotoController} from './components/new-photo/new-photo.ts';
 import {LogInController} from './components/logIn/LogIn.ts';
 import {AppToolbarController} from './components/appToolbar/AppToolbar.ts';
+import {RatingController} from './components/rating/rating.ts';
+import {RatingClickableController} from './components/rating/rating-clickable.ts';
 
 // server APIs
 import {UserService} from './serverApis/UserService.ts';
@@ -113,9 +115,35 @@ angular.module('photoAlbum')
     .controller('LogInController', LogInController)
     .controller('NewPhotoController', NewPhotoController)
     .controller('AppToolbarController', AppToolbarController)
+    .controller('RatingController', RatingController)
+    .controller('RatingClickableController', RatingClickableController)
      
      // server APIs
      .service('userService', UserService)
      .service('imageService', ImageService)
      .service('socketService', SocketService)
+     
+     // directives
+     .directive('myRating', function () {
+         return {
+             restrict: `E`,
+             scope: {
+                 rating: `@`
+             },
+             replace: true,
+             templateUrl: `./components/rating/rating.html`,
+             controller: `RatingController as rtCtrl`
+         }
+     })
+     .directive('myRatingClickable', function () {
+         return {
+             restrict: `E`,
+             scope: {
+                 rating: `=`
+             },
+             replace: true,
+             templateUrl: `./components/rating/rating-clickable.html`,
+             controller: `RatingClickableController as rtClCtrl`
+         }
+     })
      ;
