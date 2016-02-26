@@ -9,15 +9,17 @@ export class AllPhotoController extends AbstractPhotoController {
     private _mdMedia: any;
     
     constructor($scope, $mdDialog, $mdMedia, $state,
-                imageStore, imageActions, imageService, socketService
-                ) {
-        super ($scope, $state, imageStore, imageActions, imageService, socketService);
+                imageStore, imageActions, imageService, socketService, userDataStore) {
+
+        super ($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore);
+ console.log(`all photo`);
            
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
         
         this._resetImages();
-console.log(`all photo`); 
+        
+        console.log(this._userName);
     }
     
     // show add photo form

@@ -23,4 +23,11 @@ class ServerActions {
            image 
         });
     }
+    
+    public votePhoto (newRating: INewRating) {
+        this._dispatcher.emit({
+           type: "VOTE_PHOTO_SERVER",
+           newRating 
+        });
+    }
 }

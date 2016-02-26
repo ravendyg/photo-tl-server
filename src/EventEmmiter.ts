@@ -63,7 +63,7 @@ export class EventEmmiter implements IEventEmmiter {
 // console.log('stop ' + tokenName);
     }
     
-    public waitFor (tokenNames: string [], deferred: any, owner: string): any {
+    public waitFor(tokenNames: string [], deferred: any, owner: string): any {
         // handle angular d.resolve() && d.promise()
         // and js promise d.resolve() && d itself
         var promise = deferred.promise || deferred;

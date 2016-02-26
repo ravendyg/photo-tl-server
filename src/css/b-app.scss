@@ -28,3 +28,12 @@
         height: 48px;
     }
 }
+
+.rating-stars-clickable {
+    &:focus {
+        outline: none
+    }
+    i {
+        cursor: pointer;
+    }
+}

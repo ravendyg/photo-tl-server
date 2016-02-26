@@ -4,17 +4,17 @@
 import {AbstractPhotoController} from './../abstract-photo-controller.ts';
 
 export class UserPhotoController extends AbstractPhotoController {
-    private _userDataStore: any;
-    private _userName: string;
+    // private _userDataStore: any;
+    // private _userName: string;
      
     
     constructor($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore ) {
         
-        super ($scope, $state, imageStore, imageActions, imageService, socketService);
+        super ($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore);
 console.log(`user photo`);
         
-        this._userDataStore = userDataStore;
-        this._userName = this._userDataStore.getLoggedInUser().name;
+        // this._userDataStore = userDataStore;
+        // this._userName = this._userDataStore.getLoggedInUser().name;
         
         this._resetImages();
         

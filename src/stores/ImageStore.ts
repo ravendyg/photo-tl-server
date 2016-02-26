@@ -3,7 +3,7 @@
 import {EventEmmiter} from './../EventEmmiter.ts';
 import Utils = require('./../Utils.ts');
 
-class ImageStore extends EventEmmiter {
+class ImageStore extends EventEmmiter implements IImageStore{
     private _imageService: IImageService;
     private _images: IImage [];
     
@@ -60,6 +60,40 @@ class ImageStore extends EventEmmiter {
         this._images = this._images.filter( (obj) => obj._id !== id );
         // this._imageService.deleteImage(id);
     }
+    // replace rating for specified photo
+    public replaceComment (newRating: INewRating) {
+// console.log(newRating);
+        var i = 0;
+        var changedImage: IImage;
+        for (i=0; i<this._images.length; i++ ) {
+            if (this._images[i]._id === newRating._id) {
+                // replace average rating
+                changedImage = this._images[i];
+                changedImage.averageRating = newRating.averageRating;
+                for (i=0; i<changedImage.rating.length; i++) {
+                    if (changedImage.rating[i].user === newRating.ratingElem.user) {
+                        // replace user's rating
+                        changedImage.rating[i] = newRating.ratingElem;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+// console.log(changedImage);
+// console.log(this._images);
+    }
+    
+    public getAverageRating (photoId: string) {
+        // return this._images.filter( (obj) => obj._id === photoId )[0].averageRating.val;
+        return 1;
+    }
+    
+    public getUserRating (photoId: string, userName: string) {
+        // return this._images.filter( (obj) => obj._id === photoId )[0]
+        //     .rating;
+        return 0;
+    }
     
     public emitChange () {
         this.emit('change');
@@ -68,6 +102,13 @@ class ImageStore extends EventEmmiter {
 
 export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService, $timeout, $q) {
     var imageStore = new ImageStore(imageService);
+    
+    function finishWithTimeout () {
+        imageStore.emitChange();
+        dispatcher.stopHandling('ImageStoreDispatchToken');
+        // gotta use angular timeout to trigger digest on all clients
+        $timeout(()=>{});
+    }
         
     dispatcher.setToken('ImageStoreDispatchToken', 
         dispatcher.addListener(function (action) {
@@ -91,18 +132,17 @@ export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IIma
                 
                 case 'DELETE_PHOTO_SERVER':
                     imageStore.filterImageOut(action.photoId);
-                    imageStore.emitChange();
-                    dispatcher.stopHandling('ImageStoreDispatchToken');
-                    // gotta use angular timeout to trigger digest on all clients
-                    $timeout(()=>{});
+                    finishWithTimeout();
                 break;
                 
                 case 'UPLOAD_PHOTO_SERVER':
                     imageStore.addImage(action.image);
-                    imageStore.emitChange();
-                    dispatcher.stopHandling('ImageStoreDispatchToken');
-                    // gotta use angular timeout to trigger digest on all clients
-                    $timeout(()=>{});
+                    finishWithTimeout();
+                break;
+                
+                case `VOTE_PHOTO_SERVER`:
+                    imageStore.replaceComment(action.newRating);
+                    finishWithTimeout();
                 break;
                 
                 default:
@@ -115,6 +155,8 @@ export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IIma
         addListener: (foo) => imageStore.addListener(foo),
         removeListener: (listenerId: number) => imageStore.removeListener(listenerId),
         
-        getImages: (userName) => imageStore.getImages(userName)
+        getImages: (userName) => imageStore.getImages(userName),
+        getAverageRating: (photoId) => imageStore.getAverageRating(photoId),
+        getUserRating: (photoId, userName) => imageStore.getUserRating(photoId, userName)
     }
 }

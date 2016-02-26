@@ -10,13 +10,13 @@
         class="bmd-sign-btn"
         style="color: black!important;"
         ng-disabled="true"
-        ng-if="!apTbCtrl._userPhotoDisplayed">
+        ng-if="!apTbCtrl._userPhotoDisplayed && apTbCtrl.getLoggedInUser().name">
             Все фотографии
     </md-button>
     <md-button
         class="md-raised bmd-sign-btn"
         ng-click="apTbCtrl.toUserPhotos()"
-        ng-if="!apTbCtrl._userPhotoDisplayed">
+        ng-if="!apTbCtrl._userPhotoDisplayed && apTbCtrl.getLoggedInUser().name">
             Мои фотографии
     </md-button>
     <md-button

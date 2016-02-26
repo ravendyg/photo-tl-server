@@ -33,6 +33,13 @@
                 </md-card-title-text>
             </md-card-title>
             <md-card-actions layout="row" layout-align="start center">
+                <!--ratings-->
+                <!--{{photo.rating}}
+                {{alPhCtrl._userName}}-->
+                <my-rating num="{{photo._id}}"></my-rating>
+                <my-rating-clickable num="{{photo._id}}" user="{{alPhCtrl._userName}}">
+                </my-rating-clickable>
+                <!--buttons-->
                 <md-button ng-click="alPhCtrl.editPhoto(photo._id)">
                     <md-icon md-menu-align-target md-svg-icon="create"></md-icon>
                     Редактировать
@@ -41,8 +48,6 @@
                     <md-icon md-menu-align-target md-svg-icon="remove"></md-icon>
                     Удалить
                 </md-button>
-                <!--<my-rating rating="photo.rating"></my-rating>-->
-                <my-rating-clickable rating="photo.rating"></my-rating-clickable>
             </md-card-actions>
             <md-card-content>
                 <p>Добавил: {{photo.uploadedBy}} - {{photo.uploaded}}</p>

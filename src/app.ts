@@ -139,7 +139,9 @@ angular.module('photoAlbum')
          return {
              restrict: `E`,
              scope: {
-                 rating: `=`
+                 rating: `@`,
+                 user: `@`,
+                 num: `@`
              },
              replace: true,
              templateUrl: `./components/rating/rating-clickable.html`,

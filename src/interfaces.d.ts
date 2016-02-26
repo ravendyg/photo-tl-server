@@ -20,6 +20,15 @@ interface IUser {
     then?: any
 }
 
+declare type ratingElement = {
+    user: string,
+    val: number
+}
+declare type averageRating = {
+    count: number,
+    val: number
+}
+
 interface IImage {
     _id: string,
     src: string,
@@ -29,8 +38,8 @@ interface IImage {
     changed: number,
     uploadedBy: string,
     changedBy: string,
-    rating: number,
-    myRating: number,
+    averageRating: averageRating,
+    rating: ratingElement [],
     views: number,
     comments: {
         userName: string,
@@ -53,6 +62,7 @@ interface ISocketService {
     getConnection (): any;
     removePhoto (_id: string): void;
     uploadPhoto (filename: string, title: string, text: string): void;
+    vote (newVote: number, _id: string): void;
 }
 
 interface IUserActions {
@@ -60,4 +70,23 @@ interface IUserActions {
     signup (user: IUser): void;
     signout (user: IUser): void;
     confirmed (): void;
+}
+
+interface IRatingCtrl {
+}
+
+interface INewRating {
+    _id: string,
+    averageRating: averageRating,
+    ratingElem: ratingElement
+}
+
+interface IImageStore extends IEventEmmiter {
+    loadImages (promise?: any): any;
+    getImages (userName?: string): IImage [];
+    addImage (newImage: IImage): void;
+    filterImageOut (id: string): void;
+    replaceComment (newRating: INewRating): void;
+    getAverageRating (photoId: string): number;
+    getUserRating (photoId: string, userName: string): number;
 }

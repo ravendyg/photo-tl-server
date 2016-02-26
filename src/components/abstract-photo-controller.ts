@@ -12,6 +12,9 @@ export class AbstractPhotoController {
     private _imageService: IImageService;
     private _socketService: ISocketService;
     
+    protected _userDataStore: any;
+    protected _userName: string;
+    
     protected _images: IImage;
     private _uploadedImage: any;
     
@@ -20,7 +23,7 @@ export class AbstractPhotoController {
 
     public imagesLoaded: boolean;   
     
-    constructor($scope, $state, imageStore, imageActions, imageService, socketService) {
+    constructor($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore) {
 
         this._scope = $scope;
         this._state = $state;
@@ -37,6 +40,10 @@ export class AbstractPhotoController {
             text: '',
             // file: null
         };
+        
+        // get username
+        this._userDataStore = userDataStore;
+        this._userName = this._userDataStore.getLoggedInUser().name;
         
         // register with the dispatcher
         this._listenerIds = [];

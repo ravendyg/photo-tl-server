@@ -1,6 +1,6 @@
 var io = require('./../../node_modules/socket.io/node_modules/socket.io-client');
 
-export class SocketService {
+export class SocketService implements ISocketService {
     private _socket: any;
     private _io: any;
     
@@ -26,12 +26,12 @@ export class SocketService {
         this._stopListen();
     }
     
-    public getConection () {
+    public getConnection () {
         return this._socket;
     }
     
     // tell the server to remove specified photo
-    public removePhoto (_id: number) {
+    public removePhoto (_id: string) {
         this._socket.emit('remove-photo', {_id});
     }
     
@@ -39,6 +39,15 @@ export class SocketService {
     public uploadPhoto (filename: string, title: string, text: string) {
         this._socket.emit('upload-photo', {
             filename, title, text
+        });
+    }
+    
+    // vote
+    public vote (newVote: number, _id: string) {
+console.log(`socket service vote ${newVote} ${_id}`)
+        this._socket.emit('vote-photo', {
+            _id,
+            newVote
         });
     }
         
@@ -52,11 +61,16 @@ export class SocketService {
         this._socket.on('upload-photo', (data) => {
             this._serverActions.uploadPhoto(data);
         });
+        // new vote accepted
+        this._socket.on('vote-photo', (data) => {
+           this._serverActions.votePhoto(data); 
+        });
     }
     // stop listen
     private _stopListen () {
         // walk around this issues
         this._socket._callbacks['$remove-photo'] = [];
         this._socket._callbacks['$upload-photo'] = [];
+        this._socket._callbacks['$vote-photo'] = [];
     }
 }
