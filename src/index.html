@@ -13,29 +13,11 @@
 </head>
     <body ng-cloack layout="column" ng-controller="WrapperController as wCtrl">
 
-    <!--<app-toolbar></app-toolbar>-->
-    
     <div ui-view="toolbar"></div>
 
     <div flex layout="row">
         <div ui-view="content" layout="column" flex="100"></div>
     </div>
-    <!--<div flex layout="row" user-info  ng-if="uwCtrl.getLoggedInUser().name"></div>-->
-
-        <!--<md-sidenav md-is-locked-open="$mdMedia('gt-sm')"
-            ng-if="uwCtrl.getLoggedInUser().name"
-            md-component-id="left"
-            class="md-whiteframe-z2"
-            ng-click="uwCtrl.toggleList()" >
-            <user-menu></user-menu>
-        </md-sidenav>-->
-
-        <!--<md-content flex id="content">
-            <user-info></user-info>
-        </md-content>
-
-    </div>-->
-    <!--<user-wrapper></user-wrapper>-->
     
 <!-- build:js vendor.js -->
     <script src="../node_modules/angular/angular.js"></script>

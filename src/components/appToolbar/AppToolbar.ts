@@ -41,9 +41,8 @@ class AppToolbarController {
             this._userPhotoDisplayed = false;
         }
         
-        
-        var self = this;
         // registen with the dispatcher
+        var self = this;
         function _resetUserInfo () {
             self._resetUserInfo(self);
         }
@@ -116,8 +115,7 @@ class AppToolbarController {
             clickOutsideToClose:true,
             fullscreen: useFullScreen,
             locals: {
-                mode: mode,
-                self: this._mdDialog
+                mode: mode
             }
         });
             

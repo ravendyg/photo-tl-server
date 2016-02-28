@@ -30,8 +30,6 @@ class RatingClickableController extends RatingController {
     }
     
     public show ($event) {
-        // console.log(this._scope);
-        // console.log(this._ratingRender);
         console.log($event);
         console.log($event.target.className);
         // check for click target correctness

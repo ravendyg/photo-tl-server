@@ -11,7 +11,6 @@ export class AllPhotoController extends AbstractPhotoController {
                 imageStore, imageService, socketService, userDataStore) {
 
         super ($scope, $state, imageStore, imageService, socketService, userDataStore);
- console.log(`all photo`);
            
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;

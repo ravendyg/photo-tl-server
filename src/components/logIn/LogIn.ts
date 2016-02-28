@@ -15,7 +15,7 @@ class LogInController {
     
     // public loginForm: any;
     
-    constructor ($scope: any, $mdDialog: any, mode: string, self: any,
+    constructor ($scope: any, $mdDialog: any, mode: string,
                 userDataStore: any, userActions: IUserActions) {
         // set up vars
         this._userDataStore = userDataStore;
@@ -30,7 +30,8 @@ class LogInController {
         }       
         
         // register with the emmiter
-        var _resetUser = () => this._resetUser; // bind to this
+        var self = this;
+        function _resetUser () {self._resetUser(self);} // bind to this
         userDataStore.addListener(_resetUser);
         
         // unregister
@@ -39,17 +40,16 @@ class LogInController {
         });
         
         // load initial state
-        this._resetUser();
+        this._resetUser(this);
     }
     
-    private _resetUser () {
-console.log('reset user');
-        this._user = this._userDataStore.getLoggedInUser();
-        if (this._user.name && !this._user.error) {
-            this._mdDialog.hide();
+    private _resetUser (self) {
+        self._user = self._userDataStore.getLoggedInUser();
+        if (self._user.name && !self._user.error) {
+            self._mdDialog.hide();
         }
-        this._userInput = {name: '', pas: '', pas2: '', rem: false, error: this._user.error};
-        this._user.error = '';
+        self._userInput = {name: '', pas: '', pas2: '', rem: false, error: self._user.error};
+        self._user.error = '';
     }
     
     public getUser (): IUser {

@@ -26,7 +26,6 @@ class WrapperController {
             this._userDataStore.removeListener(_resetUserInfo);
         });
         
-        
         // load initial state
         userService.getUserFromMemory();
         this._resetUserInfo(this);
@@ -41,8 +40,6 @@ class WrapperController {
                 this._state.go('photo.loggedin-all');
             }
         }); 
-        
-        
     }
     
     private _resetUserInfo (self) {

@@ -32,8 +32,7 @@ export class AbstractPhotoController {
         // this.resetImages();
         this._uploadedImage = {
             title: '',
-            text: '',
-            // file: null
+            text: ''
         };
         
         // get username
