@@ -3,7 +3,7 @@
 import {Dispatcher} from './../Dispatcher.ts';
 import Utils = require('./../Utils.ts');
 
-class ImageStore extends Dispatcher implements IImageStore{
+class ImageStore extends Dispatcher {
     private _imageService: IImageService;
     private _images: IImage [];
     
@@ -96,7 +96,7 @@ class ImageStore extends Dispatcher implements IImageStore{
     }
     
     public emitChange () {
-        this.emit('change');
+        this.dispatch('change');
     }
 }
 
@@ -105,55 +105,44 @@ export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImage
     
     function finishWithTimeout () {
         imageStore.emitChange();
-        dispatcher.stopHandling('ImageStoreDispatchToken');
         // gotta use angular timeout to trigger digest on all clients
         $timeout(()=>{});
     }
         
-    dispatcher.setToken('ImageStoreDispatchToken', 
-        dispatcher.addListener(function (action) {
-            dispatcher.startHandling('ImageStoreDispatchToken');
-            switch (action.type) {   
-                case 'USER_CONFIRMED':
-                    // now we are sure that the user has signedin and the server won't reject our request for photos
-                    if (!imageStore.getImages) {
-                        // images not loaded
-                        var deferred = $q.defer();
-                        imageStore.loadImages(deferred)
-                            .then( () => {
-                                imageStore.emitChange();
-                                dispatcher.stopHandling('ImageStoreDispatchToken');
-                            });    
-                    } else {
-                        // already loaded, do nothing
-                        dispatcher.stopHandling('ImageStoreDispatchToken');
-                    }
-                break;
-                
-                case 'DELETE_PHOTO_SERVER':
-                    imageStore.filterImageOut(action.photoId);
-                    finishWithTimeout();
-                break;
-                
-                case 'UPLOAD_PHOTO_SERVER':
-                    imageStore.addImage(action.image);
-                    finishWithTimeout();
-                break;
-                
-                case `VOTE_PHOTO_SERVER`:
-                    imageStore.replaceComment(action.newRating);
-                    finishWithTimeout();
-                break;
-                
-                default:
-                    dispatcher.stopHandling('ImageStoreDispatchToken');
-            }
-        })
-    );
+    dispatcher.register(function (action) {
+        switch (action.type) {   
+            case 'USER_CONFIRMED':
+                // now we are sure that the user has signedin and the server won't reject our request for photos
+                if (!imageStore.getImages) {
+                    // images not loaded
+                    var deferred = $q.defer();
+                    imageStore.loadImages(deferred)
+                        .then( () => {
+                            imageStore.emitChange();
+                        });    
+                }
+            break;
+            
+            case 'DELETE_PHOTO_SERVER':
+                imageStore.filterImageOut(action.photoId);
+                finishWithTimeout();
+            break;
+            
+            case 'UPLOAD_PHOTO_SERVER':
+                imageStore.addImage(action.image);
+                finishWithTimeout();
+            break;
+            
+            case `VOTE_PHOTO_SERVER`:
+                imageStore.replaceComment(action.newRating);
+                finishWithTimeout();
+            break;
+        }
+    });
     
     return {
-        addListener: (foo) => imageStore.addListener(foo),
-        removeListener: (listenerId: number) => imageStore.removeListener(listenerId),
+        addListener: (foo) => imageStore.register(foo),
+        removeListener: (listenerId: number) => imageStore.unregister(listenerId),
         
         getImages: (userName) => imageStore.getImages(userName),
         getAverageRating: (photoId) => imageStore.getAverageRating(photoId),

@@ -42,6 +42,7 @@ class LogInController {
     }
     
     private _resetUser () {
+console.log('reset user');
         this._user = this._userDataStore.getLoggedInUser();
         if (this._user.name && !this._user.error) {
             this._mdDialog.hide();

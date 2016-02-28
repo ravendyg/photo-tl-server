@@ -12,9 +12,9 @@ class RatingController implements IRatingCtrl {
     protected _photoId: string;
     
     protected _scope: any;
-    protected _imageStore: IImageStore;
+    protected _imageStore: IImageStoreFactory;
     
-    constructor ($scope, imageStore: IImageStore) {
+    constructor ($scope, imageStore: IImageStoreFactory) {
         this._scope = $scope;
         this._imageStore = imageStore;
         
@@ -38,6 +38,7 @@ class RatingController implements IRatingCtrl {
     }
     
     protected _renderRating (): void {
+console.log('reset rating');
         // - reset
         this._ratingRender = [];
         this._getRatingFromImageStore();

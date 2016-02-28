@@ -11,7 +11,7 @@ class RatingClickableController extends RatingController {
     private _user: string;
     
     
-    constructor ($scope, socketService: ISocketService, imageStore: IImageStore) {
+    constructor ($scope, socketService: ISocketService, imageStore: IImageStoreFactory) {
         super($scope, imageStore);
         
         this._socketService = socketService;

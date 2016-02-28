@@ -11,7 +11,7 @@ class ImageActions {
     }
     
     public deletePhoto (photoId: number) {
-        this._dispatcher.emit({
+        this._dispatcher.dispatch({
            type: "DELETE_PHOTO",
            photoId: photoId 
         });

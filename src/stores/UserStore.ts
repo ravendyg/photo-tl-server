@@ -91,39 +91,31 @@ class UserStore extends Dispatcher {
     }
     
     public emitChange () {
-        this.emit('change');
+        this.dispatch('change');
     }
 }
 
 export function UserStoreFactory (dispatcher: IDispatcher, $q) {
     var userStore = new UserStore ($q);
       
-    dispatcher.setToken('UserStoreDispatchToken', 
-        dispatcher.addListener(function (action) {
-            dispatcher.startHandling('UserStoreDispatchToken');
-            switch (action.type) {
-                case 'SELECT_USER':
-                    userStore.selectUser(action.userId)
-                        .then( () => {
-                            userStore.emitChange();
-                            dispatcher.stopHandling('UserStoreDispatchToken');
-                        });       
-                break;
-                case 'DELETE_USER':
-                    userStore.deleteUser(action.userId);
-                    userStore.emitChange();
-                    dispatcher.stopHandling('UserStoreDispatchToken');
-                break;
-                default:
-                    dispatcher.stopHandling('UserStoreDispatchToken');
-            }
-        })
-    );
-// console.log(dispatcher.getTokens());
+    dispatcher.register(function (action) {
+        switch (action.type) {
+            case 'SELECT_USER':
+                userStore.selectUser(action.userId)
+                    .then( () => {
+                        userStore.emitChange();
+                    });       
+            break;
+            case 'DELETE_USER':
+                userStore.deleteUser(action.userId);
+                userStore.emitChange();
+            break;
+        }
+    });
     
     return {
-        addListener: (foo) => userStore.addListener(foo),
-        removeListener: (listenerId: number) => userStore.removeListener(listenerId),
+        addListener: (foo) => userStore.register(foo),
+        removeListener: (listenerId: number) => userStore.unregister(listenerId),
         
         users: () => userStore.getUsers(),
         user: () => userStore.getUser()

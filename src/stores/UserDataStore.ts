@@ -69,60 +69,40 @@ class UserDataStore extends Dispatcher {
     }
     
     public emitChange () {
-        this.emit('change');
+        this.dispatch('change');
     }
 }
 
 export function UserDataStoreFactory (dispatcher: IDispatcher, $q, userService) {
     var userDataStore = new UserDataStore(userService);
         
-    dispatcher.setToken('UserDataStoreDispatchToken', 
-        dispatcher.addListener(function (action) {
-            dispatcher.startHandling('UserDataStoreDispatchToken');
-            switch (action.type) {
-                // case 'SELECT_USER':
-                //     // in order to use angular promise, but keep EventEmmiter able to process any type of promises
-                //     // without injecting $q directly
-                //     var deferred = $q.defer();
-                //     dispatcher.waitFor(['UserStoreDispatchToken'], deferred, 'UserDataStoreDispatchToken')
-                //         .then( () => {
-                //             userDataStore.setMessage('Selected: ' + action.userId);
-                //             console.log(userDataStore.getMessage());
-                //             dispatcher.stopHandling('UserDataStoreDispatchToken');        
-                //         });                    
-                // break;
-                
-                case 'SIGNIN_USER':
-                    userDataStore.signin(action.user)
-                        .then( () => {
-                            userDataStore.emitChange();
-                            dispatcher.stopHandling('UserDataStoreDispatchToken');
-                        }); 
-                break;
-                
-                case 'SIGNUP_USER':
-                    userDataStore.signup(action.newUser)
-                        .then( () => {
-                            userDataStore.emitChange();
-                            dispatcher.stopHandling('UserDataStoreDispatchToken');
-                        }); 
-                break;
-                
-                case 'SIGNOUT_USER':
-                    userDataStore.signout(action.user);
-                    userDataStore.emitChange();
-                    dispatcher.stopHandling('UserDataStoreDispatchToken');
-                break;
-                
-                default:
-                    dispatcher.stopHandling('UserDataStoreDispatchToken');
-            }
-        })
-    );
+    dispatcher.register(function (action) {
+        switch (action.type) {
+            
+            case 'SIGNIN_USER':
+                userDataStore.signin(action.user)
+                    .then( () => {
+                        userDataStore.emitChange();
+                    }); 
+            break;
+            
+            case 'SIGNUP_USER':
+                userDataStore.signup(action.newUser)
+                    .then( () => {
+                        userDataStore.emitChange();
+                    }); 
+            break;
+            
+            case 'SIGNOUT_USER':
+                userDataStore.signout(action.user);
+                userDataStore.emitChange();
+            break;
+        }
+    });
     
     return {
-        addListener: (foo) => userDataStore.addListener(foo),
-        removeListener: (listenerId: number) => userDataStore.removeListener(listenerId),
+        addListener: (foo) => userDataStore.register(foo),
+        removeListener: (listenerId: number) => userDataStore.unregister(listenerId),
         
         getLoggedInUser: () => userDataStore.getLoggedInUser(),
         message: () => userDataStore.getMessage()

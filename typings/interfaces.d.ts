@@ -1,12 +1,7 @@
 interface IDispatcher {
-    emit (event: any): void;
-    addListener (listener: any): number;
-    removeListener (listenerId: number): void;
-    setToken (tokenName: string, listenerId: number);
-    getTokens (): any;
-    startHandling (tokenName: string): void;
-    stopHandling (tokenName: string): void;
-    waitFor (tokens: string [], promise: any, owner: string): any;
+    dispatch (payload: any): void;
+    register (listener: any): number;
+    unregister (listenerId: number): void;
 }
 
 interface IUser {
@@ -79,11 +74,9 @@ interface INewRating {
     ratingElem: ratingElement
 }
 
-interface IImageStore extends IDispatcher {
-    loadImages (promise?: any): any;
-    getImages (userName?: string): IImage [];
-    addImage (newImage: IImage): void;
-    filterImageOut (id: string): void;
+interface IImageStoreFactory extends IDispatcher {
+    addListener (callback: any): number;
+    removeListener (callbackId: number): void;
     replaceComment (newRating: INewRating): void;
     getAverageRating (photoId: string): number;
     getUserRating (photoId: string, userName: string): number;

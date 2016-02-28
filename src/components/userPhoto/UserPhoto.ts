@@ -21,6 +21,7 @@ console.log(`user photo`);
     
     // process 'change' on image store
     protected _resetImages () {
+console.log('reset user photo');
         this._images = this._imageStore.getImages(this._userName);
         this.imagesLoaded = (typeof this._images) === 'undefined';
     }

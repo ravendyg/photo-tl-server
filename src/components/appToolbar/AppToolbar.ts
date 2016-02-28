@@ -57,6 +57,7 @@ class AppToolbarController {
     }
     
     private resetUserInfo () {
+console.log('reset toolbar');
         this._loggedInUser = this._userDataStore.getLoggedInUser();
     }
     
