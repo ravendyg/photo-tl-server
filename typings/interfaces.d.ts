@@ -1,3 +1,9 @@
+interface IEventEmmiter {
+    emit (): void;
+    addChangeListener (callback: any): void;
+    removeChangeListener (callback: any): void;
+}
+
 interface IDispatcher {
     dispatch (payload: any): void;
     register (listener: any): number;

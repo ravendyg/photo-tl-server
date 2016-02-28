@@ -1,14 +1,19 @@
 /// <reference path="../../typings/tsd.d.ts" />
 
-import {Dispatcher} from './../Dispatcher.ts';
 import Utils = require('./../Utils.ts');
 
-class ImageStore extends Dispatcher {
+import {EventEmmiter} from './../EventEmmiter.ts';
+
+class ImageStore extends EventEmmiter {
     private _imageService: IImageService;
     private _images: IImage [];
     
+    private _eventEmmiter: IEventEmmiter;
+    
     constructor (imageService: IImageService) {
         super();
+        
+        this._eventEmmiter = new EventEmmiter();
         
         this._imageService = imageService;
         
@@ -31,7 +36,7 @@ class ImageStore extends Dispatcher {
                     // }
                     // this.emitChange();
                     if (promise) promise.resolve();
-                    else this.emitChange();
+                    else this.emit();
                 }, () => {
                     console.error('imageService failed');
                     if (promise) promise.reject();
@@ -47,8 +52,7 @@ class ImageStore extends Dispatcher {
             return this._images.filter( (obj) => obj.uploadedBy === userName );    
         } else {
             return this._images;
-        }
-        
+        }      
     }
     
     // add image
@@ -62,15 +66,15 @@ class ImageStore extends Dispatcher {
     }
     // replace rating for specified photo
     public replaceComment (newRating: INewRating) {
-// console.log(newRating);
-        var i = 0;
+        var i = this._images.length-1;
+        // for some reason if i use '<' syntax highlighting goes wild
         var changedImage: IImage;
-        for (i=0; i<this._images.length; i++ ) {
+        for (i; i>=0; i-- ) {
             if (this._images[i]._id === newRating._id) {
                 // replace average rating
                 changedImage = this._images[i];
                 changedImage.averageRating = newRating.averageRating;
-                for (i=0; i<changedImage.rating.length; i++) {
+                for (i=changedImage.rating.length-1; i>=0; i--) {
                     if (changedImage.rating[i].user === newRating.ratingElem.user) {
                         // replace user's rating
                         changedImage.rating[i] = newRating.ratingElem;
@@ -80,8 +84,6 @@ class ImageStore extends Dispatcher {
                 break;
             }
         }
-// console.log(changedImage);
-// console.log(this._images);
     }
     
     public getAverageRating (photoId: string) {
@@ -94,17 +96,13 @@ class ImageStore extends Dispatcher {
         //     .rating;
         return 0;
     }
-    
-    public emitChange () {
-        this.dispatch('change');
-    }
 }
 
 export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImageService, $timeout, $q) {
     var imageStore = new ImageStore(imageService);
     
     function finishWithTimeout () {
-        imageStore.emitChange();
+        imageStore.emit();
         // gotta use angular timeout to trigger digest on all clients
         $timeout(()=>{});
     }
@@ -118,7 +116,7 @@ export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImage
                     var deferred = $q.defer();
                     imageStore.loadImages(deferred)
                         .then( () => {
-                            imageStore.emitChange();
+                            imageStore.emit();
                         });    
                 }
             break;
@@ -141,8 +139,8 @@ export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImage
     });
     
     return {
-        addListener: (foo) => imageStore.register(foo),
-        removeListener: (listenerId: number) => imageStore.unregister(listenerId),
+        addListener: (foo) => imageStore.addChangeListener(foo),
+        removeListener: (foo) => imageStore.removeChangeListener(foo),
         
         getImages: (userName) => imageStore.getImages(userName),
         getAverageRating: (photoId) => imageStore.getAverageRating(photoId),
