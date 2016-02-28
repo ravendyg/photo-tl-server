@@ -42,9 +42,11 @@ class AppToolbarController {
         }
         
         
-        
+        var self = this;
         // registen with the dispatcher
-        var _resetUserInfo = () => this._resetUserInfo; // bind to this
+        function _resetUserInfo () {
+            self._resetUserInfo(self);
+        }
         this._userDataStore.addListener(_resetUserInfo);
         
         // unregister
@@ -53,11 +55,11 @@ class AppToolbarController {
         });
         
         // load initial state
-        this._resetUserInfo();
+        this._resetUserInfo(self);
     }
     
-    private _resetUserInfo () {
-        this._loggedInUser = this._userDataStore.getLoggedInUser();
+    private _resetUserInfo (self) {
+        self._loggedInUser = self._userDataStore.getLoggedInUser();
     }
     
     public getLoggedInUser () {

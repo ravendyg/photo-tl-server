@@ -96,7 +96,8 @@ console.log('reset user');
                     rem: this._userInput.rem
                 });
             }    
-        }        
+        }
+        this._mdDialog.hide();
     }
     
     private _verifyInput (): boolean {  

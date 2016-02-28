@@ -25,7 +25,8 @@ class RatingController implements IRatingCtrl {
         this._photoId = this._scope.num;
 
         // register with the emmiter
-        var _renderRating = () => this._renderRating;   // bind to this
+        var self = this;
+        function _renderRating () {self._renderRating(self);}   // bind to this
         imageStore.addListener(_renderRating)
         
         // unregister
@@ -34,23 +35,22 @@ class RatingController implements IRatingCtrl {
         });
         
         // load initial state
-        this._renderRating();
+        this._renderRating(this);
     }
     
-    protected _renderRating (): void {
-console.log('reset rating');
+    protected _renderRating (self): void {
         // - reset
-        this._ratingRender = [];
-        this._getRatingFromImageStore();
+        self._ratingRender = [];
+        self._getRatingFromImageStore();
         // - recalculate
         for (var i=1; i<=5; i++) {
-            if ( i <= Math.floor(this._rating) ) {
-                this._ratingRender.push({i, val:``});       
+            if ( i <= Math.floor(self._rating) ) {
+                self._ratingRender.push({i, val:``});       
             } else {
-                if (i === Math.ceil(this._rating)) {
-                    this._ratingRender.push({i, val:`-half-o`});  
+                if (i === Math.ceil(self._rating)) {
+                    self._ratingRender.push({i, val:`-half-o`});  
                 } else {
-                    this._ratingRender.push({i, val:`-o`});
+                    self._ratingRender.push({i, val:`-o`});
                 }  
             }
         }

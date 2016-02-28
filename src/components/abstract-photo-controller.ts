@@ -41,7 +41,8 @@ export class AbstractPhotoController {
         this._userName = this._userDataStore.getLoggedInUser().name;
         
         // register with the emmiter
-        var _resetImages = () => this._resetImages;   // bind to this
+        var self = this;
+        function _resetImages () {self._resetImages(self);};   // bind to this
         imageStore.addListener(_resetImages)
         
         // unregister
@@ -51,9 +52,9 @@ export class AbstractPhotoController {
     }
     
     // process 'change' on image store
-    protected _resetImages () {
-        this._images = this._imageStore.getImages();
-        this.imagesLoaded = (typeof this._images) === 'undefined';
+    protected _resetImages (self) {
+        self._images = self._imageStore.getImages();
+        self.imagesLoaded = (typeof self._images) === 'undefined';
     }
     
     // trigger delete photo action ->

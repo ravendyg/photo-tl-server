@@ -16,7 +16,7 @@ export class AllPhotoController extends AbstractPhotoController {
         this._mdDialog = $mdDialog;
         this._mdMedia = $mdMedia;
         
-        this._resetImages();
+        this._resetImages(this);
         
         console.log(this._userName);
     }
