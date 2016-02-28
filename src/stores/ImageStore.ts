@@ -5,46 +5,45 @@ import Utils = require('./../Utils.ts');
 import {EventEmmiter} from './../EventEmmiter.ts';
 
 class ImageStore extends EventEmmiter {
-    private _imageService: IImageService;
     private _images: IImage [];
     
     private _eventEmmiter: IEventEmmiter;
     
-    constructor (imageService: IImageService) {
+    constructor (storesActions: IStoresActions) {
         super();
         
         this._eventEmmiter = new EventEmmiter();
-        
-        this._imageService = imageService;
         
         this._images = [];
         // start loading image data
         // if server already confirmed user's permission it will get data
         // if not 'user_confirmed' will be triggered to run this method second time
-        this.loadImages();
+        // this.loadImages();
+        
+        storesActions.imageStoreReport();
         
     }
     
-    // load image data from the server
-    public loadImages (promise?: any) {
-        this._imageService.getImageData()
-            .then( (imagesData) => {
-                    this._images = imagesData.data;
-                    // // transform date
-                    // for (var i=0; i<this._images.length; i++) {
-                    //     this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
-                    // }
-                    // this.emitChange();
-                    if (promise) promise.resolve();
-                    else this.emit();
-                }, () => {
-                    console.error('imageService failed');
-                    if (promise) promise.reject();
-                }
-            );
+    // // load image data from the server
+    // public loadImages (promise?: any) {
+    //     this._imageService.getImageData()
+    //         .then( (imagesData) => {
+    //                 this._images = imagesData.data;
+    //                 // // transform date
+    //                 // for (var i=0; i<this._images.length; i++) {
+    //                 //     this._images[i].uploaded = Utils.transformDate(this._images[i].uploadedNum);
+    //                 // }
+    //                 // this.emitChange();
+    //                 if (promise) promise.resolve();
+    //                 else this.emit();
+    //             }, () => {
+    //                 console.error('imageService failed');
+    //                 if (promise) promise.reject();
+    //             }
+    //         );
             
-       return (promise) ? promise.promise || promise : undefined;
-    }
+    //    return (promise) ? promise.promise || promise : undefined;
+    // }
     
     // getter for image data
     public getImages (userName?: string) {
@@ -98,8 +97,8 @@ class ImageStore extends EventEmmiter {
     }
 }
 
-export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImageService, $timeout, $q) {
-    var imageStore = new ImageStore(imageService);
+export function ImageStoreFactory (dispatcher: IDispatcher, storesActions: IStoresActions, $timeout, $q) {
+    var imageStore = new ImageStore(storesActions);
     
     function finishWithTimeout () {
         imageStore.emit();
@@ -109,18 +108,6 @@ export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImage
         
     dispatcher.register(function (action) {
         switch (action.type) {   
-            case 'USER_CONFIRMED':
-                // now we are sure that the user has signedin and the server won't reject our request for photos
-                if (!imageStore.getImages) {
-                    // images not loaded
-                    var deferred = $q.defer();
-                    imageStore.loadImages(deferred)
-                        .then( () => {
-                            imageStore.emit();
-                        });    
-                }
-            break;
-            
             case 'DELETE_PHOTO_SERVER':
                 imageStore.filterImageOut(action.photoId);
                 finishWithTimeout();
@@ -133,6 +120,13 @@ export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImage
             
             case `VOTE_PHOTO_SERVER`:
                 imageStore.replaceComment(action.newRating);
+                finishWithTimeout();
+            break;
+            
+            case `DOWNLOAD_PHOTO_SERVER`:
+                for (var i=0; i<action.images.length; i++) {
+                    imageStore.addImage(action.images[i]);
+                }
                 finishWithTimeout();
             break;
         }

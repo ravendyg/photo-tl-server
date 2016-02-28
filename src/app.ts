@@ -72,7 +72,7 @@ import {UserDataStoreFactory} from './stores/UserDataStore.ts';
 
 // action creators
 import {UserActions} from './actionCreators/UserActions.ts';
-import {ImageActions} from './actionCreators/ImageActions.ts';
+import {StoresActions} from './actionCreators/StoresActions.ts';
 import {ServerActions} from './actionCreators/ServerActions.ts';
 
 // component controllers
@@ -101,7 +101,7 @@ angular.module('photoAlbum')
     
     // actions
     .service('userActions', UserActions)
-    .service('imageActions', ImageActions)
+    .service('storesActions', StoresActions)
     .service('serverActions', ServerActions)
     // .service('serverActions', ServerActions)
     
@@ -148,3 +148,5 @@ angular.module('photoAlbum')
          }
      })
      ;
+     
+     

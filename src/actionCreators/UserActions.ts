@@ -31,9 +31,10 @@ class UserActions {
         });
     }
     
-    public confirmed () {
+    public confirmed (name: string) {
         this._dispatcher.dispatch({
-            type: 'USER_CONFIRMED'
+            type: 'USER_CONFIRMED',
+            name
         });
     }
     

@@ -23,6 +23,6 @@ console.log(this._nodeEventEmmiter);
     }
     
     public removeChangeListener (callback: any) {
-        this._nodeEventEmmiter.removeListener('change', callback);
+        console.log(this._nodeEventEmmiter.removeListener('change', callback));
     }
 }

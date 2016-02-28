@@ -8,10 +8,22 @@ export class ImageService implements IImageService {
     private _timeout: any;
     private _loggedInUser: any;
     
-    constructor ($http, $q, $timeout) {
+    constructor ($http, $q, $timeout,
+                dispatcher: IDispatcher, serverActions) {
         this._http = $http;
         this._q = $q;
         this._timeout = $timeout;
+        
+        var getImageData = () => this.getImageData();
+        
+        dispatcher.register(function (action) {
+            switch (action.type) {                
+                case 'IMAGE_STORE_ONLINE':
+                    getImageData()
+                        .then(images => { serverActions.downloadPhotos(images.data)});
+                break;
+            }
+        });
     }
     
     public getImageData (): void {

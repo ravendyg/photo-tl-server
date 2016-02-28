@@ -3,17 +3,16 @@
 export /**
  * UserActions
  */
-class ImageActions {
+class StoresActions {
     private _dispatcher: IDispatcher;
     
     constructor(dispatcher: IDispatcher) {
         this._dispatcher = dispatcher;
     }
     
-    public deletePhoto (photoId: number) {
+    public imageStoreReport () {
         this._dispatcher.dispatch({
-           type: "DELETE_PHOTO",
-           photoId: photoId 
+           type: "IMAGE_STORE_ONLINE"
         });
     }    
     

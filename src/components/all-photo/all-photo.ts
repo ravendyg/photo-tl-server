@@ -8,9 +8,9 @@ export class AllPhotoController extends AbstractPhotoController {
     private _mdMedia: any;
     
     constructor($scope, $mdDialog, $mdMedia, $state,
-                imageStore, imageActions, imageService, socketService, userDataStore) {
+                imageStore, imageService, socketService, userDataStore) {
 
-        super ($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore);
+        super ($scope, $state, imageStore, imageService, socketService, userDataStore);
  console.log(`all photo`);
            
         this._mdDialog = $mdDialog;

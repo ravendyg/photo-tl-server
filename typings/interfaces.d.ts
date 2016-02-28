@@ -64,12 +64,7 @@ interface ISocketService {
     vote (newVote: number, _id: string): void;
 }
 
-interface IUserActions {
-    signin (user: IUser): void;
-    signup (user: IUser): void;
-    signout (user: IUser): void;
-    confirmed (): void;
-}
+
 
 interface IRatingCtrl {
 }
@@ -80,10 +75,22 @@ interface INewRating {
     ratingElem: ratingElement
 }
 
-interface IImageStoreFactory extends IDispatcher {
-    addListener (callback: any): number;
-    removeListener (callbackId: number): void;
-    replaceComment (newRating: INewRating): void;
+interface IImageStoreFactory {
+    addListener (callback: any): any;
+    removeListener (callbackId: any): void;
+    
+    getImages (userName?: string): IImage [];
     getAverageRating (photoId: string): number;
     getUserRating (photoId: string, userName: string): number;
+}
+
+interface IUserActions {
+    signin (user: IUser): void;
+    signup (user: IUser): void;
+    signout (user: IUser): void;
+    confirmed (name: string): void;
+}
+
+interface IStoresActions {
+    imageStoreReport (): void;
 }

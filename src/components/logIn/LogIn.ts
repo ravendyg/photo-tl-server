@@ -10,7 +10,6 @@ class LogInController {
     private _submitText: string;
     private _userDataStore: any;
     private _userActions: IUserActions;
-    private _listenerId: number;
     private _errorMessage: string;
     private _mdDialog: any;
     
@@ -30,15 +29,17 @@ class LogInController {
             this._submitText = 'Зарегистрироваться';
         }       
         
-        this._resetUser();
-        
-        // register with the dispatcher
-        this._listenerId = userDataStore.addListener( (q) => this._resetUser() );
+        // register with the emmiter
+        var _resetUser = () => this._resetUser; // bind to this
+        userDataStore.addListener(_resetUser);
         
         // unregister
         $scope.$on('$destroy', () => {
-            userDataStore.removeListener(this._listenerId);
+            userDataStore.removeListener(_resetUser);
         });
+        
+        // load initial state
+        this._resetUser();
     }
     
     private _resetUser () {

@@ -13,7 +13,6 @@ class AppToolbarController {
     private _loggedInUser: IUser;
     
     private _userDataStore: any;
-    private _listenerId: number;
     
     private _userActions: any;
     
@@ -42,22 +41,22 @@ class AppToolbarController {
             this._userPhotoDisplayed = false;
         }
         
-        // this._loggedInUser = this._userService.loggedInUser;
-        this.resetUserInfo();
+        
         
         // registen with the dispatcher
-        this._listenerId = this._userDataStore.addListener( () => {
-            this.resetUserInfo();
-        });
+        var _resetUserInfo = () => this._resetUserInfo; // bind to this
+        this._userDataStore.addListener(_resetUserInfo);
         
         // unregister
         $scope.$on('$destroy', () => {
-            this._userDataStore.removeListener(this._listenerId);
+            this._userDataStore.removeListener(_resetUserInfo);
         });
+        
+        // load initial state
+        this._resetUserInfo();
     }
     
-    private resetUserInfo () {
-console.log('reset toolbar');
+    private _resetUserInfo () {
         this._loggedInUser = this._userDataStore.getLoggedInUser();
     }
     

@@ -24,16 +24,16 @@ class RatingController implements IRatingCtrl {
         
         this._photoId = this._scope.num;
 
-        // register with the dispatcher
-        this._listenerIds = [];
-        this._listenerIds.push(imageStore.addListener( () => { this._renderRating(); } ))
+        // register with the emmiter
+        var _renderRating = () => this._renderRating;   // bind to this
+        imageStore.addListener(_renderRating)
         
         // unregister
         $scope.$on('$destroy', () => {
-            imageStore.removeListener(this._listenerIds[0]);
+            imageStore.removeListener(_renderRating);
         });
         
-        // reset
+        // load initial state
         this._renderRating();
     }
     

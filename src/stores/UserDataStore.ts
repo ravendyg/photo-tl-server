@@ -1,12 +1,11 @@
 /// <reference path="../../typings/tsd.d.ts" />
 
-import {Dispatcher} from './../Dispatcher.ts';
+import {EventEmmiter} from './../EventEmmiter.ts';
 
-class UserDataStore extends Dispatcher {
+class UserDataStore extends EventEmmiter {
     private _message: string;
     private _loggedinUser: IUser;
     private _userService: any;
-    private _serverDirectory;
     
     constructor (userService) {
         super();
@@ -15,25 +14,24 @@ class UserDataStore extends Dispatcher {
         
         // by default not logged in
         this._loggedinUser = {name: ''};
-        this._serverDirectory = '';
         
         // can be logged in -> check cookies if any verify on the server
         // when done, if a user name received, use it and trigger change
-        this._userService.getUserFromMemory()
-            .then( (name) => {
-                if (name) {
-                    this._loggedinUser = {name: name };
-                    this.emitChange();
-                }  
-            });
+        // this._userService.getUserFromMemory()
+        //     .then( (name) => {
+        //         if (name) {
+        //             this._loggedinUser = {name: name };
+        //             this.emit();
+        //         }  
+        //     });
     }
     
     public getMessage (): string {
         return this._message;
     }
     
-    public setMessage (message: string): void {
-        this._message = message;
+    public setUser (name: string): void {
+        this._loggedinUser.name = name;
     }
     
     public getLoggedInUser () {
@@ -67,14 +65,16 @@ class UserDataStore extends Dispatcher {
         this._userService.signout(user);
         /** ? */
     }
-    
-    public emitChange () {
-        this.dispatch('change');
-    }
 }
 
-export function UserDataStoreFactory (dispatcher: IDispatcher, $q, userService) {
+export function UserDataStoreFactory (dispatcher: IDispatcher, $timeout, userService) {
     var userDataStore = new UserDataStore(userService);
+        
+        function finishWithTimeout () {
+        userDataStore.emit();
+        // gotta use angular timeout to trigger digest on all clients
+        $timeout(()=>{});
+    }
         
     dispatcher.register(function (action) {
         switch (action.type) {
@@ -82,27 +82,33 @@ export function UserDataStoreFactory (dispatcher: IDispatcher, $q, userService) 
             case 'SIGNIN_USER':
                 userDataStore.signin(action.user)
                     .then( () => {
-                        userDataStore.emitChange();
+                        userDataStore.emit();
                     }); 
             break;
             
             case 'SIGNUP_USER':
                 userDataStore.signup(action.newUser)
                     .then( () => {
-                        userDataStore.emitChange();
+                        userDataStore.emit();
                     }); 
             break;
             
             case 'SIGNOUT_USER':
                 userDataStore.signout(action.user);
-                userDataStore.emitChange();
+                userDataStore.emit();
+            break;
+            
+            case 'USER_CONFIRMED':
+                userDataStore.setUser(action.name);
+                userDataStore.emit();
+                // finishWithTimeout();
             break;
         }
     });
     
     return {
-        addListener: (foo) => userDataStore.register(foo),
-        removeListener: (listenerId: number) => userDataStore.unregister(listenerId),
+        addListener: (foo) => userDataStore.addChangeListener(foo),
+        removeListener: (foo) => userDataStore.removeChangeListener(foo),
         
         getLoggedInUser: () => userDataStore.getLoggedInUser(),
         message: () => userDataStore.getMessage()

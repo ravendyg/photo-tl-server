@@ -18,7 +18,6 @@ window.socketService = socketService;
     }
     
     public getUserFromMemory () {
-        var deferred = this._q.defer();
         // check session storage
         var cookies: string [] = document.cookie.split(';');
         var name = cookies.filter( (obj) => obj.indexOf('uId=') > -1 )[0];
@@ -30,19 +29,11 @@ window.socketService = socketService;
                 url: config('url') + config('port') + config('userDriver') + '/verify-user',
                 params: {name: name.split('%7C')[0].split('=')[1]}
             }).then( (response) => {
-                deferred.resolve(response.data.name);
                 this._socketService.connect(config('url') + config('port'));
-                this._userActions.confirmed();
+                this._userActions.confirmed(response.data.name);
             }, (response) => {
-                // no confirmatin from the server
-                deferred.resolve('');
             })
-        } else {
-            // not loggedin
-            deferred.resolve('');
         }
-        
-        return deferred.promise;
     }
     
     // generic sign up or in operation

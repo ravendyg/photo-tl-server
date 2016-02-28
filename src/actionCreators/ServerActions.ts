@@ -30,4 +30,11 @@ class ServerActions {
            newRating 
         });
     }
+    
+    public downloadPhotos (images: IImage []) {
+        this._dispatcher.dispatch({
+           type: "DOWNLOAD_PHOTO_SERVER",
+           images 
+        });
+    }
 }

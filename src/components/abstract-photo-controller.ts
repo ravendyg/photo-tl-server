@@ -7,29 +7,24 @@ export class AbstractPhotoController {
     
     private _state: any;
     
-    protected _imageStore: any;
-    private _imageActions: any;
+    protected _imageStore: IImageStoreFactory;
     private _imageService: IImageService;
     private _socketService: ISocketService;
     
     protected _userDataStore: any;
     protected _userName: string;
     
-    protected _images: IImage;
+    protected _images: IImage [];
     private _uploadedImage: any;
-    
-    // private _$mdBottomSheet: any;
-    private _listenerIds: number [];
 
     public imagesLoaded: boolean;   
     
-    constructor($scope, $state, imageStore, imageActions, imageService, socketService, userDataStore) {
+    constructor($scope, $state, imageStore, imageService, socketService, userDataStore) {
 
         this._scope = $scope;
         this._state = $state;
         
         this._imageStore = imageStore;
-        this._imageActions = imageActions;
         this._imageService = imageService;
         this._socketService = socketService;
         
@@ -45,16 +40,14 @@ export class AbstractPhotoController {
         this._userDataStore = userDataStore;
         this._userName = this._userDataStore.getLoggedInUser().name;
         
-        // register with the dispatcher
-        this._listenerIds = [];
-        this._listenerIds.push(imageStore.addListener( () => { this._resetImages(); } ))
+        // register with the emmiter
+        var _resetImages = () => this._resetImages;   // bind to this
+        imageStore.addListener(_resetImages)
         
         // unregister
         $scope.$on('$destroy', () => {
-            imageStore.removeListener(this._listenerIds[0]);
-            // this._$mdBottomSheet.hide();
+            imageStore.removeListener(_resetImages);
         });
-        
     }
     
     // process 'change' on image store
