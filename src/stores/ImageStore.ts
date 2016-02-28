@@ -1,9 +1,9 @@
-/// <reference path="./../interfaces.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 
-import {EventEmmiter} from './../EventEmmiter.ts';
+import {Dispatcher} from './../Dispatcher.ts';
 import Utils = require('./../Utils.ts');
 
-class ImageStore extends EventEmmiter implements IImageStore{
+class ImageStore extends Dispatcher implements IImageStore{
     private _imageService: IImageService;
     private _images: IImage [];
     
@@ -100,7 +100,7 @@ class ImageStore extends EventEmmiter implements IImageStore{
     }
 }
 
-export function ImageStoreFactory (dispatcher: IEventEmmiter, imageService: IImageService, $timeout, $q) {
+export function ImageStoreFactory (dispatcher: IDispatcher, imageService: IImageService, $timeout, $q) {
     var imageStore = new ImageStore(imageService);
     
     function finishWithTimeout () {

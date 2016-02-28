@@ -1,4 +1,5 @@
-/// <reference path="./../interfaces.d.ts" />
+/// <reference path="./../../typings/interfaces.d.ts" />
+
 import {config} from './../config.ts';
 
 export class UserService {

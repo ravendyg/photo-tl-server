@@ -1,12 +1,12 @@
-/// <reference path="./../interfaces.d.ts" />
+/// <reference path="./../../typings/interfaces.d.ts" />
 
 export /**
  * UserActions
  */
 class ImageActions {
-    private _dispatcher: IEventEmmiter;
+    private _dispatcher: IDispatcher;
     
-    constructor(dispatcher: IEventEmmiter) {
+    constructor(dispatcher: IDispatcher) {
         this._dispatcher = dispatcher;
     }
     

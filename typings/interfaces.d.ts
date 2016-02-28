@@ -1,6 +1,4 @@
-/// <reference path="../typings/others.d.ts" />
-
-interface IEventEmmiter {
+interface IDispatcher {
     emit (event: any): void;
     addListener (listener: any): number;
     removeListener (listenerId: number): void;
@@ -81,7 +79,7 @@ interface INewRating {
     ratingElem: ratingElement
 }
 
-interface IImageStore extends IEventEmmiter {
+interface IImageStore extends IDispatcher {
     loadImages (promise?: any): any;
     getImages (userName?: string): IImage [];
     addImage (newImage: IImage): void;

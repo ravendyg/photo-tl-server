@@ -3,7 +3,6 @@
 /* global $mdIconProvider */
 
 /// <reference path="../typings/tsd.d.ts" />
-/// <reference path="../typings/others.d.ts" />
 
 'use strict';
 angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
@@ -65,7 +64,7 @@ angular.module( 'photoAlbum', ['ngMaterial', 'ui.router'] )
 
     });
     
-import {EventEmmiter} from './EventEmmiter.ts';
+import {Dispatcher} from './Dispatcher.ts';
 
 // stores
 import {ImageStoreFactory} from './stores/ImageStore.ts';
@@ -94,7 +93,7 @@ import {ImageService} from './serverApis/ImageService.ts';
 import {SocketService} from './serverApis/socket-service.ts';
 
 angular.module('photoAlbum')
-    .service('dispatcher', EventEmmiter)
+    .service('dispatcher', Dispatcher)
     
     // stores
     .factory('imageStore', ImageStoreFactory)

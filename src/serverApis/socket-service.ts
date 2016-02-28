@@ -1,3 +1,5 @@
+/// <reference path="./../../typings/interfaces.d.ts" />
+
 var io = require('./../../node_modules/socket.io/node_modules/socket.io-client');
 
 export class SocketService implements ISocketService {

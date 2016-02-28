@@ -1,6 +1,8 @@
-import {EventEmmiter} from './../EventEmmiter.ts';
+/// <reference path="../../typings/tsd.d.ts" />
 
-class UserDataStore extends EventEmmiter {
+import {Dispatcher} from './../Dispatcher.ts';
+
+class UserDataStore extends Dispatcher {
     private _message: string;
     private _loggedinUser: IUser;
     private _userService: any;
@@ -71,7 +73,7 @@ class UserDataStore extends EventEmmiter {
     }
 }
 
-export function UserDataStoreFactory (dispatcher: IEventEmmiter, $q, userService) {
+export function UserDataStoreFactory (dispatcher: IDispatcher, $q, userService) {
     var userDataStore = new UserDataStore(userService);
         
     dispatcher.setToken('UserDataStoreDispatchToken', 

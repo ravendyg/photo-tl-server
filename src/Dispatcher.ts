@@ -1,6 +1,6 @@
-/// <reference path="./interfaces.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 
-export class EventEmmiter implements IEventEmmiter {
+export class Dispatcher implements IDispatcher {
     private _lastListenerId: number;
     private _listenersCounter: number;
     private _listeners: any;
@@ -20,9 +20,6 @@ export class EventEmmiter implements IEventEmmiter {
     }
     
     public emit (event): void {
-        // for (var i=0; i<this._listeners.length; i++) {
-        //     this._listeners[i](event);    
-        // }
         for (var key in this._listeners) {
             this._listeners[key](event);
         }
@@ -33,13 +30,11 @@ export class EventEmmiter implements IEventEmmiter {
     }
     
     public addListener (listener: any): number {
-        // this._listeners.push(listener);
         this._listeners[++this._lastListenerId] = listener;
         return ++this._listenersCounter;
     }
     
     public removeListener (listenerId: number): void {
-        // this._listeners[listenerId] = null;
         delete this._listeners[listenerId];
     }
     
@@ -55,12 +50,10 @@ export class EventEmmiter implements IEventEmmiter {
     
     public startHandling (tokenName: string): void {
         this._pending[tokenName] = true;
-// console.log('start ' + tokenName);
     }
     
     public stopHandling (tokenName: string): void {
         this._pending[tokenName] = false;
-// console.log('stop ' + tokenName);
     }
     
     public waitFor(tokenNames: string [], deferred: any, owner: string): any {
@@ -86,20 +79,6 @@ export class EventEmmiter implements IEventEmmiter {
             deferred,
             started: Date.now()
         });
-        // var pending;
-        // // regularly check thet all store dependencies reported 'done'
-        // var probe = setInterval( () => {
-        //     pending = false;
-        //     for (var i=0; i<tokenNames.length; i++) {
-        //         console.log(tokenNames[i] + ' pending: ' + this._pending[tokenNames[i]]);
-        //         pending = pending || this._pending[tokenNames[i]];
-        //     }
-        //     // all conditions were satisfied
-        //     if (!pending) {
-        //         clearInterval(probe);
-        //         deferred.resolve();
-        //     }     
-        // }, 200);
 
         return promise;
     }

@@ -1,6 +1,8 @@
-import {EventEmmiter} from './../EventEmmiter.ts';
+/// <reference path="../../typings/tsd.d.ts" />
 
-class UserStore extends EventEmmiter {
+import {Dispatcher} from './../Dispatcher.ts';
+
+class UserStore extends Dispatcher {
     private _users: any [];
     private _selectedUser;
     private _q;
@@ -93,7 +95,7 @@ class UserStore extends EventEmmiter {
     }
 }
 
-export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
+export function UserStoreFactory (dispatcher: IDispatcher, $q) {
     var userStore = new UserStore ($q);
       
     dispatcher.setToken('UserStoreDispatchToken', 
@@ -127,43 +129,3 @@ export function UserStoreFactory (dispatcher: IEventEmmiter, $q) {
         user: () => userStore.getUser()
     }
 }
-
-// class UserStoreFactory {
-//     // private _dispatcher: EventEmmiter;
-//     private _q: any;
-//     private _userStore: UserStore;
-    
-//     constructor (dispatcher: IEventEmmiter, $q) {
-//         // this._dispatcher = dispatcher;
-//         this._q = $q;
-        
-//         this._userStore = new UserStore($q);
-        
-//         dispatcher.addListener(function (action) {
-//             switch (action.type) {
-//                 case 'SELECT_USER':
-//                     this._userStore.selectUser(action.userId)
-//                         .then( () => {
-//                             this._userStore.emitChange();
-//                         });       
-//                 break;
-//             }
-//         });
-//     }
-    
-//     public addListener (foo): void {
-//         this._userStore.addListener(foo);
-//     }
-    
-//     public getUsers () {
-//         return this._userStore.getUsers();
-//     }
-    
-//     public getUser () {
-//         return this._userStore.getUser();
-//     }
-// }
-
-// export function UserStoreFactoryFunction (dispatcher, $q) {
-//     return new UserStoreFactory(dispatcher, $q);
-// }

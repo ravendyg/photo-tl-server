@@ -1,7 +1,4 @@
 /// <reference path="../../../typings/tsd.d.ts" />
-/// <reference path="../../../typings/others.d.ts" />
-/// <reference path="../../interfaces.d.ts" />
-// Create and prepare the 'users' module (with its controllers and dataservices) 
 
 import {RatingController} from './rating.ts';
 
