@@ -1,1 +1,1 @@
-project for internship
+server project for internship
