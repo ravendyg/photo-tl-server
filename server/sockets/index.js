@@ -121,8 +121,45 @@ console.log(`remove: ${doc.src}`);
            });
         });
         
+        socket.on('edit-photo', function (data) {
+            // find user
+            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // user id exists
+            if (user) {
+                user = user.slice(4, user.length).split('%7C')[0];
+                // response object
+                var dataChange = {
+                    _id: data.id,
+                    title: data.title,
+                    text: data.text,
+                    time: new Date(),
+                    user
+                };
+console.log(dataChange);
+                db.collection('photos').update(
+                        {_id: ObjectId(dataChange._id)},
+                        {
+                            $set: {
+                                title: dataChange.title,
+                                description: dataChange.text,
+                                changedBy: user,
+                                changed: dataChange.time
+                            }
+                        },
+                function (err, doc) {
+                    if (err) utils.serverSocketAuthError(err, null);
+                    else {
+                        // send to everyone except the source
+                        socket.broadcast.emit('edit-photo', dataChange);
+                        // send to the source
+                        socket.emit('edit-photo', dataChange);
+                    }
+                });
+            }
+        });
+        
         socket.on('vote-photo', function (data) {
-console.log(data);
+// console.log(data);
             // find user
             var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
             // user id exists
@@ -135,7 +172,7 @@ console.log(data);
                 function (err, doc) {
                     if (err) utils.serverSocketAuthError(err, null);
                     else {
-// console.log(doc.rating);
+// console.log(doc);
                         var sum = doc.averageRating.val * doc.averageRating.count;
 
                         // recalculate number of votes: +0 if not new, +1 otherwise
@@ -153,9 +190,7 @@ console.log(data);
                                 {   $set: {
                                         averageRating: { val: sum, count: doc.averageRating.count },
                                         "rating.$": { user: user, val: +data.newVote }       
-                                }
-                                    // $pull: {rating: { $elemMatch: {user: user} }},
-                                    // $push: {rating: { user: user, val: +data.newVote }}
+                                    }
                                 }, function (err, res) {
                                     if (err) utils.serverSocketAuthError(err, null);
                                     else {
