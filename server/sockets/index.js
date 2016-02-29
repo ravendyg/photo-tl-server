@@ -41,6 +41,22 @@ console.log('user connected');
 console.log('user disconnected');
         });
         
+        // send image list to the newly connected user
+        // find user
+        var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+        // user id exists
+        if (user) {
+            user = user.slice(4, user.length).split('%7C')[0];
+            db.collection('photos').find({}).toArray(function (err, docs) {
+                if (err) { utils.serverError(err, null); }
+                else {
+                    socket.emit(`photo-list`, docs);
+                }
+            });
+        }
+        
+        
+        
         socket.on('remove-photo', function (data) {
 // console.log(data);
 // console.log(`remove image ${data._id}`);
