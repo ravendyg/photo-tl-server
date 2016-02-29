@@ -23,7 +23,7 @@ app.disable('x-powered-by');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var _path = path.join(__dirname, config.get('src'));
+var _path = path.join(__dirname, `..`, `photo-tl-angular`);
 console.log(_path);
 
 // connect to db
@@ -40,9 +40,9 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
 
     // index
     app.get('/', function (req, webRes, next) {
-        fs.exists(path.join(__dirname, config.get('src'), 'index.html'), function (exists) {
+        fs.exists(path.join(_path, config.get('src'), 'index.html'), function (exists) {
             if (exists) {
-                webRes.sendFile(path.join(__dirname, config.get('src'), 'index.html'));
+                webRes.sendFile(path.join(_path, config.get('src'), 'index.html'));
             }
             else {
                 webRes.status(status.NOT_FOUND).json({ error: 'Not found' });
@@ -51,7 +51,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     });
     
     // common static stuff
-    app.use(express.static(path.join(__dirname, config.get('src'))));
+    app.use(express.static(_path));
 
     // default NOT_FOUND
     app.use('*', function (req, webRes, next) {
