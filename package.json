@@ -20,8 +20,5 @@
     "socket.io": "^1.4.5"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-jshint": "^2.0.0",
-    "jshint-stylish": "^2.1.0"
   }
 }
