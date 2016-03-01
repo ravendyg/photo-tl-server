@@ -58,7 +58,7 @@ console.log('uploading file');
                             if (doc) {
                                 // found the user
                                 var filename = crypto.randomBytes(20).toString('hex');
-                                var fileStream = fs.WriteStream(path.join(__dirname, 'users_data',
+                                var fileStream = fs.WriteStream(path.join(__dirname, '..', '..', 'users_data',
                                         'images', `${filename}.jpg`));
                                 req.pipe(fileStream);
                                 
@@ -66,7 +66,7 @@ console.log('uploading file');
                                 req.on('close', function () {
                                     console.log('aborted');
                                     // remove partialy loaded file
-                                    fs.unlink(path.join(__dirname, 'users_data', 'images', `${filename}.jpg`), function (err) {
+                                    fs.unlink(path.join(__dirname, '..', '..', 'users_data', 'images', `${filename}.jpg`), function (err) {
                                         if (err) console.error(err.message);
                                         webRes.status(503).send('aborted');
                                     });
