@@ -229,7 +229,66 @@ console.log(dataChange);
                 });
             }
         });
+        
+        socket.on('comment-photo', function (data) {
+            // find user
+            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // user id exists
+            if (user) {
+                user = user.slice(4, user.length).split('%7C')[0];
+                // response object
+                var comment = {
+                    text: data.text,
+                    user,
+                    date: new Date()
+                };
+console.log(comment, data.id);
+                db.collection('photos').update(
+                        {_id: ObjectId(data.id)},
+                        {
+                            $push: {
+                                comments: comment
+                            }
+                        },
+                function (err, doc) {
+                    if (err) utils.serverSocketAuthError(err, null);
+                    else {
+// console.log(doc);
+                        // send to everyone except the source
+                        socket.broadcast.emit('comment-photo', {comment, id: data.id});
+                        // send to the source
+                        socket.emit('comment-photo', {comment, id: data.id});
+                    }
+                });
+            }
+        });
+        
+        socket.on('uncomment-photo', function (data) {
+            // find user
+            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // user id exists
+            if (user) {
+                user = user.slice(4, user.length).split('%7C')[0];
+                db.collection('photos').update(
+                        {_id: ObjectId(data.id)},
+                        {
+                            $pull: {
+                                comments: {date: new Date(data.date)}
+                            }
+                        },
+                function (err, doc) {
+                    if (err) utils.serverSocketAuthError(err, null);
+                    else {
+                        // send to everyone except the source
+                        socket.broadcast.emit('uncomment-photo', {id: data.id, date: data.date});
+                        // send to the source
+                        socket.emit('uncomment-photo', {id: data.id, date: data.date});
+                    }
+                });
+            }
+        });
     });
+    
     
     
 };

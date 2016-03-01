@@ -20,11 +20,14 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                 ],
                 views: 10,
                 comments: [{
-                    userName: 'vasya',
+                    user: 'vasya',
                     text: 'bla-bla-bla'
+                    ,
+                    date: new Date(1455964399151)
                 },{
-                    userName: 'petya',
-                    text: 'bla-bla-bla-bla'
+                    user: 'petya',
+                    text: 'bla-bla-bla-bla',
+                    date: new Date(1455962799151)
                 }]
             },{
                 src: 'image2.jpg',
@@ -40,11 +43,13 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                 ],
                 views: 100,
                 comments: [{
-                    userName: 'vasya',
-                    text: 'bla-bla'
+                    user: 'vasya',
+                    text: 'bla-bla',
+                    date: new Date(1455962399158)
                 },{
-                    userName: 'petya',
-                    text: 'bla-bla-bla-bla-bla'
+                    user: 'petya',
+                    text: 'bla-bla-bla-bla-bla',
+                    date: new Date(1455962399151)
                 }]
             },{
                 src: 'image3.jpg',
@@ -61,11 +66,13 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                 ],
                 views: 23,
                 comments: [{
-                    userName: 'vasya',
-                    text: 'bla-bla'
+                    user: 'vasya',
+                    text: 'bla-bla',
+                    date: new Date(1455967399151)
                 },{
-                    userName: 'petya',
-                    text: 'bla-bla-bla-bla-bla'
+                    user: 'petya',
+                    text: 'bla-bla-bla-bla-bla',
+                    date: new Date(1455968399151)
                 }]
             }], function (err, docs) {
                 console.log('inserted');
