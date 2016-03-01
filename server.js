@@ -52,6 +52,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
 console.log(_path);
     // common static stuff
     app.use('/users_data', express.static(path.join(__dirname, `..`, `photo-tl-server`, `users_data`)));
+console.log(path.join(__dirname, `..`, `photo-tl-server`, `users_data`));
     if (config.get('src') === `src`) {
         app.use('/src', express.static(path.join(_path, config.get('src'))));
         app.use('/node_modules', express.static(path.join(_path, 'node_modules')));

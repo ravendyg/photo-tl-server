@@ -84,7 +84,7 @@ console.log(`remove: ${doc.src}`);
         
         socket.on('upload-photo', function (data) {
            // check that file exists
-           fs.exists(path.join('users_data', 'images', `${data.filename}`), function (exists) {
+           fs.exists(path.join(__dirname, '..', '..', 'users_data', 'images', `${data.filename}`), function (exists) {
               if (exists) {
                 // find user
                 var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
