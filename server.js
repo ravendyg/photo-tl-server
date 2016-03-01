@@ -49,17 +49,19 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
             }
         });
     });
-    
+console.log(_path);
     // common static stuff
-    // app.use('/*jpg', express.static(__dirname));
-    // app.use('/node_modules', express.static(_path));
-    // app.use(express.static(_path));
-    app.use('/src', express.static(path.join(_path, config.get('src'))));
-    app.use('/node_modules', express.static(path.join(_path, 'node_modules')));
-    app.use('/prebuild', express.static(path.join(_path, 'prebuild')));
-    app.use('/components', express.static(path.join(_path, config.get('src'), 'components')));
-    app.use('/assets', express.static(path.join(_path, config.get('src'), 'assets')));
     app.use('/users_data', express.static(path.join(__dirname, `..`, `photo-tl-server`, `users_data`)));
+    if (config.get('src') === `src`) {
+        app.use('/src', express.static(path.join(_path, config.get('src'))));
+        app.use('/node_modules', express.static(path.join(_path, 'node_modules')));
+        app.use('/prebuild', express.static(path.join(_path, 'prebuild')));
+        app.use('/components', express.static(path.join(_path, config.get('src'), 'components')));
+        app.use('/assets', express.static(path.join(_path, config.get('src'), 'assets')));
+        // app.use('/users_data', express.static(path.join(__dirname, `..`, `photo-tl-server`, `users_data`)));
+    } else {
+        app.use(express.static(path.join(_path, config.get('src'))));
+    }
 
     // default NOT_FOUND
     app.use('*', function (req, webRes, next) {
