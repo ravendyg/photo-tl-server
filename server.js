@@ -23,8 +23,9 @@ app.disable('x-powered-by');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var _path = path.join(__dirname, `..`, `photo-tl-angular`);
-console.log(_path);
+var _path = path.join(__dirname, `..`); //, `photo-tl-angular`);
+var _angularPath = path.join(_path,  `photo-tl-angular`);
+var _reactPath = path.join(_path,  `photo-tl-react`);
 
 // connect to db
 MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
@@ -38,31 +39,36 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     // image processor
     app.use('/image-processor', imageProcessor(db));
 
-    // index
+    // common static stuff
+    app.use('/users_data', express.static(path.join(__dirname, `users_data`)));
+
+    // angular
+    app.use('/angular/build', express.static(path.join(_angularPath, 'build')));
+    app.use('/angular/assets', express.static(path.join(_angularPath, 'assets')));
     app.get('/angular', function (req, webRes, next) {
-        fs.exists(path.join(_path, config.get('src'), 'index.html'), function (exists) {
+        fs.exists(path.join(_angularPath, 'index.html'), function (exists) {
             if (exists) {
-                webRes.sendFile(path.join(_path, config.get('src'), 'index.html'));
+                webRes.sendFile(path.join(_angularPath, 'index.html'));
             }
             else {
                 webRes.status(status.NOT_FOUND).json({ error: 'Not found' });
             }
         });
     });
-console.log(_path);
-    // common static stuff
-    app.use('/users_data', express.static(path.join(__dirname, `..`, `photo-tl-server`, `users_data`)));
-console.log(path.join(__dirname, `..`, `photo-tl-server`, `users_data`));
-    if (config.get('src') === `src`) {
-        app.use('/src', express.static(path.join(_path, config.get('src'))));
-        app.use('/node_modules', express.static(path.join(_path, 'node_modules')));
-        app.use('/prebuild', express.static(path.join(_path, 'prebuild')));
-        app.use('/components', express.static(path.join(_path, config.get('src'), 'components')));
-        app.use('/assets', express.static(path.join(_path, config.get('src'), 'assets')));
-        // app.use('/users_data', express.static(path.join(__dirname, `..`, `photo-tl-server`, `users_data`)));
-    } else {
-        app.use(express.static(path.join(_path, config.get('src'))));
-    }
+    
+    // react
+    app.use('/react/build', express.static(path.join(_reactPath, 'build')));
+    app.use('/react/assets', express.static(path.join(_reactPath, 'assets')));
+    app.get('/react', function (req, webRes, next) {
+        fs.exists(path.join(_reactPath, 'index.html'), function (exists) {
+            if (exists) {
+                webRes.sendFile(path.join(_reactPath, 'index.html'));
+            }
+            else {
+                webRes.status(status.NOT_FOUND).json({ error: 'Not found' });
+            }
+        });
+    });
 
     // default NOT_FOUND
     app.use('*', function (req, webRes, next) {
@@ -80,6 +86,7 @@ console.log(path.join(__dirname, `..`, `photo-tl-server`, `users_data`));
 		if (err) console.error(err.stack);
 		if (options.exit) process.exit();
 	}
+    
 	process.stdin.resume();//so the program will not close instantly
 	//do something when app is closing
 	process.on('exit', exitHandler.bind(null,{cleanup:true}));
