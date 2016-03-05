@@ -2,11 +2,13 @@
 var express = require('express'),
     app = express(),
     status = require('http-status'),
-	bodyParser = require('body-parser');
+	bodyParser = require('body-parser'),
+    cookieParser = require('cookie-parser');
 var server = require('http').Server(app);
 var fs = require('fs');
 var path = require('path');
 var MongoClient = require('mongodb').MongoClient;
+var engines = require('consolidate');
 
 var config = require('./server/config');
 var userProcessor = require('./server/user-processor');
@@ -21,7 +23,12 @@ app.set('port', config.get('port'));
 app.disable('x-powered-by');
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// view engine setup
+app.engine('html', require('ejs-locals'));
+app.set('view engine', 'html');
 
 var _path = path.join(__dirname, `..`); //, `photo-tl-angular`);
 var _angularPath = path.join(_path,  `photo-tl-angular`);
@@ -62,7 +69,32 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     app.get('/react', function (req, webRes, next) {
         fs.exists(path.join(_reactPath, 'index.html'), function (exists) {
             if (exists) {
-                webRes.sendFile(path.join(_reactPath, 'index.html'));
+                var uId = req.cookies.uId;
+                if (uId) {
+                    var template = {username: uId.split('|')[0]};
+                    // check cookie
+                    db.collection('users').findOne({
+                        cookies: {$elemMatch: {$eq: uId}}
+                    }, function (err, doc) {
+                        if (err) {
+                            console.error(err.stack);
+                            // can't confirm
+                            template.username = ``;
+                        }
+                        else {
+                            if (!doc) {
+                                // not confirmed
+                                template.username = ``;
+                            }
+                        }
+                        webRes.render(path.join(_reactPath, 'index.html'), template);
+                    }); 
+                } else {
+                 // webRes.sendFile(path.join(_reactPath, 'index.html'));
+                  webRes.render(path.join(_reactPath, 'index.html'), {
+                        username: ``
+                    });
+                }
             }
             else {
                 webRes.status(status.NOT_FOUND).json({ error: 'Not found' });

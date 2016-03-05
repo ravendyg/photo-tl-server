@@ -37,7 +37,7 @@ module.exports = function (db) {
                         // create new user
                         var dir = crypto.randomBytes(20).toString('hex');
                         // encrypt
-// console.log(req.body);
+console.log(req.body);
                         var cipher = crypto.createCipher('aes192', req.body.pas);
                         var encrypted = cipher.update(dir, 'utf8', 'hex');
                         encrypted += cipher.final('hex');
@@ -73,7 +73,7 @@ module.exports = function (db) {
     
     // signin
     api.get('/sign-in', function (req, webRes, next) {
-// console.log(req.query);
+console.log(req.query);
         db.collection('users').findOne({
             name: req.query.name
         }, (err, doc) => {
