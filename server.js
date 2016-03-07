@@ -102,6 +102,17 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
         });
     });
 
+     app.get('/', function (req, webRes, next) {
+        fs.exists(path.join(__dirname, 'index.html'), function (exists) {
+            if (exists) {
+                webRes.sendFile(path.join(__dirname, 'index.html'));
+            }
+            else {
+                webRes.status(status.NOT_FOUND).json({ error: 'Not found' });
+            }
+        });
+    });
+
     // default NOT_FOUND
     app.use('*', function (req, webRes, next) {
         webRes.status(status.NOT_FOUND).json({ error: 'Not found' });

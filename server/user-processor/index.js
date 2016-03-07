@@ -27,7 +27,7 @@ module.exports = function (db) {
         // a request issued not by the client app - response with error and ignore
         if (req.body.name.match(/[^0-1a-zA-Z\s]/) || req.body.name.match(/^\s*$/) ||
                 (req.body.pas !== req.body.pas2) || req.body.pas.match(/^\s*$/)) {
-           webRes.status(status.BAD_REQUEST).json({ error: 'data are incorrect' }); 
+           webRes.status(status.BAD_REQUEST).json({ error: 'Data are incorrect' }); 
         } else {
             // check whether a user with this name already exists
             db.collection('users').findOne({name: req.body.name}, function (err, doc) {
@@ -57,14 +57,14 @@ console.log(req.body);
                                                 : 0;
                                 webRes.cookie('uId', req.body.name+'|'+dir, {expires: expiration});
                                 webRes.json({
-                                    result: 'user created',
+                                    result: 'User created',
                                     name: req.body.name
                                 });
                             }
                         });
                     } else {
                         // exists
-                        webRes.status(status.FORBIDDEN).json({ error: 'already exists' }); 
+                        webRes.status(status.FORBIDDEN).json({ error: 'Already exists' }); 
                     }
                 } 
             });
@@ -92,7 +92,7 @@ console.log(req.query);
 // console.log(expiration);
                     webRes.cookie('uId', req.query.name+'|'+newCookie, {expires: expiration});
                     webRes.json({
-                        result: 'logedin',
+                        result: 'Logedin',
                         name: req.query.name
                         // ,
                         // dir: doc.dir
@@ -102,10 +102,10 @@ console.log(req.query);
                             (err, doc) => { if (err) { console.error(err.message);} });
                 } catch (e) {
                     console.error(e.message);
-                    webRes.status(status.FORBIDDEN).json({ error: 'wrong password' });
+                    webRes.status(status.FORBIDDEN).json({ error: 'Wrong password' });
                 }
             } else {
-                webRes.status(status.NOT_FOUND).json({ error: 'wrong username' });
+                webRes.status(status.NOT_FOUND).json({ error: 'Wrong username' });
             }           
         });
     });
@@ -123,7 +123,7 @@ console.log(req.query);
                     // found the user, checked his name
                     webRes.json({name: doc.name});
                 } else {
-                    webRes.status(status.FORBIDDEN).json({ error: 'expired' }); 
+                    webRes.status(status.FORBIDDEN).json({ error: 'Expired' }); 
                 }
             }
         });
@@ -136,7 +136,7 @@ console.log(req.query);
                 if (err) { utils.serverError(err, webRes); }
                 else {                  
                     if (doc) {
-                        webRes.json({result: 'signed out'});
+                        webRes.json({result: 'Signed out'});
                     } else {
                         webRes.status(status.NOT_FOUND).json({ error: 'Not found' });
                     } 
