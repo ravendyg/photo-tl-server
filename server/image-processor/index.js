@@ -5,6 +5,7 @@ const express = require('express'),
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const exec = require('child_process').exec;
       
 const utils = require('./../utils');
 
@@ -47,34 +48,46 @@ module.exports = function (db, dir) {
     api.post('/upload-image', function (req, webRes, next) {
 console.log('uploading file');
         if (req.cookies.uId) {
-                    db.collection('users').findOne({
-                        cookies: {$elemMatch: {$eq: req.cookies.uId}}
-                    }, function (err, doc) {
-                        if (err) { utils.serverError(err, webRes); }
-                        else {
-                            if (doc) {
-                                // found the user
-                                var filename = crypto.randomBytes(20).toString('hex');
-                                var fileStream = fs.WriteStream(path.join(__dirname, '..', '..', 'users_data',
-                                        'images', `${filename}.jpg`));
-                                req.pipe(fileStream);
-                                
-                                // connection aborted - remove output
-                                req.on('close', function () {
-                                    console.log('aborted');
-                                    // remove partialy loaded file
-                                    fs.unlink(path.join(__dirname, '..', '..', 'users_data', 'images', `${filename}.jpg`), function (err) {
-                                        if (err) console.error(err.message);
-                                        webRes.status(503).send('aborted');
-                                    });
-                                });
-                                
-                                // uploaded
-                                fileStream.on('finish', function () {
-                                    console.log('file finished');
-                                    webRes.json({filename: `${filename}.jpg`});
-                                });
-                            } else {
+            // where to write
+            var filename = crypto.randomBytes(20).toString('hex');
+            var pathToFile = path.join(__dirname, '..', '..', 'users_data', 'images', `${filename}.jpg`);
+            // check user
+            db.collection('users').findOne({
+                cookies: {$elemMatch: {$eq: req.cookies.uId}}
+            }, function (err, doc) {
+                if (err) { utils.serverError(err, webRes); }
+                else {
+                    if (doc) {
+                        // found the user
+                        var fileStream = fs.WriteStream(pathToFile);
+                        req.pipe(fileStream);
+
+                        // connection aborted - remove output
+                        req.on('close', function () {
+                            console.log('aborted');
+                            // remove partialy loaded file
+                            fs.unlink(pathToFile, function (err) {
+                                if (err) console.error(err.message);
+                                webRes.status(503).send('aborted');
+                            });
+                        });
+                        
+                        // uploaded
+                        fileStream.on('finish', function () {
+                            console.log('file finished');
+                            webRes.json({filename: `${filename}.jpg`});
+                            
+                            // rotate image if necessary
+                            exec(`exiftran -ai ${pathToFile}`,
+                            (error, stdout, stderr) => {
+                                console.log(`stdout: ${stdout}`);
+                                console.log(`stderr: ${stderr}`);
+                                if (error !== null) {
+                                console.log(`exec error: ${error}`);
+                                }
+                            });
+                        });
+                    } else {
                         webRes.status(status.FORBIDDEN).json({ error: 'expired' }); 
                     }
                 }
