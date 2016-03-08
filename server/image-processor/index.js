@@ -18,33 +18,30 @@ api.use(cookieParser());
  */
 module.exports = function (db, dir) {
     // request to create a new user
-//     api.get('/all-images', function (req, webRes, next) {
-// // console.log(req.body);
-//         // req.cookies.uId
-//         if (req.cookies.uId) {
-//             db.collection('users').findOne({
-//                 cookies: {$elemMatch: {$eq: req.cookies.uId}}
-//             }, function (err, doc) {
-//                 if (err) { utils.serverError(err, webRes); }
-//                 else {
-//                     if (doc) {
-//                         // found the user
-//                         db.collection('photos').find({}).toArray(function (err, docs) {
-//                             if (err) { utils.serverError(err, webRes); }
-//                             else {
-// // console.log(docs);
-//                                 webRes.json(docs);
-//                             }
-//                         });
-//                     } else {
-//                         webRes.status(status.FORBIDDEN).json({ error: 'expired' }); 
-//                     }
-//                 }
-//             });   
-//         } else {
-//             webRes.status(status.FORBIDDEN).json({ error: 'no session' }); 
-//         }
-//     });
+    api.get('/all-images', function (req, webRes, next) {
+        if (req.cookies.uId) {
+            db.collection('users').findOne({
+                cookies: {$elemMatch: {$eq: req.cookies.uId}}
+            }, function (err, doc) {
+                if (err) { utils.serverError(err, webRes); }
+                else {
+                    if (doc) {
+                        // found the user
+                        db.collection('photos').find({}).toArray(function (err, docs) {
+                            if (err) { utils.serverError(err, webRes); }
+                            else {
+                                webRes.json(docs);
+                            }
+                        });
+                    } else {
+                        webRes.status(status.FORBIDDEN).json({ error: 'expired' }); 
+                    }
+                }
+            });   
+        } else {
+            webRes.status(status.FORBIDDEN).json({ error: 'no session' }); 
+        }
+    });
     
     // uploading iamge
     api.post('/upload-image', function (req, webRes, next) {
