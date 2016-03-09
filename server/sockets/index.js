@@ -9,7 +9,8 @@ module.exports = function (server, db) {
     
     // authorization using cookies - executed for every connection
     io.use(function(socket, next){
-        var uId = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+        var uId = socket.request.headers.cookie;
+        if (uId) uId = uId.match(/uId=[0-1a-zA-Z%].*/)[0];
         // user id exists
         if (uId) {
             uId = uId.slice(4, uId.length).replace('%7C', '|');
@@ -43,7 +44,9 @@ console.log('user disconnected');
         
         // send image list to the newly connected user
         // find user
-        var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+        // var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+        var user = socket.request.headers.cookie;
+        if (user) user = user.match(/uId=[0-1a-zA-Z%].*/)[0];
         // user id exists
         if (user) {
             user = user.slice(4, user.length).split('%7C')[0];
@@ -87,7 +90,9 @@ console.log(`remove: ${doc.src}`);
            fs.exists(path.join(__dirname, '..', '..', 'users_data', 'images', `${data.filename}`), function (exists) {
               if (exists) {
                 // find user
-                var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+                // var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+                var user = socket.request.headers.cookie;
+                if (user) user = user.match(/uId=[0-1a-zA-Z%].*/)[0];
                 // user id exists
                 if (user) {
                     user = user.slice(4, user.length).split('%7C')[0];
@@ -123,7 +128,9 @@ console.log(`remove: ${doc.src}`);
         
         socket.on('edit-photo', function (data) {
             // find user
-            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            var user = socket.request.headers.cookie;
+            if (user) user = user.match(/uId=[0-1a-zA-Z%].*/)[0];
             // user id exists
             if (user) {
                 user = user.slice(4, user.length).split('%7C')[0];
@@ -161,7 +168,9 @@ console.log(dataChange);
         socket.on('vote-photo', function (data) {
 // console.log(data);
             // find user
-            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            var user = socket.request.headers.cookie;
+            if (user) user = user.match(/uId=[0-1a-zA-Z%].*/)[0];
             // user id exists
             if (user) {
                 user = user.slice(4, user.length).split('%7C')[0];
@@ -232,7 +241,9 @@ console.log(dataChange);
         
         socket.on('comment-photo', function (data) {
             // find user
-            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            var user = socket.request.headers.cookie;
+            if (user) user = user.match(/uId=[0-1a-zA-Z%].*/)[0];
             // user id exists
             if (user) {
                 user = user.slice(4, user.length).split('%7C')[0];
@@ -265,7 +276,9 @@ console.log(comment, data.id);
         
         socket.on('uncomment-photo', function (data) {
             // find user
-            var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            // var user = socket.request.headers.cookie.match(/uId=[0-1a-zA-Z%].*/)[0];
+            var user = socket.request.headers.cookie;
+            if (user) user = user.match(/uId=[0-1a-zA-Z%].*/)[0];
             // user id exists
             if (user) {
                 user = user.slice(4, user.length).split('%7C')[0];
