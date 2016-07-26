@@ -34,15 +34,19 @@ var _path = path.join(__dirname, `..`); //, `photo-tl-angular`);
 var _angularPath = path.join(_path,  `photo-tl-angular`);
 var _reactPath = path.join(_path,  `photo-tl-react`);
 
+// ignore some suspicious requests
+app.get('/HNAP1*', (req,res,next) => {});
+app.get('/.htaccess*', (req,res,next) => {});
+
 // connect to db
 MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
-    
+
     // set up web sockets - inject listeneres
     require('./server/sockets')(server, db);
-  
+
     // sigin-up-out interaction with users
     app.use('/user-processor', userProcessor(db, _path));
-    
+
     // image processor
     app.use('/image-processor', imageProcessor(db));
 
@@ -62,7 +66,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
             }
         });
     });
-    
+
     // react
     app.use('/react/build', express.static(path.join(_reactPath, 'build')));
     app.use('/react/assets', express.static(path.join(_reactPath, 'assets')));
@@ -88,7 +92,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
                             }
                         }
                         webRes.render(path.join(_reactPath, 'index.html'), template);
-                    }); 
+                    });
                 } else {
                  // webRes.sendFile(path.join(_reactPath, 'index.html'));
                   webRes.render(path.join(_reactPath, 'index.html'), {
@@ -121,7 +125,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
     // start server
     server.listen(app.get('port'));
     console.log('Listen on ' + config.get('port'));
-    
+
     // exit and errors
     var exitHandler = function (options, err) {
 		db.close();
@@ -129,7 +133,7 @@ MongoClient.connect('mongodb://localhost:27017/photo', function (err, db) {
 		if (err) console.error(err.stack);
 		if (options.exit) process.exit();
 	}
-    
+
 	process.stdin.resume();//so the program will not close instantly
 	//do something when app is closing
 	process.on('exit', exitHandler.bind(null,{cleanup:true}));
