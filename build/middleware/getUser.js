@@ -49,38 +49,41 @@ exports.__esModule = true;
 function createGetUser(dbService, sessionService) {
     var _this = this;
     var getUser = function (_req, res, next) { return __awaiter(_this, void 0, void 0, function () {
-        var req, body, name, pas, user, err_1;
+        var req, uId, user, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    _a.trys.push([0, 2, , 3]);
                     req = _req;
-                    body = req.body;
-                    if (!body) {
-                        return [2 /*return*/, res.status(400).json({ error: "Credentials missing" })];
+                    uId = req.cookies.uId;
+                    if (!Boolean(uId)) {
+                        return [2 /*return*/, res.json({
+                                error: "Session does not exist",
+                                status: 403
+                            })];
                     }
-                    name = body.name, pas = body.pas;
-                    if (!name || !pas) {
-                        return [2 /*return*/, res.status(400).json({ error: "Credentials missing" })];
-                    }
-                    _a.label = 1;
+                    return [4 /*yield*/, dbService.getUserBySession(uId)];
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, dbService.getUser(name, pas)];
-                case 2:
                     user = _a.sent();
                     if (user === null) {
-                        return [2 /*return*/, res.status(404).json({ error: 'Wrong name or password' })];
+                        return [2 /*return*/, res.json({
+                                error: "Session expired",
+                                status: 403
+                            })];
                     }
                     else {
                         req.metadata = __assign({}, req.metadata, { user: user });
                         return [2 /*return*/, next()];
                     }
-                    return [3 /*break*/, 4];
-                case 3:
+                    return [3 /*break*/, 3];
+                case 2:
                     err_1 = _a.sent();
                     console.error(err_1);
-                    return [2 /*return*/, res.status(500).json({ error: 'Server error' })];
-                case 4: return [2 /*return*/];
+                    return [2 /*return*/, res.json({
+                            error: "Server error",
+                            status: 500
+                        })];
+                case 3: return [2 /*return*/];
             }
         });
     }); };

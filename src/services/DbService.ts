@@ -6,9 +6,11 @@ import { IUser } from '../types';
 import { ICryptoService } from './CryptoService';
 
 export interface IDbService {
-    getUser: (name: string, password: string) => Promise<IUser | null>;
+    getUser(name: string, password: string): Promise<IUser | null>;
 
-    createSession: (cookieStr: string, user: IUser) => Promise<boolean>;
+    createSession(cookieStr: string, user: IUser): Promise<boolean>;
+
+    getUserBySession(cookieStr: string): Promise<IUser>;
 }
 
 export class DbService implements IDbService {
@@ -22,7 +24,10 @@ export class DbService implements IDbService {
     getUser(name: string, pas: string): Promise<IUser | null>  {
         return new Promise((resolve, reject) => {
             this.connection.query(
-                'SELECT id, uid, name, password FROM users WHERE name = ?;',
+                `SELECT id, uid, name, password
+                    FROM users
+                    WHERE name = ?
+                    LIMIT 1;`,
                 [name],
                 (err, res) => {
                     if (err) {
@@ -64,6 +69,26 @@ export class DbService implements IDbService {
                         return reject('Server error');
                     }
                     return resolve(res.insertId > 0 ? true : false);
+                }
+            );
+        });
+    }
+
+    getUserBySession(cookieStr: string): Promise<IUser> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `SELECT users.id, users.uid, users.name
+                    FROM sessions
+                    JOIN users BY sessions.user = users.id
+                    WHERE sessions.cookie = ?
+                    LIMIT 1;`,
+                [cookieStr],
+                (err, res) => {
+                    if (err) {
+                        console.error(err);
+                        return reject('Server error');
+                    }
+                    return resolve(res);
                 }
             );
         });

@@ -12,7 +12,7 @@ var DbService = /** @class */ (function () {
     DbService.prototype.getUser = function (name, pas) {
         var _this = this;
         return new es6_promise_1.Promise(function (resolve, reject) {
-            _this.connection.query('SELECT id, uid, name, password FROM users WHERE name = ?;', [name], function (err, res) {
+            _this.connection.query("SELECT id, uid, name, password\n                    FROM users\n                    WHERE name = ?\n                    LIMIT 1;", [name], function (err, res) {
                 if (err) {
                     console.error(err);
                     return reject('Server error');
@@ -43,6 +43,18 @@ var DbService = /** @class */ (function () {
                     return reject('Server error');
                 }
                 return resolve(res.insertId > 0 ? true : false);
+            });
+        });
+    };
+    DbService.prototype.getUserBySession = function (cookieStr) {
+        var _this = this;
+        return new es6_promise_1.Promise(function (resolve, reject) {
+            _this.connection.query("SELECT users.id, users.uid, users.name\n                    FROM sessions\n                    JOIN users BY sessions.user = users.id\n                    WHERE sessions.cookie = ?\n                    LIMIT 1;", [cookieStr], function (err, res) {
+                if (err) {
+                    console.error(err);
+                    return reject('Server error');
+                }
+                return resolve(res);
             });
         });
     };

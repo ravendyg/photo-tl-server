@@ -1,34 +1,54 @@
 import * as express from 'express';
 import * as Express from 'express';
-import { IEnrichedRequest } from '../types';
-import {ISessionService} from '../services/SessionService';
+import { IDbService } from '../services/DbService';
+import { ISessionService } from '../services/SessionService';
 
 export function createSessionRouter(
-    getUser: Express.RequestHandler,
+    dbService: IDbService,
     sessionService: ISessionService,
 ) {
     const router = express.Router();
 
-    router.post('/', getUser, (_req: Express.Request, res: Express.Response) => {
-        const req: IEnrichedRequest = _req as any;
-        const {
-            metadata: {
-                user
-            },
-            body: {
-                rem
+    router.post('/', async (req: Express.Request, res: Express.Response) => {
+        try {
+            const { body } = req;
+            if (!body) {
+                return res.json({
+                    error: "Credentials missing",
+                    status: 400,
+                });
             }
-        } = req;
-        console.log(req.body)
-        sessionService.addExpirationCookie(res, user, rem)
-        .then(() => {
-            console.log('done')
-            res.json(user);
-        })
-        .catch(err => {
+
+            const { name, pas, rem, } = body;
+            if (!name || !pas) {
+                return res.json({
+                    error: "Credentials missing",
+                    status: 400,
+                });
+            }
+
+            const user = await dbService.getUser(name, pas);
+            if (user === null) {
+                return res.json({
+                    error: "Wrong name or password",
+                    status: 403,
+                });
+            }
+
+            await sessionService.addExpirationCookie(res, user, rem)
+            return res.json({
+                status: 200,
+            });
+        } catch (err) {
             console.error(err);
-            res.status(500).json({ error: 'Server error'} );
-        });
+            return res.json({
+                error: "Server error",
+                status: 500,
+            });
+
+        }
+
+
     });
 
     router.delete('/', (req, res) => {

@@ -24,11 +24,11 @@ const dbService = new DbService(config, cryptoService);
 const sessionService = new SessionService(Utils, dbService);
 
 const getUser = createGetUser(dbService, sessionService);
-const userRouter = createUserRouter(dbService);
-const sessionRouter = createSessionRouter(getUser, sessionService);
+const userRouter = createUserRouter(getUser, dbService);
+const sessionRouter = createSessionRouter(dbService, sessionService);
 
 app.use('/node/user', userRouter);
-app.use('/node/session', sessionRouter);
+app.use('/node/session', getUser, sessionRouter);
 
 
 // var fs = require('fs');
