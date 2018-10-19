@@ -6,6 +6,11 @@ export interface IUser {
     name: string,
 }
 
+export interface IUserDto {
+    uid: string,
+    name: string,
+}
+
 export interface IRequestMetadata {
     user: IUser,
 }

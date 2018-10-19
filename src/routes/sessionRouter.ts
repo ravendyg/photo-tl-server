@@ -11,26 +11,25 @@ export function createSessionRouter(
 
     router.post('/', async (req: Express.Request, res: Express.Response) => {
         try {
-            const { body } = req;
-            if (!body) {
+            const {
+                body: {
+                    login,
+                    pas,
+                    rem,
+                } = ({} as any),
+            } = req;
+
+            if (!login || !pas) {
                 return res.json({
                     error: "Credentials missing",
                     status: 400,
                 });
             }
 
-            const { name, pas, rem, } = body;
-            if (!name || !pas) {
-                return res.json({
-                    error: "Credentials missing",
-                    status: 400,
-                });
-            }
-
-            const user = await dbService.getUser(name, pas);
+            const user = await dbService.getUser(login, pas);
             if (user === null) {
                 return res.json({
-                    error: "Wrong name or password",
+                    error: "Wrong login or password",
                     status: 403,
                 });
             }
@@ -45,10 +44,7 @@ export function createSessionRouter(
                 error: "Server error",
                 status: 500,
             });
-
         }
-
-
     });
 
     router.delete('/', (req, res) => {

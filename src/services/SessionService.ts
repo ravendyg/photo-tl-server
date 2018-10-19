@@ -9,21 +9,17 @@ export interface ISessionService {
 }
 
 export class SessionService implements ISessionService {
-    constructor(private Utils: IUtils, private dbService: IDbService) {}
+    constructor(private utils: IUtils, private dbService: IDbService) {}
 
     addExpirationCookie(res: Express.Response, user: IUser, rem: boolean) {
-        const cookieStr = user.name + "|" + (this.Utils.getRandom() * 1e19).toFixed(19);;
+        const cookieStr = user.name + "|" + (this.utils.getRandom() * 1e19).toFixed(0);
         return this.dbService.createSession(cookieStr, user)
         .then(success => {
-            console.log(success, rem)
             if (success) {
                 res.cookie('uId', cookieStr, {
-                    maxAge: rem ? 60 * 60 * 24 * 10 : -1,
+                    maxAge: rem ? 60 * 60 * 24 * 10 : 60 * 60 * 30,
                 });
             }
-        })
-        .catch(err => {
-            console.error(err);
         });
     }
 };
