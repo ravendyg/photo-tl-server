@@ -1,3 +1,14 @@
-server project for internship
+Node.js version of the photo app.
 
-!not npm dependency exiftran!
+### Build
+```
+npm run build // build and exit
+```
+```
+npm run watch // start build in wwatch mode
+```
+
+### Start
+```
+npm start // run the server
+```

@@ -4,7 +4,8 @@
     "main": "gulpfile.js",
     "scripts": {
         "build": "gulp build",
-        "start": "gulp start"
+        "watch": "gulp start",
+        "start": "node build/index.js"
     },
     "author": "",
     "license": "ISC",
@@ -18,6 +19,7 @@
         "cookie-parser": "^1.4.3",
         "express": "^4.16.4",
         "gulp": "^3.9.1",
+        "gulp-sourcemaps": "^2.6.4",
         "gulp-typescript": "^5.0.0-alpha.3",
         "morgan": "^1.9.1",
         "mysql": "^2.16.0",
