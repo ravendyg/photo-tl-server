@@ -11,6 +11,7 @@ import { createSessionRouter } from './routes/sessionRouter';
 import { createGetUser } from './middleware/getUser';
 import { Utils } from './utils/utils';
 import { SessionService } from './services/SessionService';
+import { WebSocketService } from './services/WebSocketService';
 
 const app = express();
 app.use(logger('tiny'));
@@ -157,6 +158,7 @@ app.use('*', function (_, webRes) {
 // });
 
 const server = http.createServer(app);
+new WebSocketService(server, app);
 server.listen(app.get('port'), () => {
     console.log(`Server started on ${config.port}`);
 });
