@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
 import { ISessionService } from '../services/SessionService';
+import { mapUserToDto } from '../utils/mappers';
 
 export function createSessionRouter(
     dbService: IDbService,
@@ -37,9 +38,10 @@ export function createSessionRouter(
                 });
             }
 
-            await sessionService.addExpirationCookie(res, user, rem)
+            await sessionService.addExpirationCookie(res, user, rem);
             return res.json({
                 status: 200,
+                payload: mapUserToDto(user),
             });
         } catch (err) {
             console.error(err);
