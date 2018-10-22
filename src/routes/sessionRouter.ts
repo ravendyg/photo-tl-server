@@ -9,7 +9,10 @@ export function createSessionRouter(
 ) {
     const router = express.Router();
 
-    router.post('/', async (req: Express.Request, res: Express.Response) => {
+    router.post('/', async (
+        req: Express.Request,
+        res: Express.Response
+    ) => {
         try {
             const {
                 body: {

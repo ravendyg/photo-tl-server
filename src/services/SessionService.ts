@@ -17,7 +17,9 @@ export class SessionService implements ISessionService {
         .then(success => {
             if (success) {
                 res.cookie('uId', cookieStr, {
-                    maxAge: rem ? 60 * 60 * 24 * 10 : 60 * 60 * 30,
+                    maxAge: rem
+                        ? 1000 * 60 * 60 * 24 * 10
+                        : 1000 * 60 * 30,
                 });
             }
         });

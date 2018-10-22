@@ -24,7 +24,7 @@ const utils = new Utils(cryptoService);
 const dbService = new DbService(config, utils);
 const sessionService = new SessionService(utils, dbService);
 
-const getUser = createGetUser(dbService, sessionService);
+const getUser = createGetUser(dbService);
 const userRouter = createUserRouter(getUser, dbService, sessionService);
 const sessionRouter = createSessionRouter(dbService, sessionService);
 

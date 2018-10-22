@@ -115,7 +115,7 @@ export class DbService implements IDbService {
             this.connection.query(
                 `SELECT users.id, users.uid, users.name
                     FROM sessions
-                    JOIN users BY sessions.user = users.id
+                    JOIN users ON sessions.user = users.id
                     WHERE sessions.cookie = ?
                     LIMIT 1;`,
                 [cookieStr],
@@ -124,7 +124,7 @@ export class DbService implements IDbService {
                         console.error(err);
                         return reject('Server error');
                     }
-                    return resolve(res);
+                    return resolve(res[0]);
                 }
             );
         });
