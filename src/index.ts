@@ -8,6 +8,7 @@ import { DbService } from './services/DbService';
 import { CryptoService } from './services/CryptoService';
 import { createUserRouter } from './routes/userRouter';
 import { createSessionRouter } from './routes/sessionRouter';
+import { createPhotoRouter } from './routes/photoRouter';
 import { createGetUser } from './middleware/getUser';
 import { Utils } from './utils/utils';
 import { SessionService } from './services/SessionService';
@@ -28,9 +29,11 @@ const sessionService = new SessionService(utils, dbService);
 const getUser = createGetUser(dbService);
 const userRouter = createUserRouter(getUser, dbService, sessionService);
 const sessionRouter = createSessionRouter(dbService, sessionService);
+const photoRouter = createPhotoRouter(getUser, dbService);
 
 app.use('/node/user', userRouter);
 app.use('/node/session', sessionRouter);
+app.use('/node/photo', photoRouter);
 
 
 // var fs = require('fs');

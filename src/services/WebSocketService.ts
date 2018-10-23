@@ -19,7 +19,9 @@ export class WebSocketService implements IWebSocket {
         });
 
         // ws handler
-        this.ws.on('connection', console.log);
+        this.ws.on('connection', () => {
+
+        });
 
         // long poling handlers
         this.app.post(_path, (req, res) => {

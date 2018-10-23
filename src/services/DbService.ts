@@ -2,7 +2,7 @@ import { IConfig } from '../config';
 import * as mysql from 'mysql';
 import { Promise } from 'es6-promise';
 import { Connection } from 'mysql';
-import { IUser } from '../types';
+import { IPhoto, IUser } from '../types';
 import { IUtils } from '../utils/utils';
 
 export interface IDbService {
@@ -15,6 +15,8 @@ export interface IDbService {
     createSession(cookieStr: string, user: IUser): Promise<boolean>;
 
     getUserBySession(cookieStr: string): Promise<IUser>;
+
+    getPhotos(): Promise<IPhoto[]>;
 }
 
 export class DbService implements IDbService {
@@ -34,7 +36,8 @@ export class DbService implements IDbService {
             const hash = this.utils.getPasswordHash(uid, password);
             this.connection.query(
                 `INSERT INTO users (uid, name, password)
-                    VALUES (?, ?, ?);`,
+                VALUES (?, ?, ?)
+                ;`,
                 [uid, name, hash],
                 (err, res) => {
                     if (err && err.errno === 1062) {
@@ -57,9 +60,10 @@ export class DbService implements IDbService {
         return new Promise((resolve, reject) => {
             this.connection.query(
                 `SELECT id, uid, name, password
-                    FROM users
-                    WHERE name = ?
-                    LIMIT 1;`,
+                FROM users
+                WHERE name = ?
+                LIMIT 1
+                ;`,
                 [name],
                 (err, res: any[]) => {
                     if (err) {
@@ -114,10 +118,11 @@ export class DbService implements IDbService {
         return new Promise((resolve, reject) => {
             this.connection.query(
                 `SELECT users.id, users.uid, users.name
-                    FROM sessions
+                FROM sessions
                     JOIN users ON sessions.user = users.id
-                    WHERE sessions.cookie = ?
-                    LIMIT 1;`,
+                WHERE sessions.cookie = ?
+                LIMIT 1
+                ;`,
                 [cookieStr],
                 (err, res) => {
                     if (err) {
@@ -130,6 +135,53 @@ export class DbService implements IDbService {
         });
     }
 
+    getPhotos(): Promise<IPhoto[]> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `SELECT images.id as photoId, images.iid, images.changed,
+                    images.description, images.title, images.uploaded,
+                    users.id as userId, users.uid, users.name as userName
+                FROM images
+                    JOIN users
+                    ON images.uploaded_by = users.id
+                ;`,
+                [],
+                (err, res) => {
+                    if (err) {
+                        console.error(err);
+                        return reject('Server error');
+                    } else {
+                        return resolve(res.map((rawItem: any) => {
+                            const {
+                                photoId,
+                                iid,
+                                description,
+                                title,
+                                uploaded,
+                                changed,
+                                userId,
+                                uid,
+                                userName,
+                            } = rawItem;
 
+                            return {
+                                id: photoId,
+                                iid,
+                                description,
+                                title,
+                                uploadedBy: {
+                                    id: userId,
+                                    uid,
+                                    name: userName,
+                                },
+                                uploaded,
+                                changed,
+                            }
+                        }));
+                    }
+                }
+            );
+        });
+    }
 
 }

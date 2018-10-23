@@ -18,3 +18,22 @@ export interface IRequestMetadata {
 export interface IEnrichedRequest extends Express.Request {
     metadata: IRequestMetadata,
 }
+
+export interface IPhoto {
+    id: number;
+    iid: string;
+    description: string;
+    title: string;
+    uploadedBy: IUser;
+    uploaded: number;
+    changed: number;
+}
+
+export interface IPhotoDto {
+    iid: string;
+    description: string;
+    title: string;
+    uploadedBy: IUserDto;
+    uploaded: number;
+    changed: number;
+}
