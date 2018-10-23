@@ -5,6 +5,33 @@ import { Connection } from 'mysql';
 import { IPhoto, IUser } from '../types';
 import { IUtils } from '../utils/utils';
 
+interface IAccumulator<T> {
+    [id: number]: T;
+}
+
+interface IDbRating {
+    id: number;
+    value: number;
+    count: number;
+}
+
+interface IDbCommentCount {
+    id: number;
+    value: number;
+}
+
+interface IDbViewCount {
+    id: number;
+    value: number;
+}
+
+function reduceDbAccumulator<T extends {id: number}>(items: T[]): IAccumulator<T> {
+    return (items || []).reduce((acc: IAccumulator<T>, item: T) => {
+        acc[item.id] = item;
+        return acc;
+    }, {})
+}
+
 export interface IDbService {
     createUser(name: string, password: string): Promise<IUser | null>;
 
@@ -18,7 +45,7 @@ export interface IDbService {
 
     getUserBySession(cookieStr: string): Promise<IUser>;
 
-    getPhotos(): Promise<IPhoto[]>;
+    getPhotos(user: IUser): Promise<IPhoto[]>;
 }
 
 export class DbService implements IDbService {
@@ -153,17 +180,20 @@ export class DbService implements IDbService {
         });
     }
 
-    getPhotos(): Promise<IPhoto[]> {
+    private getPhotosWithoutRatingAndComments(user: IUser):Promise<IPhoto[]> {
         return new Promise((resolve, reject) => {
             this.connection.query(
-                `SELECT images.id as photoId, images.iid, images.changed,
+                `SELECT images.id as id, images.iid, images.changed,
                     images.description, images.title, images.uploaded,
-                    users.id as userId, users.uid, users.name as userName
+                    users.id as userId, users.uid, users.name as userName,
+                    ratings.value as userRating
                 FROM images
-                    JOIN users
+                JOIN users
                     ON images.uploaded_by = users.id
+                JOIN ratings
+                    ON images.id = ratings.image AND ratings.user = ?
                 ;`,
-                [],
+                [user.id],
                 (err, res) => {
                     if (err) {
                         console.error(err);
@@ -171,7 +201,7 @@ export class DbService implements IDbService {
                     } else {
                         return resolve(res.map((rawItem: any) => {
                             const {
-                                photoId,
+                                id,
                                 iid,
                                 description,
                                 title,
@@ -180,10 +210,10 @@ export class DbService implements IDbService {
                                 userId,
                                 uid,
                                 userName,
+                                userRating,
                             } = rawItem;
-
-                            return {
-                                id: photoId,
+                            const photo: IPhoto = {
+                                id,
                                 iid,
                                 description,
                                 title,
@@ -194,7 +224,14 @@ export class DbService implements IDbService {
                                 },
                                 uploaded,
                                 changed,
-                            }
+                                averageRating: 0,
+                                commentCount: 0,
+                                ratingCount: 0,
+                                userRating,
+                                views: 0,
+                            };
+
+                            return photo;
                         }));
                     }
                 }
@@ -202,4 +239,82 @@ export class DbService implements IDbService {
         });
     }
 
+    private getAverageRatings(ids: number[]): Promise<IAccumulator<IDbRating>> {
+        return new Promise((resolve) => {
+            this.connection.query(
+                `SELECT AVG(value) AS rating, COUNT(*) AS count, image as id
+                FROM ratings
+                WHERE image IN (?)
+                GROUP BY image
+                ;`,
+                [ids],
+                (err, res) => {
+                    if (err) { console.error(err); }
+                    resolve(reduceDbAccumulator<IDbRating>(res));
+                });
+        });
+    }
+
+    private getCommentCounts(ids: number[]): Promise<IAccumulator<IDbCommentCount>> {
+        return new Promise((resolve) => {
+            this.connection.query(
+                `SELECT COUNT(*) as value, image as id
+                FROM comments
+                WHERE image IN (?)
+                GROUP BY image
+                ;`,
+                [ids],
+                (err, res) => {
+                    if (err) { console.error(err); }
+                    resolve(reduceDbAccumulator<IDbCommentCount>(res));
+                });
+        });
+    }
+
+    private getViewCounts(ids: number[]): Promise<IAccumulator<IDbViewCount>> {
+        return new Promise((resolve) => {
+            this.connection.query(
+                `SELECT COUNT(*) as value, image as id
+                FROM views
+                WHERE image IN (?)
+                GROUP BY image
+                ;`,
+                [ids],
+                (err, res) => {
+                    if (err) { console.error(err); }
+                    resolve(reduceDbAccumulator<IDbViewCount>(res));
+                });
+        });
+    }
+
+    getPhotos = (user: IUser): Promise<IPhoto[]> => {
+        return this.getPhotosWithoutRatingAndComments(user)
+            .then(photos => {
+                const ids = photos.map(photo => photo.id);
+                return Promise.resolve([
+                    this.getAverageRatings(ids),
+                    this.getCommentCounts(ids),
+                    this.getViewCounts(ids),
+                ]).then(res => {
+                    const [
+                        ratings,
+                        comments,
+                        views,
+                    ] = res as any as [
+                        IAccumulator<IDbRating>,
+                        IAccumulator<IDbCommentCount>,
+                        IAccumulator<IDbViewCount>
+                    ];
+                    return photos.map(photo => {
+                        return {
+                            ...photo,
+                            averageRating: (ratings[photo.id] || {value: 0}).value,
+                            ratingCount: (ratings[photo.id] || {count: 0}).count,
+                            commentCount: (comments[photo.id] || {value: 0}).value,
+                            views: (views[photo.id] || {value: 0}).value,
+                        };
+                    });
+                });
+            });
+    }
 }

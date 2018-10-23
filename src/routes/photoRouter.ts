@@ -1,7 +1,8 @@
 import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
-import {mapPhotoToDto} from '../utils/mappers';
+import { mapPhotoToDto } from '../utils/mappers';
+import { IEnrichedRequest } from '../types';
 
 export function createPhotoRouter(
     getUser: Express.RequestHandler,
@@ -10,8 +11,15 @@ export function createPhotoRouter(
     const router = express.Router();
 
     router.get('/', getUser, async (_req: Express.Request, res: Express.Response) => {
+        const req: IEnrichedRequest = _req as any;
+        const {
+            metadata: {
+                user
+            },
+        } = req;
+
         try {
-            const photos = await dbService.getPhotos();
+            const photos = await dbService.getPhotos(user);
             const photosDto = photos.map(mapPhotoToDto);
 
             return res.json({

@@ -25,6 +25,11 @@ export function mapPhotoToDto(photo: IPhoto): IPhotoDto {
         title,
         uploaded,
         uploadedBy,
+        averageRating,
+        commentCount,
+        ratingCount,
+        userRating,
+        views,
     } = photo;
 
     return {
@@ -34,5 +39,10 @@ export function mapPhotoToDto(photo: IPhoto): IPhotoDto {
         uploaded,
         uploadedBy: mapUserToDto(uploadedBy),
         changed,
+        averageRating,
+        commentCount,
+        ratingCount,
+        userRating,
+        views,
     };
 }

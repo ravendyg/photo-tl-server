@@ -19,6 +19,21 @@ export interface IEnrichedRequest extends Express.Request {
     metadata: IRequestMetadata,
 }
 
+export interface IComment {
+    id: number;
+    cid: string;
+    iid: string;
+    uid: string;
+    date: number;
+    text: string;
+}
+
+export interface ICommentDto {
+    cid: string;
+    date: number;
+    text: string;
+}
+
 export interface IPhoto {
     id: number;
     iid: string;
@@ -27,6 +42,11 @@ export interface IPhoto {
     uploadedBy: IUser;
     uploaded: number;
     changed: number;
+    commentCount: number;
+    averageRating: number;
+    ratingCount: number
+    userRating: number;
+    views: number;
 }
 
 export interface IPhotoDto {
@@ -36,4 +56,9 @@ export interface IPhotoDto {
     uploadedBy: IUserDto;
     uploaded: number;
     changed: number;
+    commentCount: number;
+    averageRating: number;
+    ratingCount: number
+    userRating: number;
+    views: number;
 }
