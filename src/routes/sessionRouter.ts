@@ -52,8 +52,19 @@ export function createSessionRouter(
         }
     });
 
-    router.delete('/', (req, res) => {
-
+    router.delete('/', async (req, res) => {
+        try {
+            await sessionService.removeExpirationCookie(req, res)
+            return res.json({
+                status: 200
+            });
+        } catch (err) {
+            console.error(err);
+            return res.json({
+                error: "Server error",
+                status: 500,
+            });
+        }
     });
 
     return router;

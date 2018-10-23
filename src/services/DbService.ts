@@ -14,6 +14,8 @@ export interface IDbService {
 
     createSession(cookieStr: string, user: IUser): Promise<boolean>;
 
+    deleteSession(cookieStr: string): Promise<void>;
+
     getUserBySession(cookieStr: string): Promise<IUser>;
 
     getPhotos(): Promise<IPhoto[]>;
@@ -111,6 +113,22 @@ export class DbService implements IDbService {
                     return resolve(res.insertId > 0 ? true : false);
                 }
             );
+        });
+    }
+
+    deleteSession(cookieStr: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                'DELETE FROM sessions WHERE cookie=?;',
+                [cookieStr],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return reject('Server error');
+                    }
+                    return resolve();
+                }
+            )
         });
     }
 

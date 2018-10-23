@@ -4,8 +4,22 @@ import { IUser } from '../types';
 import { IUtils } from '../utils/utils';
 import { IDbService } from './DbService';
 
+function getCookie(cookies: string, name: string): string | null {
+    const pairs = cookies.split(';')
+        .map(cookie => cookie.trim())
+        .map(cookie => cookie.split('='));
+    for (let [key, value] of pairs) {
+        if (key === name) {
+            return decodeURI(value);
+        }
+    }
+    return null;
+}
+
 export interface ISessionService {
     addExpirationCookie: (res: Express.Response, user: IUser, rem: boolean) => Promise<void>;
+
+    removeExpirationCookie(req: Express.Request, res: Express.Response): Promise<void>;
 }
 
 export class SessionService implements ISessionService {
@@ -23,5 +37,15 @@ export class SessionService implements ISessionService {
                 });
             }
         });
+    }
+
+    removeExpirationCookie(req: Express.Request, res: Express.Response) {
+        const cookie = getCookie(req.header('cookie') || '', 'uId');
+        res.cookie('uId', '', {
+            maxAge: -1,
+        });
+        return cookie !== null
+            ? this.dbService.deleteSession(cookie)
+            : Promise.resolve();
     }
 };
