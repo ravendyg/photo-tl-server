@@ -190,7 +190,7 @@ export class DbService implements IDbService {
                 FROM images
                 JOIN users
                     ON images.uploaded_by = users.id
-                JOIN ratings
+                LEFT JOIN ratings
                     ON images.id = ratings.image AND ratings.user = ?
                 ;`,
                 [user.id],
