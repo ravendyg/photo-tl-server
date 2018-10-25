@@ -240,6 +240,9 @@ export class DbService implements IDbService {
     }
 
     private getAverageRatings(ids: number[]): Promise<IAccumulator<IDbRating>> {
+        if (ids.length === 0) {
+            return Promise.resolve([]);
+        }
         return new Promise((resolve) => {
             this.connection.query(
                 `SELECT AVG(value) AS rating, COUNT(*) AS count, image as id
@@ -256,6 +259,9 @@ export class DbService implements IDbService {
     }
 
     private getCommentCounts(ids: number[]): Promise<IAccumulator<IDbCommentCount>> {
+        if (ids.length === 0) {
+            return Promise.resolve([]);
+        }
         return new Promise((resolve) => {
             this.connection.query(
                 `SELECT COUNT(*) as value, image as id
@@ -272,6 +278,9 @@ export class DbService implements IDbService {
     }
 
     private getViewCounts(ids: number[]): Promise<IAccumulator<IDbViewCount>> {
+        if (ids.length === 0) {
+            return Promise.resolve([]);
+        }
         return new Promise((resolve) => {
             this.connection.query(
                 `SELECT COUNT(*) as value, image as id

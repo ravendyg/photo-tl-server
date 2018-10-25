@@ -29,7 +29,7 @@ const sessionService = new SessionService(utils, dbService);
 const getUser = createGetUser(dbService);
 const userRouter = createUserRouter(getUser, dbService, sessionService);
 const sessionRouter = createSessionRouter(dbService, sessionService);
-const photoRouter = createPhotoRouter(getUser, dbService);
+const photoRouter = createPhotoRouter(getUser, dbService, utils, config);
 
 app.use('*', (req: Express.Request, _, next) => {
     req.metadata = {};

@@ -23,7 +23,7 @@
       "rootDir": "."
     },
     "include": [
-      "src", "src/config.ts"
+      "src"
     ],
     "exclude": [
       "node_modules",
