@@ -1,5 +1,3 @@
-import * as Express from 'express';
-
 export interface IUser {
     id: number,
     uid: string,
@@ -12,11 +10,15 @@ export interface IUserDto {
 }
 
 export interface IRequestMetadata {
-    user: IUser,
+    user?: IUser,
 }
 
-export interface IEnrichedRequest extends Express.Request {
-    metadata: IRequestMetadata,
+declare global {
+    namespace Express {
+        interface Request {
+            metadata: IRequestMetadata,
+        }
+    }
 }
 
 export interface IComment {

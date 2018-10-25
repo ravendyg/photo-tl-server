@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
 import { mapPhotoToDto } from '../utils/mappers';
-import { IEnrichedRequest } from '../types';
 
 export function createPhotoRouter(
     getUser: Express.RequestHandler,
@@ -10,13 +9,18 @@ export function createPhotoRouter(
 ) {
     const router = express.Router();
 
-    router.get('/', getUser, async (_req: Express.Request, res: Express.Response) => {
-        const req: IEnrichedRequest = _req as any;
+    router.get('/', getUser, async (req: Express.Request, res: Express.Response) => {
         const {
             metadata: {
                 user
             },
         } = req;
+        if (!user) {
+            return res.json({
+                error: 'Unauthorized',
+                status: 403,
+            });
+        }
 
         try {
             const photos = await dbService.getPhotos(user);

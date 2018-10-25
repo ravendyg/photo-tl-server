@@ -31,6 +31,10 @@ const userRouter = createUserRouter(getUser, dbService, sessionService);
 const sessionRouter = createSessionRouter(dbService, sessionService);
 const photoRouter = createPhotoRouter(getUser, dbService);
 
+app.use('*', (req: Express.Request, _, next) => {
+    req.metadata = {};
+    next();
+});
 app.use('/node/user', userRouter);
 app.use('/node/session', sessionRouter);
 app.use('/node/photo', photoRouter);

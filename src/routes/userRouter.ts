@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
-import { IEnrichedRequest, IUserDto } from '../types';
+import { IUserDto } from '../types';
 import { ISessionService } from '../services/SessionService';
 
 export function createUserRouter(
@@ -11,23 +11,28 @@ export function createUserRouter(
 ) {
     const router = express.Router();
 
-    router.get('/', getUser, (_req: Express.Request, res: Express.Response) => {
-        const req: IEnrichedRequest = _req as any;
+    router.get('/', getUser, (req: Express.Request, res: Express.Response) => {
         const {
             metadata: {
                 user
             },
         } = req;
+        if (!user) {
+            return res.json({
+                error: 'Unauthorized',
+                status: 403,
+            });
+        }
 
         const userDto: IUserDto = user;
-        res.json({
+        return res.json({
             payload: userDto,
             status: 200,
             error: '',
         });
     });
 
-    router.post('/', async (req, res) => {
+    router.post('/', async (req: Express.Request, res: Express.Response) => {
         try {
             const {
                 body: {

@@ -1,16 +1,14 @@
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
-import { IEnrichedRequest } from '../types';
 
 export function createGetUser(dbService: IDbService) {
     const getUser: Express.RequestHandler =
     async (
-        _req: Express.Request,
+        req: Express.Request,
         res: Express.Response,
         next: Express.NextFunction,
     ) => {
         try {
-            let req: IEnrichedRequest = _req as any;
             const { uId } = req.cookies;
 
             if (!Boolean(uId)) {
