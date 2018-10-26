@@ -36,9 +36,18 @@ export interface ICommentDto {
     text: string;
 }
 
+export interface IPhotoRequest {
+    iid: string;
+    extension: string;
+    description: string;
+    title: string;
+    uploadedBy: IUser;
+}
+
 export interface IPhoto {
     id: number;
     iid: string;
+    extension: string;
     description: string;
     title: string;
     uploadedBy: IUser;
@@ -53,6 +62,7 @@ export interface IPhoto {
 
 export interface IPhotoDto {
     iid: string;
+    extension: string;
     description: string;
     title: string;
     uploadedBy: IUserDto;

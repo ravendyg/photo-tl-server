@@ -22,6 +22,7 @@ export function mapPhotoToDto(photo: IPhoto): IPhotoDto {
         iid,
         changed,
         description,
+        extension,
         title,
         uploaded,
         uploadedBy,
@@ -35,6 +36,7 @@ export function mapPhotoToDto(photo: IPhoto): IPhotoDto {
     return {
         iid,
         description,
+        extension,
         title,
         uploaded,
         uploadedBy: mapUserToDto(uploadedBy),

@@ -2,7 +2,7 @@ import { IConfig } from '../config';
 import * as mysql from 'mysql';
 import { Promise } from 'es6-promise';
 import { Connection } from 'mysql';
-import { IPhoto, IUser } from '../types';
+import { IPhoto, IUser, IPhotoRequest } from '../types';
 import { IUtils } from '../utils/utils';
 
 interface IAccumulator<T> {
@@ -45,6 +45,8 @@ export interface IDbService {
 
     getUserBySession(cookieStr: string): Promise<IUser>;
 
+    createPhoto(photoRequest: IPhotoRequest): Promise<void>;
+
     getPhotos(user: IUser): Promise<IPhoto[]>;
 }
 
@@ -64,7 +66,8 @@ export class DbService implements IDbService {
             const uid = this.utils.getUid();
             const hash = this.utils.getPasswordHash(uid, password);
             this.connection.query(
-                `INSERT INTO users (uid, name, password)
+                `INSERT INTO users
+                    (uid, name, password)
                 VALUES (?, ?, ?)
                 ;`,
                 [uid, name, hash],
@@ -78,7 +81,7 @@ export class DbService implements IDbService {
                             uid,
                         });
                     } else {
-                        return reject('Server error');
+                        return reject(err);
                     }
                 }
             );
@@ -96,8 +99,7 @@ export class DbService implements IDbService {
                 [name],
                 (err, res: any[]) => {
                     if (err) {
-                        console.error(err);
-                        return reject('Server error');
+                        return reject(err);
                     }
                     if (res.length === 0) {
                         return resolve(null);
@@ -134,8 +136,7 @@ export class DbService implements IDbService {
                 [cookieStr, user.id],
                 (err, res) => {
                     if (err) {
-                        console.error(err);
-                        return reject('Server error');
+                        return reject(err);
                     }
                     return resolve(res.insertId > 0 ? true : false);
                 }
@@ -150,8 +151,7 @@ export class DbService implements IDbService {
                 [cookieStr],
                 (err) => {
                     if (err) {
-                        console.error(err);
-                        return reject('Server error');
+                        return reject(err);
                     }
                     return resolve();
                 }
@@ -171,8 +171,7 @@ export class DbService implements IDbService {
                 [cookieStr],
                 (err, res) => {
                     if (err) {
-                        console.error(err);
-                        return reject('Server error');
+                        return reject(err);
                     }
                     return resolve(res[0]);
                 }
@@ -180,10 +179,66 @@ export class DbService implements IDbService {
         });
     }
 
+    createPhoto(photoRequest: IPhotoRequest): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const {
+                description,
+                extension,
+                iid,
+                title,
+                uploadedBy,
+            } = photoRequest;
+            this.connection.query(
+                `INSERT INTO images
+                    (iid, ext, description, title, uploaded_by)
+                VALUES (?, ?, ?, ?, ?);`,
+                [iid, extension, description, title, uploadedBy.id],
+                (err, _) => {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve();
+                    }
+                }
+            )
+        });
+    }
+
+    getPhotos(user: IUser): Promise<IPhoto[]> {
+        return this.getPhotosWithoutRatingAndComments(user)
+            .then(photos => {
+                const ids = photos.map(photo => photo.id);
+                return Promise.resolve([
+                    this.getAverageRatings(ids),
+                    this.getCommentCounts(ids),
+                    this.getViewCounts(ids),
+                ]).then(res => {
+                    const [
+                        ratings,
+                        comments,
+                        views,
+                    ] = res as any as [
+                        IAccumulator<IDbRating>,
+                        IAccumulator<IDbCommentCount>,
+                        IAccumulator<IDbViewCount>
+                    ];
+                    return photos.map(photo => {
+                        return {
+                            ...photo,
+                            averageRating: (ratings[photo.id] || {value: 0}).value,
+                            ratingCount: (ratings[photo.id] || {count: 0}).count,
+                            commentCount: (comments[photo.id] || {value: 0}).value,
+                            views: (views[photo.id] || {value: 0}).value,
+                        };
+                    });
+                });
+            });
+    }
+
     private getPhotosWithoutRatingAndComments(user: IUser):Promise<IPhoto[]> {
         return new Promise((resolve, reject) => {
             this.connection.query(
-                `SELECT images.id as id, images.iid, images.changed,
+                `SELECT images.id as id, images.iid, images.changed, images.ext,
                     images.description, images.title, images.uploaded,
                     users.id as userId, users.uid, users.name as userName,
                     ratings.value as userRating
@@ -196,14 +251,14 @@ export class DbService implements IDbService {
                 [user.id],
                 (err, res) => {
                     if (err) {
-                        console.error(err);
-                        return reject('Server error');
+                        return reject(err);
                     } else {
                         return resolve(res.map((rawItem: any) => {
                             const {
                                 id,
                                 iid,
                                 description,
+                                ext,
                                 title,
                                 uploaded,
                                 changed,
@@ -216,6 +271,7 @@ export class DbService implements IDbService {
                                 id,
                                 iid,
                                 description,
+                                extension: ext,
                                 title,
                                 uploadedBy: {
                                     id: userId,
@@ -294,36 +350,5 @@ export class DbService implements IDbService {
                     resolve(reduceDbAccumulator<IDbViewCount>(res));
                 });
         });
-    }
-
-    getPhotos = (user: IUser): Promise<IPhoto[]> => {
-        return this.getPhotosWithoutRatingAndComments(user)
-            .then(photos => {
-                const ids = photos.map(photo => photo.id);
-                return Promise.resolve([
-                    this.getAverageRatings(ids),
-                    this.getCommentCounts(ids),
-                    this.getViewCounts(ids),
-                ]).then(res => {
-                    const [
-                        ratings,
-                        comments,
-                        views,
-                    ] = res as any as [
-                        IAccumulator<IDbRating>,
-                        IAccumulator<IDbCommentCount>,
-                        IAccumulator<IDbViewCount>
-                    ];
-                    return photos.map(photo => {
-                        return {
-                            ...photo,
-                            averageRating: (ratings[photo.id] || {value: 0}).value,
-                            ratingCount: (ratings[photo.id] || {count: 0}).count,
-                            commentCount: (comments[photo.id] || {value: 0}).value,
-                            views: (views[photo.id] || {value: 0}).value,
-                        };
-                    });
-                });
-            });
     }
 }
