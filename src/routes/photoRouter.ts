@@ -2,10 +2,10 @@ import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
 import { mapPhotoToDto } from '../utils/mappers';
-import {IUtils} from '../utils/utils';
-import {IConfig} from '../config';
-import {IFileService} from '../services/FileService';
-import {IPhotoRequest} from '../types';
+import { IUtils } from '../utils/utils';
+import { IConfig } from '../config';
+import { IFileService } from '../services/FileService';
+import { IPhotoRequest } from '../types';
 
 export function createPhotoRouter(
     getUser: Express.RequestHandler,
@@ -81,33 +81,33 @@ export function createPhotoRouter(
         const iid = utils.getUid();
         const fileName = `${iid}.${ext}`;
         fileService.saveImage(req, fileName)
-        .then(() => {
-            const description = req.header('description') || '';
-            const title = req.header('title') || '';
-            const photoRequest: IPhotoRequest = {
-                description,
-                extension: ext,
-                iid,
-                title,
-                uploadedBy: user,
-            };
-            return dbService.createPhoto(photoRequest);
-        })
-        .then(() => {
-            res.json({
-                payload: '',
-                status: 200,
-                error: '',
+            .then(() => {
+                const description = req.header('description') || '';
+                const title = req.header('title') || '';
+                const photoRequest: IPhotoRequest = {
+                    description,
+                    extension: ext,
+                    iid,
+                    title,
+                    uploadedBy: user,
+                };
+                return dbService.createPhoto(photoRequest);
+            })
+            .then(() => {
+                res.json({
+                    payload: '',
+                    status: 200,
+                    error: '',
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.json({
+                    payload: '',
+                    status: 500,
+                    error: 'Server error',
+                });
             });
-        })
-        .catch(err => {
-            console.error(err);
-            res.json({
-                payload: '',
-                status: 500,
-                error: 'Server error',
-            });
-        });
     });
 
     return router;

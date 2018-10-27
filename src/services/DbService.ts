@@ -25,7 +25,7 @@ interface IDbViewCount {
     value: number;
 }
 
-function reduceDbAccumulator<T extends {id: number}>(items: T[]): IAccumulator<T> {
+function reduceDbAccumulator<T extends { id: number }>(items: T[]): IAccumulator<T> {
     return (items || []).reduce((acc: IAccumulator<T>, item: T) => {
         acc[item.id] = item;
         return acc;
@@ -53,7 +53,7 @@ export interface IDbService {
 export class DbService implements IDbService {
     private connection: Connection;
 
-    constructor(
+    constructor (
         private config: IConfig,
         private utils: IUtils,
     ) {
@@ -225,17 +225,17 @@ export class DbService implements IDbService {
                     return photos.map(photo => {
                         return {
                             ...photo,
-                            averageRating: (ratings[photo.id] || {value: 0}).value,
-                            ratingCount: (ratings[photo.id] || {count: 0}).count,
-                            commentCount: (comments[photo.id] || {value: 0}).value,
-                            views: (views[photo.id] || {value: 0}).value,
+                            averageRating: (ratings[photo.id] || { value: 0 }).value,
+                            ratingCount: (ratings[photo.id] || { count: 0 }).count,
+                            commentCount: (comments[photo.id] || { value: 0 }).value,
+                            views: (views[photo.id] || { value: 0 }).value,
                         };
                     });
                 });
             });
     }
 
-    private getPhotosWithoutRatingAndComments(user: IUser):Promise<IPhoto[]> {
+    private getPhotosWithoutRatingAndComments(user: IUser): Promise<IPhoto[]> {
         return new Promise((resolve, reject) => {
             this.connection.query(
                 `SELECT images.id as id, images.iid, images.changed, images.ext,
