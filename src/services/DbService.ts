@@ -45,7 +45,7 @@ export interface IDbService {
 
     getUserBySession(cookieStr: string): Promise<IUser>;
 
-    createPhoto(photoRequest: IPhotoRequest): Promise<void>;
+    createPhoto(photoRequest: IPhotoRequest): Promise<IPhoto>;
 
     getPhotos(user: IUser): Promise<IPhoto[]>;
 }
@@ -179,7 +179,7 @@ export class DbService implements IDbService {
         });
     }
 
-    createPhoto(photoRequest: IPhotoRequest): Promise<void> {
+    createPhoto(photoRequest: IPhotoRequest): Promise<IPhoto> {
         return new Promise((resolve, reject) => {
             const {
                 description,
@@ -193,11 +193,25 @@ export class DbService implements IDbService {
                     (iid, ext, description, title, uploaded_by)
                 VALUES (?, ?, ?, ?, ?);`,
                 [iid, extension, description, title, uploadedBy.id],
-                (err, _) => {
+                (err, res) => {
                     if (err) {
                         return reject(err);
                     } else {
-                        return resolve();
+                        return resolve({
+                            averageRating: 0,
+                            changed: 0,
+                            commentCount: 0,
+                            description,
+                            extension,
+                            id: res.insertId,
+                            iid,
+                            ratingCount: 0,
+                            title,
+                            uploaded: 0,
+                            uploadedBy,
+                            userRating: 0,
+                            views: 0,
+                        });
                     }
                 }
             )

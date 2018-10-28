@@ -6,6 +6,7 @@ import { IUtils } from '../utils/utils';
 import { IConfig } from '../config';
 import { IFileService } from '../services/FileService';
 import { IPhotoRequest } from '../types';
+import { IDataBus } from '../services/DataBus';
 
 export function createPhotoRouter(
     getUser: Express.RequestHandler,
@@ -13,6 +14,7 @@ export function createPhotoRouter(
     utils: IUtils,
     config: IConfig,
     fileService: IFileService,
+    dataBus: IDataBus,
 ) {
     const router = express.Router();
 
@@ -54,10 +56,11 @@ export function createPhotoRouter(
             },
         } = req;
         if (!user) {
-            return res.json({
+            res.json({
                 error: 'Unauthorized',
                 status: 403,
             });
+            return;
         }
         const type = req.header('Content-Type');
         let ext = 'png';
@@ -93,7 +96,9 @@ export function createPhotoRouter(
                 };
                 return dbService.createPhoto(photoRequest);
             })
-            .then(() => {
+            .then(photo => {
+                const photoDto = mapPhotoToDto(photo);
+                dataBus.broadcastNewPhoto(photoDto);
                 res.json({
                     payload: '',
                     status: 200,

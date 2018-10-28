@@ -17,6 +17,7 @@ import { Utils } from './utils/utils';
 import { SessionService } from './services/SessionService';
 import { WebSocketService } from './services/WebSocketService';
 import { FileService } from './services/FileService';
+import { DataBus } from './services/DataBus';
 
 const app = express();
 app.use(logger('tiny'));
@@ -25,11 +26,14 @@ app.set('port', config.port);
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+const server = http.createServer(app);
+const webSocketService = new WebSocketService(server, app);
 const cryptoService = new CryptoService();
 const utils = new Utils(cryptoService);
 const dbService = new DbService(config, utils);
 const sessionService = new SessionService(utils, dbService);
 const fileService = new FileService(config, fs, path, pump);
+const dataBus = new DataBus(webSocketService);
 
 const getUser = createGetUser(dbService);
 const userRouter = createUserRouter(getUser, dbService, sessionService);
@@ -40,6 +44,7 @@ const photoRouter = createPhotoRouter(
     utils,
     config,
     fileService,
+    dataBus,
 );
 
 app.use('*', (req: Express.Request, _, next) => {
@@ -175,8 +180,6 @@ app.use('*', function (_, webRes) {
 // 	process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 // });
 
-const server = http.createServer(app);
-new WebSocketService(server, app);
 server.listen(app.get('port'), () => {
     console.log(`Server started on ${config.port}`);
 });
