@@ -1,3 +1,12 @@
+import * as path from 'path';
+import * as fs from 'fs';
+
+const configJson = JSON.parse(
+    fs.readFileSync(
+        path.join('src', 'config.json'),
+        {encoding: 'utf8'},
+    )
+);
 export interface IDbConfig {
     host: string,
     user: string,
@@ -8,6 +17,7 @@ export interface IDbConfig {
 export interface IConfig {
     port: number,
     dbConfig: IDbConfig,
+    imageDirChunks: string[],
 }
 
 export const config: IConfig = {
@@ -18,4 +28,5 @@ export const config: IConfig = {
         password: 'tully',
         user: 'tully',
     },
+    imageDirChunks: configJson.filePathChunks,
 };
