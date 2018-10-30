@@ -74,3 +74,9 @@ export interface IPhotoDto {
     userRating: number;
     views: number;
 }
+
+export interface IRating {
+    uid: string;
+    iid: string;
+    value: number;
+}
