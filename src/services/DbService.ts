@@ -2,7 +2,12 @@ import { IConfig } from '../config';
 import * as mysql from 'mysql';
 import { Promise } from 'es6-promise';
 import { Connection } from 'mysql';
-import { IPhoto, IUser, IPhotoRequest } from '../types';
+import {
+    IPhoto,
+    IUser,
+    IPhotoRequest,
+    IRating,
+} from '../types';
 import { IUtils } from '../utils/utils';
 
 interface IAccumulator<T> {
@@ -48,6 +53,8 @@ export interface IDbService {
     createPhoto(photoRequest: IPhotoRequest): Promise<IPhoto>;
 
     getPhotos(user: IUser): Promise<IPhoto[]>;
+
+    updateRating(user: IUser, iid: string, rating: number): Promise<IRating>;
 }
 
 export class DbService implements IDbService {
@@ -222,7 +229,7 @@ export class DbService implements IDbService {
         return this.getPhotosWithoutRatingAndComments(user)
             .then(photos => {
                 const ids = photos.map(photo => photo.id);
-                return Promise.resolve([
+                return Promise.all([
                     this.getAverageRatings(ids),
                     this.getCommentCounts(ids),
                     this.getViewCounts(ids),
@@ -247,6 +254,52 @@ export class DbService implements IDbService {
                     });
                 });
             });
+    }
+
+    updateRating(user: IUser, iid: string, value: number): Promise<IRating> {
+        return this.getPhoto(iid).then(({id: imageId}) =>
+            new Promise((resolve, reject) => {
+                this.connection.query(
+                    `INSERT INTO ratings
+                        (user, image, value)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE value=?
+                    ;`,
+                    [user.id, imageId, value, value],
+                    (err, _) => {
+                        if (err) {
+                            return reject(err);
+                        } else {
+                            return resolve({
+                                uid: user.uid,
+                                iid,
+                                value,
+                            });
+                        }
+                    }
+                );
+            })
+        );
+    }
+
+    private getPhoto(iid: string): Promise<IPhoto> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `SELECT * from images
+                WHERE iid=?
+                ;`,
+                [iid],
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else if (res.length === 0) {
+                        return reject('not found');
+                    } else {
+                        resolve(res[0]);
+                    }
+                }
+            );
+        });
     }
 
     private getPhotosWithoutRatingAndComments(user: IUser): Promise<IPhoto[]> {
@@ -279,7 +332,7 @@ export class DbService implements IDbService {
                                 userId,
                                 uid,
                                 userName,
-                                userRating,
+                                userRating = 0,
                             } = rawItem;
                             const photo: IPhoto = {
                                 id,
@@ -315,7 +368,7 @@ export class DbService implements IDbService {
         }
         return new Promise((resolve) => {
             this.connection.query(
-                `SELECT AVG(value) AS rating, COUNT(*) AS count, image as id
+                `SELECT AVG(value) AS value, COUNT(*) AS count, image as id
                 FROM ratings
                 WHERE image IN (?)
                 GROUP BY image

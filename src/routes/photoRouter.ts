@@ -115,5 +115,48 @@ export function createPhotoRouter(
             });
     });
 
+    router.post('/rating', getUser, (req: Express.Request, res: Express.Response) => {
+        const {
+            body = {},
+            metadata: {
+                user
+            },
+        } = req;
+        if (!user) {
+            res.json({
+                error: 'Unauthorized',
+                status: 403,
+            });
+            return;
+        }
+        const {iid, rating} = body;
+        if (!iid || !rating) {
+            res.json({
+                error: 'Missing data',
+                status: 400,
+            });
+            return;
+        }
+
+
+        dbService.updateRating(user, iid, rating)
+            .then(rating => {
+                dataBus.broadcastRating(rating);
+                res.json({
+                    payload: '',
+                    status: 200,
+                    error: '',
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                res.json({
+                    payload: '',
+                    status: 500,
+                    error: 'Server error',
+                });
+            });
+    });
+
     return router;
 }
