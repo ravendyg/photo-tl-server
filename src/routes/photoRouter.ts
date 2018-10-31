@@ -139,7 +139,7 @@ export function createPhotoRouter(
         }
 
 
-        dbService.updateRating(user, iid, rating)
+        dbService.createRating(user, iid, rating)
             .then(rating => {
                 dataBus.broadcastRating(rating);
                 res.json({
