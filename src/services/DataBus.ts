@@ -16,18 +16,16 @@ export class DataBus implements IDataBus {
     constructor (private webSocketService: IWebSocketService) { }
 
     broadcastNewPhoto(photo: IPhotoDto) {
-        const message = JSON.stringify({
+        this.webSocketService.broadcast({
             action: EWSAction.NEW_PHOTO,
             payload: photo,
         });
-        this.webSocketService.broadcast(message);
     }
 
     broadcastRating(rating: IRating) {
-        const message = JSON.stringify({
+        this.webSocketService.broadcast({
             action: EWSAction.RATING_UPDATE,
             payload: rating,
         });
-        this.webSocketService.broadcast(message);
     }
 }

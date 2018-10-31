@@ -5,13 +5,14 @@
 
 import { Server } from 'http'
 import { Express } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 import * as Ws from 'ws';
 import * as WebSocket from 'ws';
 
-export const _path = '/node/ws';
+export const _path = '/node';
 
 export interface IWebSocketService {
-    broadcast: (message: string | ArrayBuffer) => void;
+    broadcast: (message: any) => void;
 
     send: (id: string, message: string | ArrayBuffer) => void;
 }
@@ -24,12 +25,12 @@ export class WebSocketService implements IWebSocketService {
     // TODO: think about making a distinction between connections
     // could not make TS compile Set<Ws>
     private wsConnections: { [key: string]: Ws } = {};
-    private lpConnections: Express.Response[] = [];
+    private lpConnections: Response[] = [];
 
     constructor (private server: Server, private app: Express) {
         this.wss = new Ws.Server({
             server: this.server,
-            path: _path,
+            path: `${_path}/ws`,
         });
 
         // for some reasons => is ignored here
@@ -42,17 +43,22 @@ export class WebSocketService implements IWebSocketService {
             ws.on('message', this.onMessage);
             ws.on('close', (code: number, reason: string) =>
                 this.onWsClose(key, code, reason));
+            // check that connection works
+            ws.ping();
         });
 
         // long poling handlers
-        this.app.post(_path, (req, res) => {
+        this.app.post(`${_path}/lp`, (req: Request, res: Response) => {
             // TODO: add a call to the message processors
             console.log('post lp');
             res.status(400).end();
         });
 
-        this.app.get(_path, (_, res) => {
+        this.app.get(`${_path}/lp`, (req: Request, res: Response) => {
             this.lpConnections.push(res);
+            req.on('close', () => {
+                this.lpConnections = this.lpConnections.filter(connection => connection !== res);
+            });
         });
     }
 
@@ -72,10 +78,18 @@ export class WebSocketService implements IWebSocketService {
         console.log(code, reason);
     }
 
-    broadcast(message: string | ArrayBuffer) {
+    broadcast(message: any) {
         Object.keys(this.wsConnections).forEach(key => {
             const ws = this.wsConnections[key];
             ws.send(message);
+        });
+        const activeLpConnection = this.lpConnections;
+        this.lpConnections = [];
+        activeLpConnection.forEach(res => {
+            res.json({
+                status: 200,
+                payload: message,
+            });
         });
     }
 
