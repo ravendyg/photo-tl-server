@@ -54,7 +54,7 @@ export interface IDbService {
 
     getPhotos(user: IUser): Promise<IPhoto[]>;
 
-    updateRating(user: IUser, iid: string, rating: number): Promise<IRating>;
+    createRating(user: IUser, iid: string, rating: number): Promise<IRating>;
 }
 
 export class DbService implements IDbService {
@@ -256,30 +256,41 @@ export class DbService implements IDbService {
             });
     }
 
-    updateRating(user: IUser, iid: string, value: number): Promise<IRating> {
-        return this.getPhoto(iid).then(({id: imageId}) =>
-            new Promise((resolve, reject) => {
-                this.connection.query(
-                    `INSERT INTO ratings
-                        (user, image, value)
-                    VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE value=?
-                    ;`,
-                    [user.id, imageId, value, value],
-                    (err, _) => {
-                        if (err) {
-                            return reject(err);
-                        } else {
-                            return resolve({
-                                uid: user.uid,
-                                iid,
-                                value,
-                            });
-                        }
+    createRating(user: IUser, iid: string, value: number): Promise<IRating> {
+        return this.getPhoto(iid)
+        .then((photo: IPhoto) => this.upsertRating(user, photo, value))
+        .then((imageId: number) => this.getAverageRatings([imageId]))
+        .then((ratingAccumulator: IAccumulator<IDbRating>) => {
+            const photoId = parseInt(Object.keys(ratingAccumulator)[0], 10);
+            const {count, value: averageRating} = ratingAccumulator[photoId];
+            return {
+                uid: user.uid,
+                iid,
+                value,
+                count,
+                averageRating,
+            };
+        });
+    }
+
+    private upsertRating(user: IUser, photo: IPhoto, value: number): Promise<number> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `INSERT INTO ratings
+                    (user, image, value)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE value=?
+                ;`,
+                [user.id, photo.id, value, value],
+                (err, _) => {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(photo.id);
                     }
-                );
-            })
-        );
+                }
+            );
+        })
     }
 
     private getPhoto(iid: string): Promise<IPhoto> {
