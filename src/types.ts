@@ -60,6 +60,13 @@ export interface IPhoto {
     views: number;
 }
 
+export interface IPhotoPatch {
+    iid: string;
+    description: string;
+    title: string;
+    changed: number;
+}
+
 export interface IPhotoDto {
     iid: string;
     extension: string;
@@ -81,4 +88,11 @@ export interface IRating {
     value: number;
     count: number;
     averageRating: number;
+}
+
+export interface IPatchPhotoRequest {
+    iid: string;
+    user: IUser;
+    title: string;
+    description: string;
 }

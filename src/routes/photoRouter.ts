@@ -83,6 +83,7 @@ export function createPhotoRouter(
 
         const iid = utils.getUid();
         const fileName = `${iid}.${ext}`;
+        // maybe need to create PhotoService
         fileService.saveImage(req, fileName)
             .then(() => {
                 const description = req.header('description') || '';
@@ -113,6 +114,93 @@ export function createPhotoRouter(
                     error: 'Server error',
                 });
             });
+    });
+
+    router.patch('/', getUser, async (req: Express.Request, res: Express.Response) => {
+        const {
+            metadata: {
+                user
+            },
+        } = req;
+        if (!user) {
+            return res.json({
+                error: 'Unauthorized',
+                status: 403,
+            });
+        }
+
+        try {
+            const iid = req.header('iid') || '';
+            const description = req.header('description') || '';
+            const title = req.header('title') || '';
+            const maybePhoto = await dbService.patchPhoto({
+                description,
+                iid,
+                title,
+                user
+            });
+            if (!maybePhoto) {
+                return res.json({
+                    payload: '',
+                    status: 400,
+                    error: 'Could not update',
+                });
+            } else {
+                dataBus.broadcastPatchPhoto(maybePhoto);
+                return res.json({
+                    payload: '',
+                    status: 200,
+                    error: '',
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            return res.json({
+                payload: '',
+                status: 500,
+                error: 'Server error',
+            });
+        }
+    });
+
+    router.delete('/', getUser, async (req: Express.Request, res: Express.Response) => {
+        const {
+            metadata: {
+                user
+            },
+        } = req;
+        if (!user) {
+            return res.json({
+                error: 'Unauthorized',
+                status: 403,
+            });
+        }
+
+        try {
+            const iid = req.header('iid') || '';
+            const deleted = await dbService.deletePhoto(iid, user);
+            if (deleted) {
+                dataBus.broadcastDeletePhoto(iid);
+                return res.json({
+                    payload: '',
+                    status: 200,
+                    error: '',
+                });
+            } else {
+                return res.json({
+                    payload: '',
+                    status: 400,
+                    error: 'Could not delete',
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            return res.json({
+                payload: '',
+                status: 500,
+                error: 'Server error',
+            });
+        }
     });
 
     router.post('/rating', getUser, (req: Express.Request, res: Express.Response) => {
