@@ -5,6 +5,8 @@ import { Connection } from 'mysql';
 import {
     IPhoto,
     IUser,
+    IPatchPhotoRequest,
+    IPhotoPatch,
     IPhotoRequest,
     IRating,
 } from '../types';
@@ -51,6 +53,10 @@ export interface IDbService {
     getUserBySession(cookieStr: string): Promise<IUser>;
 
     createPhoto(photoRequest: IPhotoRequest): Promise<IPhoto>;
+
+    patchPhoto(patchPhotoRequest: IPatchPhotoRequest): Promise<IPhotoPatch | null>;
+
+    deletePhoto(iid: string, user: IUser): Promise<boolean>;
 
     getPhotos(user: IUser): Promise<IPhoto[]>;
 
@@ -225,6 +231,57 @@ export class DbService implements IDbService {
         });
     }
 
+    patchPhoto(patchPhotoRequest: IPatchPhotoRequest): Promise<IPhotoPatch | null> {
+        return new Promise((resolve, reject) => {
+            const {
+                description,
+                iid,
+                title,
+                user: {
+                    id: userId,
+                },
+            } = patchPhotoRequest;
+            this.connection.query(
+                `UPDATE images
+                    SET title=?, description=?
+                WHERE iid=? AND uploaded_by=?
+                ;`,
+                [title, description, iid, userId],
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else if (res.affectedRows > 0) {
+                        return resolve(
+                            this.getPhotoPatch(iid)
+                        );
+                    } else {
+                        return resolve(null);
+                    }
+                }
+            );
+        });
+    }
+
+    deletePhoto(iid: string, user: IUser): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `DELETE FROM images
+                WHERE iid=? AND uploaded_by=?
+                ;`,
+                [iid, user.id],
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else if (res.affectedRows > 0) {
+                        return resolve(true);
+                    } else {
+                        return resolve(false);
+                    }
+                }
+            );
+        });
+    }
+
     getPhotos(user: IUser): Promise<IPhoto[]> {
         return this.getPhotosWithoutRatingAndComments(user)
             .then(photos => {
@@ -325,6 +382,7 @@ export class DbService implements IDbService {
                     ON images.uploaded_by = users.id
                 LEFT JOIN ratings
                     ON images.id = ratings.image AND ratings.user = ?
+                ORDER BY uploaded DESC
                 ;`,
                 [user.id],
                 (err, res) => {
@@ -427,6 +485,29 @@ export class DbService implements IDbService {
                     if (err) { console.error(err); }
                     resolve(reduceDbAccumulator<IDbViewCount>(res));
                 });
+        });
+    }
+
+    private getPhotoPatch(iid: string): Promise<IPhotoPatch> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `SELECT description, title, changed from images WHERE iid=?;`,
+                [iid],
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else if (res.length === 0) {
+                        return reject('not found');
+                    } else {
+                        resolve({
+                            iid,
+                            description: res[0].description,
+                            title: res[0].title,
+                            changed: res[0].changed,
+                        });
+                    }
+                }
+            );
         });
     }
 }

@@ -1,13 +1,23 @@
 import { IWebSocketService } from "./WebSocketService";
-import { IPhotoDto, IRating } from "../types";
+import {
+    IPhotoDto,
+    IPhotoPatch,
+    IRating,
+} from "../types";
 
 export enum EWSAction {
     NEW_PHOTO = 1,
     RATING_UPDATE = 2,
+    PATCH_PHOTO = 3,
+    DELETE_PHOTO = 4,
 }
 
 export interface IDataBus {
     broadcastNewPhoto: (photo: IPhotoDto) => void;
+
+    broadcastPatchPhoto: (patch: IPhotoPatch) => void;
+
+    broadcastDeletePhoto: (iid: string) => void;
 
     broadcastRating: (rating: IRating) => void;
 }
@@ -19,6 +29,20 @@ export class DataBus implements IDataBus {
         this.webSocketService.broadcast({
             action: EWSAction.NEW_PHOTO,
             payload: photo,
+        });
+    }
+
+    broadcastPatchPhoto(patch: IPhotoPatch) {
+        this.webSocketService.broadcast({
+            action: EWSAction.PATCH_PHOTO,
+            payload: patch,
+        });
+    }
+
+    broadcastDeletePhoto(iid: string) {
+        this.webSocketService.broadcast({
+            action: EWSAction.DELETE_PHOTO,
+            payload: iid,
         });
     }
 
