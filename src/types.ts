@@ -26,6 +26,7 @@ export interface IComment {
     cid: string;
     iid: string;
     uid: string;
+    userName: string;
     date: string;
     text: string;
 }
@@ -36,6 +37,7 @@ export interface ICommentDto {
     text: string;
     iid: string;
     uid: string;
+    userName: string;
 }
 
 export interface IPhotoRequest {

@@ -25,18 +25,27 @@ export function createCommentRouter(
             });
         }
 
-        const iid = req.param('iid');
+        const iid = req.params.iid;
         if (!iid) {
             return res.json({
                 error: 'Missing image id',
                 status: 400,
             });
         }
-
-        return res.json({
-            error: 'Server error',
-            status: 500,
-        });
+        try {
+            const comments = await dbService.getComments(iid);
+            const commentDtos = comments.map(mapCommentToDto);
+            return res.json({
+                status: 200,
+                payload: commentDtos,
+            });
+        } catch (err) {
+            console.error(err);
+            return res.json({
+                error: 'Server error',
+                status: 500,
+            });
+        }
     });
 
     router.post('/', getUser, async (req: Express.Request, res: Express.Response) => {
@@ -65,7 +74,6 @@ export function createCommentRouter(
 
         try {
             const comment = await dbService.createComment(user, iid, text);
-            console.log(comment);
             const commentDto = mapCommentToDto(comment);
             dataBus.broadcastComment(commentDto);
             return res.json({

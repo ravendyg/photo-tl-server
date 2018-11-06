@@ -361,6 +361,7 @@ export class DbService implements IDbService {
                     date,
                     id,
                     iid,
+                    userName: user.name,
                     text,
                     uid: user.uid,
                 };
@@ -371,24 +372,28 @@ export class DbService implements IDbService {
     getComments = (iid: string): Promise<IComment[]> => {
         return this.getPhoto(iid)
             .then(({id}: IPhoto) => new Promise((resolve, reject) => {
-                const args = [iid, id];
+                const args = [id];
                 this.connection.query(
                 `SELECT
                     comments.id AS id
-                    , comment.cid AS cid
-                    , comment.date AS date
-                    , iid='?'
-                    , comment.text AS text,
+                    , comments.cid AS cid
+                    , comments.date AS date
+                    , comments.text AS text
                     , users.uid AS uid
+                    , users.name AS userName
                 FROM comments
                 JOIN users ON comments.user=users.id
                 WHERE image=?
+                ORDER BY date DESC
                 ;`,
                     args,
                     (err, res: IComment[]) => {
                         if (err) {
                             return reject(err);
                         } else {
+                            res.forEach(comment => {
+                                comment.iid = iid;
+                            });
                             return resolve(res);
                         }
                     }

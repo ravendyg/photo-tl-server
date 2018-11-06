@@ -58,6 +58,7 @@ export function mapCommentToDto(comment: IComment): ICommentDto {
         text,
         iid,
         uid,
+        userName,
     } = comment;
 
     return {
@@ -66,5 +67,6 @@ export function mapCommentToDto(comment: IComment): ICommentDto {
         text,
         iid,
         uid,
+        userName,
     };
 }
