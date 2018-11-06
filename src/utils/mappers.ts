@@ -3,6 +3,8 @@ import {
     IUserDto,
     IPhoto,
     IPhotoDto,
+    IComment,
+    ICommentDto,
 } from '../types';
 
 export function mapUserToDto(user: IUser): IUserDto {
@@ -46,5 +48,23 @@ export function mapPhotoToDto(photo: IPhoto): IPhotoDto {
         ratingCount,
         userRating,
         views,
+    };
+}
+
+export function mapCommentToDto(comment: IComment): ICommentDto {
+    const {
+        cid,
+        date,
+        text,
+        iid,
+        uid,
+    } = comment;
+
+    return {
+        cid,
+        date,
+        text,
+        iid,
+        uid,
     };
 }

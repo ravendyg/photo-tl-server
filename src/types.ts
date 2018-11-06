@@ -26,14 +26,16 @@ export interface IComment {
     cid: string;
     iid: string;
     uid: string;
-    date: number;
+    date: string;
     text: string;
 }
 
 export interface ICommentDto {
     cid: string;
-    date: number;
+    date: string;
     text: string;
+    iid: string;
+    uid: string;
 }
 
 export interface IPhotoRequest {

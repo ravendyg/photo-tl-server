@@ -1,7 +1,8 @@
-import { IConfig } from '../config';
+// TODO: don't like it, refactor
+import {IConfig} from '../config';
 import * as mysql from 'mysql';
-import { Promise } from 'es6-promise';
-import { Connection } from 'mysql';
+import {Promise} from 'es6-promise';
+import {Connection} from 'mysql';
 import {
     IPhoto,
     IUser,
@@ -9,8 +10,9 @@ import {
     IPhotoPatch,
     IPhotoRequest,
     IRating,
+    IComment,
 } from '../types';
-import { IUtils } from '../utils/utils';
+import {IUtils} from '../utils/utils';
 
 interface IAccumulator<T> {
     [id: number]: T;
@@ -27,12 +29,21 @@ interface IDbCommentCount {
     value: number;
 }
 
+interface IDbComment {
+    cid: string;
+    date: string;
+    id: number;
+    user: number;
+    text: string;
+    image: number;
+}
+
 interface IDbViewCount {
     id: number;
     value: number;
 }
 
-function reduceDbAccumulator<T extends { id: number }>(items: T[]): IAccumulator<T> {
+function reduceDbAccumulator<T extends {id: number}>(items: T[]): IAccumulator<T> {
     return (items || []).reduce((acc: IAccumulator<T>, item: T) => {
         acc[item.id] = item;
         return acc;
@@ -61,6 +72,10 @@ export interface IDbService {
     getPhotos(user: IUser): Promise<IPhoto[]>;
 
     createRating(user: IUser, iid: string, rating: number): Promise<IRating>;
+
+    createComment(user: IUser, iid: string, text: string): Promise<IComment>;
+
+    getComments(iid: string): Promise<IComment[]>;
 }
 
 export class DbService implements IDbService {
@@ -303,10 +318,10 @@ export class DbService implements IDbService {
                     return photos.map(photo => {
                         return {
                             ...photo,
-                            averageRating: (ratings[photo.id] || { value: 0 }).value,
-                            ratingCount: (ratings[photo.id] || { count: 0 }).count,
-                            commentCount: (comments[photo.id] || { value: 0 }).value,
-                            views: (views[photo.id] || { value: 0 }).value,
+                            averageRating: (ratings[photo.id] || {value: 0}).value,
+                            ratingCount: (ratings[photo.id] || {count: 0}).count,
+                            commentCount: (comments[photo.id] || {value: 0}).value,
+                            views: (views[photo.id] || {value: 0}).value,
                         };
                     });
                 });
@@ -315,20 +330,114 @@ export class DbService implements IDbService {
 
     createRating(user: IUser, iid: string, value: number): Promise<IRating> {
         return this.getPhoto(iid)
-        .then((photo: IPhoto) => this.upsertRating(user, photo, value))
-        .then((imageId: number) => this.getAverageRatings([imageId]))
-        .then((ratingAccumulator: IAccumulator<IDbRating>) => {
-            const photoId = parseInt(Object.keys(ratingAccumulator)[0], 10);
-            const {count, value: averageRating} = ratingAccumulator[photoId];
-            return {
-                uid: user.uid,
-                iid,
-                value,
-                count,
-                averageRating,
-            };
-        });
+            .then((photo: IPhoto) => this.upsertRating(user, photo, value))
+            .then((imageId: number) => this.getAverageRatings([imageId]))
+            .then((ratingAccumulator: IAccumulator<IDbRating>) => {
+                const photoId = parseInt(Object.keys(ratingAccumulator)[0], 10);
+                const {count, value: averageRating} = ratingAccumulator[photoId];
+                return {
+                    uid: user.uid,
+                    iid,
+                    value,
+                    count,
+                    averageRating,
+                };
+            });
     }
+
+    createComment = (user: IUser, iid: string, text: string): Promise<IComment> => {
+        return this.getPhoto(iid)
+            .then((photo: IPhoto) => this.insertComment(user, photo, text))
+            .then(this.getComment)
+            .then((dbComment: IDbComment) => {
+                const {
+                    id,
+                    cid,
+                    date,
+                    text,
+                } = dbComment;
+                const comment: IComment = {
+                    cid,
+                    date,
+                    id,
+                    iid,
+                    text,
+                    uid: user.uid,
+                };
+                return comment;
+            });
+    };
+
+    getComments = (iid: string): Promise<IComment[]> => {
+        return this.getPhoto(iid)
+            .then(({id}: IPhoto) => new Promise((resolve, reject) => {
+                const args = [iid, id];
+                this.connection.query(
+                `SELECT
+                    comments.id AS id
+                    , comment.cid AS cid
+                    , comment.date AS date
+                    , iid='?'
+                    , comment.text AS text,
+                    , users.uid AS uid
+                FROM comments
+                JOIN users ON comments.user=users.id
+                WHERE image=?
+                ;`,
+                    args,
+                    (err, res: IComment[]) => {
+                        if (err) {
+                            return reject(err);
+                        } else {
+                            return resolve(res);
+                        }
+                    }
+                )
+            }));
+    }
+
+    private getComment = (id: number): Promise<IDbComment> => {
+        return new Promise((resolve, reject) => {
+            const args = [id];
+            this.connection.query(
+            `SELECT * FROM comments
+                WHERE id=?
+            LIMIT 1
+            ;`,
+                args,
+                (err, res: IDbComment[]) => {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(res[0]);
+                    }
+                }
+            )
+        });
+    };
+
+    private insertComment = (user: IUser, photo: IPhoto, text: string): Promise<number> => {
+        const cid = this.utils.getUid();
+        const args = [cid, user.id, photo.id, text];
+        return new Promise((resolve, reject) => {
+            this.connection.query(
+                `INSERT INTO comments
+                    (cid, user, image, text)
+                VALUES (?, ?, ?, ?)
+                ;`,
+                args,
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else if (res.insertId) {
+                        return resolve(res.insertId);
+                    } else {
+                        return reject(`Cannot insert ${args}: ${res}`);
+                    }
+                }
+            );
+        })
+    };
 
     private upsertRating(user: IUser, photo: IPhoto, value: number): Promise<number> {
         return new Promise((resolve, reject) => {
@@ -444,7 +553,7 @@ export class DbService implements IDbService {
                 ;`,
                 [ids],
                 (err, res) => {
-                    if (err) { console.error(err); }
+                    if (err) {console.error(err);}
                     resolve(reduceDbAccumulator<IDbRating>(res));
                 });
         });
@@ -463,7 +572,7 @@ export class DbService implements IDbService {
                 ;`,
                 [ids],
                 (err, res) => {
-                    if (err) { console.error(err); }
+                    if (err) {console.error(err);}
                     resolve(reduceDbAccumulator<IDbCommentCount>(res));
                 });
         });
@@ -482,7 +591,7 @@ export class DbService implements IDbService {
                 ;`,
                 [ids],
                 (err, res) => {
-                    if (err) { console.error(err); }
+                    if (err) {console.error(err);}
                     resolve(reduceDbAccumulator<IDbViewCount>(res));
                 });
         });
