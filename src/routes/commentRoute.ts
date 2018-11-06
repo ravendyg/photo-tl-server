@@ -91,7 +91,7 @@ export function createCommentRouter(
         }
     });
 
-    router.delete('/', getUser, async (req: Express.Request, res: Express.Response) => {
+    router.delete('/:cid', getUser, async (req: Express.Request, res: Express.Response) => {
         const {
             metadata: {
                 user
@@ -104,11 +104,38 @@ export function createCommentRouter(
             });
         }
 
-        return res.json({
-            payload: '',
-            status: 500,
-            error: 'Server error',
-        });
+        const cid = req.params.cid;
+        if (!cid) {
+            return res.json({
+                error: 'Missing comment id',
+                status: 400,
+            });
+        }
+
+        try {
+            const iid = await dbService.deleteComment(cid, user);
+            if (iid) {
+                dataBus.broadcastDeleteComment({ cid, iid });
+                return res.json({
+                    payload: '',
+                    status: 200,
+                    error: '',
+                });
+            } else {
+                return res.json({
+                    payload: '',
+                    status: 404,
+                    error: 'Comment not found',
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            return res.json({
+                payload: '',
+                status: 500,
+                error: 'Server error',
+            });
+        }
     });
 
     return router;

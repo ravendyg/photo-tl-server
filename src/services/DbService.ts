@@ -76,6 +76,8 @@ export interface IDbService {
     createComment(user: IUser, iid: string, text: string): Promise<IComment>;
 
     getComments(iid: string): Promise<IComment[]>;
+
+    deleteComment(cid: string, user: IUser): Promise<string | null>;
 }
 
 export class DbService implements IDbService {
@@ -400,6 +402,50 @@ export class DbService implements IDbService {
                 )
             }));
     }
+
+    deleteComment = (cid: string, user: IUser): Promise<string | null> =>
+        this.getImageByComment(cid)
+        .then((iid: string) => new Promise((resolve, reject) => {
+            const args = [cid, user.id];
+            this.connection.query(
+                `DELETE FROM comments
+                    WHERE cid=? AND user=?
+                ;`,
+                args,
+                (err, res) => {
+                    console.log(res)
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(res.affectedRows > 0 ? iid : null);
+                    }
+                }
+            );
+        }));
+
+    private getImageByComment = (cid: string): Promise<string> =>
+        new Promise((resolve, reject) => {
+            const args = [cid];
+            this.connection.query(
+                `SELECT
+                    images.iid AS iid
+                FROM comments
+                JOIN images ON images.id=comments.image
+                WHERE comments.cid=?
+                `,
+                args,
+                (err, res) => {
+                    console.log(res)
+                    if (err) {
+                        return reject(err);
+                    } else if (res.length === 0) {
+                        return reject(`${cid} - image not found`);
+                    } else {
+                        return resolve(res[0].iid);
+                    }
+                }
+            );
+        });
 
     private getComment = (id: number): Promise<IDbComment> => {
         return new Promise((resolve, reject) => {

@@ -100,3 +100,8 @@ export interface IPatchPhotoRequest {
     title: string;
     description: string;
 }
+
+export interface IDeletedComment {
+    cid: string;
+    iid: string;
+}

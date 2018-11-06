@@ -1,5 +1,6 @@
 import { IWebSocketService } from "./WebSocketService";
 import {
+    IDeletedComment,
     IPhotoDto,
     IPhotoPatch,
     IRating,
@@ -12,6 +13,7 @@ export enum EWSAction {
     PATCH_PHOTO = 3,
     DELETE_PHOTO = 4,
     NEW_COMMENT = 5,
+    DELET_COMMENT = 6,
 }
 
 export interface IDataBus {
@@ -24,6 +26,8 @@ export interface IDataBus {
     broadcastRating: (rating: IRating) => void;
 
     broadcastComment: (comment: ICommentDto) => void;
+
+    broadcastDeleteComment: (deleted: IDeletedComment) => void;
 }
 
 export class DataBus implements IDataBus {
@@ -60,6 +64,13 @@ export class DataBus implements IDataBus {
     broadcastComment(payload: ICommentDto) {
         this.webSocketService.broadcast({
             action: EWSAction.NEW_COMMENT,
+            payload,
+        });
+    }
+
+    broadcastDeleteComment(payload: IDeletedComment) {
+        this.webSocketService.broadcast({
+            action: EWSAction.DELET_COMMENT,
             payload,
         });
     }
