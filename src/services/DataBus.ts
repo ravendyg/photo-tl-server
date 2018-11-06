@@ -1,8 +1,10 @@
 import { IWebSocketService } from "./WebSocketService";
 import {
+    IDeletedComment,
     IPhotoDto,
     IPhotoPatch,
     IRating,
+    ICommentDto,
 } from "../types";
 
 export enum EWSAction {
@@ -10,6 +12,8 @@ export enum EWSAction {
     RATING_UPDATE = 2,
     PATCH_PHOTO = 3,
     DELETE_PHOTO = 4,
+    NEW_COMMENT = 5,
+    DELET_COMMENT = 6,
 }
 
 export interface IDataBus {
@@ -20,36 +24,54 @@ export interface IDataBus {
     broadcastDeletePhoto: (iid: string) => void;
 
     broadcastRating: (rating: IRating) => void;
+
+    broadcastComment: (comment: ICommentDto) => void;
+
+    broadcastDeleteComment: (deleted: IDeletedComment) => void;
 }
 
 export class DataBus implements IDataBus {
     constructor (private webSocketService: IWebSocketService) { }
 
-    broadcastNewPhoto(photo: IPhotoDto) {
+    broadcastNewPhoto(payload: IPhotoDto) {
         this.webSocketService.broadcast({
             action: EWSAction.NEW_PHOTO,
-            payload: photo,
+            payload,
         });
     }
 
-    broadcastPatchPhoto(patch: IPhotoPatch) {
+    broadcastPatchPhoto(payload: IPhotoPatch) {
         this.webSocketService.broadcast({
             action: EWSAction.PATCH_PHOTO,
-            payload: patch,
+            payload,
         });
     }
 
-    broadcastDeletePhoto(iid: string) {
+    broadcastDeletePhoto(payload: string) {
         this.webSocketService.broadcast({
             action: EWSAction.DELETE_PHOTO,
-            payload: iid,
+            payload,
         });
     }
 
-    broadcastRating(rating: IRating) {
+    broadcastRating(payload: IRating) {
         this.webSocketService.broadcast({
             action: EWSAction.RATING_UPDATE,
-            payload: rating,
+            payload,
+        });
+    }
+
+    broadcastComment(payload: ICommentDto) {
+        this.webSocketService.broadcast({
+            action: EWSAction.NEW_COMMENT,
+            payload,
+        });
+    }
+
+    broadcastDeleteComment(payload: IDeletedComment) {
+        this.webSocketService.broadcast({
+            action: EWSAction.DELET_COMMENT,
+            payload,
         });
     }
 }

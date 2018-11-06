@@ -2,17 +2,15 @@ import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
 import { mapPhotoToDto } from '../utils/mappers';
-import { IUtils } from '../utils/utils';
-import { IConfig } from '../config';
 import { IFileService } from '../services/FileService';
 import { IPhotoRequest } from '../types';
 import { IDataBus } from '../services/DataBus';
+import { IUtils } from '../utils/utils';
 
 export function createPhotoRouter(
     getUser: Express.RequestHandler,
     dbService: IDbService,
     utils: IUtils,
-    config: IConfig,
     fileService: IFileService,
     dataBus: IDataBus,
 ) {
@@ -130,6 +128,7 @@ export function createPhotoRouter(
         }
 
         try {
+            // TODO: move to body!
             const iid = req.header('iid') || '';
             const description = req.header('description') || '';
             const title = req.header('title') || '';
@@ -203,6 +202,7 @@ export function createPhotoRouter(
         }
     });
 
+    // TODO: extract as a separate router '/node/comment'
     router.post('/rating', getUser, (req: Express.Request, res: Express.Response) => {
         const {
             body = {},

@@ -26,14 +26,18 @@ export interface IComment {
     cid: string;
     iid: string;
     uid: string;
-    date: number;
+    userName: string;
+    date: string;
     text: string;
 }
 
 export interface ICommentDto {
     cid: string;
-    date: number;
+    date: string;
     text: string;
+    iid: string;
+    uid: string;
+    userName: string;
 }
 
 export interface IPhotoRequest {
@@ -95,4 +99,9 @@ export interface IPatchPhotoRequest {
     user: IUser;
     title: string;
     description: string;
+}
+
+export interface IDeletedComment {
+    cid: string;
+    iid: string;
 }
