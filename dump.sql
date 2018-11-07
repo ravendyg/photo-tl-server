@@ -60,7 +60,7 @@ CREATE TABLE `ratings` (
 
 CREATE TABLE `views` (
   `image` bigint(20) NOT NULL,
-  `date` bigint(20) DEFAULT NULL,
+  `date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `user` bigint(20) NOT NULL,
   PRIMARY KEY (`image`, `user`),
   CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`),

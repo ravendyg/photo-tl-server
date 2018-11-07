@@ -78,6 +78,8 @@ export interface IDbService {
     getComments(iid: string): Promise<IComment[]>;
 
     deleteComment(cid: string, user: IUser): Promise<string | null>;
+
+    registerView(iid: string, user: IUser): Promise<boolean>;
 }
 
 export class DbService implements IDbService {
@@ -421,6 +423,26 @@ export class DbService implements IDbService {
                     }
                 }
             );
+        }));
+
+    registerView = (iid: string, user: IUser): Promise<boolean> =>
+        this.getPhoto(iid)
+        .then(({ id }: IPhoto) => new Promise((resolve, reject) => {
+            const args = [user.id, id];
+            this.connection.query(
+                `INSERT IGNORE INTO views
+                    (user, image)
+                VALUES (?, ?)
+                ;`,
+                args,
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(res.affectedRows > 0);
+                    }
+                }
+            )
         }));
 
     private getImageByComment = (cid: string): Promise<string> =>
