@@ -3,7 +3,7 @@ import * as Express from 'express';
 import { IDbService } from '../services/DbService';
 import { IUserDto } from '../types';
 import { IUtils } from '../utils/utils';
-import {mapUserToDto} from '../utils/mappers';
+import { mapUserToDto } from '../utils/mappers';
 
 export function createUserRouter(
     dbService: IDbService,
@@ -31,7 +31,8 @@ export function createUserRouter(
                 });
             }
 
-            const token = utils.createToken(user);
+            const userDto = mapUserToDto(user);
+            const token = utils.createToken(userDto);
             return res.json({
                 status: 200,
                 payload: token,

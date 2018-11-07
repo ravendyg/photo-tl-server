@@ -1,12 +1,8 @@
 import {ICryptoService} from '../services/CryptoService';
 import {IUserDto} from '../types';
+import * as jwt from 'jsonwebtoken';
 
 const secret = 'secret';
-const header = JSON.stringify({
-    'alg': 'HS256',
-    'typ': 'JWT',
-});
-const headerBase = (new Buffer(header)).toString('base64');
 
 export interface IUtils {
     getRandom: () => number;
@@ -17,7 +13,7 @@ export interface IUtils {
 
     createToken: (user: IUserDto) => string;
 
-    getUserFromToken: (token: string) => IUserDto;
+    getUserFromToken: (token: string) => IUserDto | null;
 }
 
 export class Utils implements IUtils {
@@ -36,32 +32,14 @@ export class Utils implements IUtils {
     }
 
     createToken(user: IUserDto) {
-        const payload = JSON.stringify(user);
-        const payloadBase = (new Buffer(payload)).toString('base64');
-        return `${headerBase}.${payloadBase}.signature`;
+        return jwt.sign(user, secret);
     }
 
     getUserFromToken(token: string = '') {
         try {
-            const [tokenHeader, payload, signature] = token.split('.');
-            if (this.verifySignature(tokenHeader, payload, signature)) {
-                return JSON.parse(this.extractPayload(payload));
-            }
-            return null;
+            return jwt.decode(token) as IUserDto;
         } catch (err) {
             return null;
         }
-    }
-
-    private verifySignature(
-        _header: string,
-        _payload: string,
-        _signature: string
-    ) {
-        return true;
-    }
-
-    private extractPayload(payload: string): any {
-        return (new Buffer(payload, 'base64')).toString();
     }
 }
