@@ -61,7 +61,7 @@ export interface IDbService {
 
     deleteSession(cookieStr: string): Promise<void>;
 
-    getUserBySession(cookieStr: string): Promise<IUser>;
+    getUserByUid(uid: string): Promise<IUser>;
 
     createPhoto(photoRequest: IPhotoRequest): Promise<IPhoto>;
 
@@ -191,16 +191,15 @@ export class DbService implements IDbService {
         });
     }
 
-    getUserBySession(cookieStr: string): Promise<IUser> {
+    getUserByUid(uid: string): Promise<IUser> {
         return new Promise((resolve, reject) => {
             this.connection.query(
-                `SELECT users.id, users.uid, users.name
-                FROM sessions
-                    JOIN users ON sessions.user = users.id
-                WHERE sessions.cookie = ?
+                `SELECT id, uid, name
+                FROM users
+                WHERE uid = ?
                 LIMIT 1
                 ;`,
-                [cookieStr],
+                [uid],
                 (err, res) => {
                     if (err) {
                         return reject(err);
@@ -415,7 +414,6 @@ export class DbService implements IDbService {
                 ;`,
                 args,
                 (err, res) => {
-                    console.log(res)
                     if (err) {
                         return reject(err);
                     } else {
@@ -457,7 +455,6 @@ export class DbService implements IDbService {
                 `,
                 args,
                 (err, res) => {
-                    console.log(res)
                     if (err) {
                         return reject(err);
                     } else if (res.length === 0) {

@@ -2,34 +2,47 @@ import * as express from 'express';
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
 import { IUserDto } from '../types';
-import { ISessionService } from '../services/SessionService';
+import { IUtils } from '../utils/utils';
+import {mapUserToDto} from '../utils/mappers';
 
 export function createUserRouter(
-    getUser: Express.RequestHandler,
     dbService: IDbService,
-    sessionService: ISessionService,
+    utils: IUtils,
 ) {
     const router = express.Router();
 
-    router.get('/', getUser, (req: Express.Request, res: Express.Response) => {
-        const {
-            metadata: {
-                user
-            },
-        } = req;
-        if (!user) {
+    router.get('/', async (req: Express.Request, res: Express.Response) => {
+        try {
+            const login = req.header('login');
+            const pas = req.header('pas');
+
+            if (!login || !pas) {
+                return res.json({
+                    error: "Credentials missing",
+                    status: 400,
+                });
+            }
+
+            const user = await dbService.getUser(login, pas);
+            if (user === null) {
+                return res.json({
+                    error: "Wrong login or password",
+                    status: 403,
+                });
+            }
+
+            const token = utils.createToken(user);
             return res.json({
-                error: 'Unauthorized',
-                status: 403,
+                status: 200,
+                payload: token,
+            });
+        } catch (err) {
+            console.error(err);
+            return res.json({
+                error: "Server error",
+                status: 500,
             });
         }
-
-        const userDto: IUserDto = user;
-        return res.json({
-            payload: userDto,
-            status: 200,
-            error: '',
-        });
     });
 
     router.post('/', async (req: Express.Request, res: Express.Response) => {
@@ -38,7 +51,6 @@ export function createUserRouter(
                 body: {
                     login,
                     pas,
-                    rem,
                 } = ({} as any),
             } = req;
 
@@ -56,19 +68,11 @@ export function createUserRouter(
                     status: 409,
                 });
             }
-            try {
-                await sessionService.addExpirationCookie(res, user, rem);
-            } catch (sessionErr) {
-                console.error(sessionErr);
-                dbService.deleteUser(user.id).catch(() => {});
-                return res.json({
-                    error: 'Server error',
-                    status: 500,
-                });
-            }
-            const userDto: IUserDto = user;
+
+            const userDto: IUserDto = mapUserToDto(user);
+            const token = utils.createToken(userDto);
             return res.json({
-                payload: userDto,
+                payload: token,
                 status: 200,
                 error: '',
             });
@@ -79,10 +83,6 @@ export function createUserRouter(
                 status: 500,
             });
         }
-    });
-
-    router.delete('/', (req, res) => {
-
     });
 
     return router;
