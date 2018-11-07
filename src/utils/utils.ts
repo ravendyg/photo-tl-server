@@ -37,7 +37,8 @@ export class Utils implements IUtils {
 
     getUserFromToken(token: string = '') {
         try {
-            return jwt.decode(token) as IUserDto;
+            const user = jwt.verify(token, secret) as IUserDto;
+            return user;
         } catch (err) {
             return null;
         }

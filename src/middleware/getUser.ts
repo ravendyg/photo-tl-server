@@ -24,14 +24,14 @@ export function createGetUser(
             const userDto = utils.getUserFromToken(token);
             if (!userDto) {
                 return res.json({
-                    error: "Missing credentials",
+                    error: "Unauthorized",
                     status: 403,
                 });
             }
             const user = await dbService.getUserByUid(userDto.uid);
             if (user === null) {
                 return res.json({
-                    error: "Session expired",
+                    error: "Unauthorized",
                     status: 403,
                 });
             } else {
