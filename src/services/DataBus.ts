@@ -14,6 +14,7 @@ export enum EWSAction {
     DELETE_PHOTO = 4,
     NEW_COMMENT = 5,
     DELET_COMMENT = 6,
+    ADD_VIEW = 7,
 }
 
 export interface IDataBus {
@@ -28,6 +29,8 @@ export interface IDataBus {
     broadcastComment: (comment: ICommentDto) => void;
 
     broadcastDeleteComment: (deleted: IDeletedComment) => void;
+
+    broadcastAddView: (iid: string) => void;
 }
 
 export class DataBus implements IDataBus {
@@ -71,6 +74,13 @@ export class DataBus implements IDataBus {
     broadcastDeleteComment(payload: IDeletedComment) {
         this.webSocketService.broadcast({
             action: EWSAction.DELET_COMMENT,
+            payload,
+        });
+    }
+
+    broadcastAddView(payload: string) {
+        this.webSocketService.broadcast({
+            action: EWSAction.ADD_VIEW,
             payload,
         });
     }
