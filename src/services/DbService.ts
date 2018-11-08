@@ -43,6 +43,16 @@ interface IDbViewCount {
     value: number;
 }
 
+interface IDbPhoto {
+    id: number;
+    iid: string;
+    extension: string;
+    description: string;
+    title: string;
+    uploaded_by: number;
+    uploaded: number;
+}
+
 function reduceDbAccumulator<T extends {id: number}>(items: T[]): IAccumulator<T> {
     return (items || []).reduce((acc: IAccumulator<T>, item: T) => {
         acc[item.id] = item;
@@ -280,8 +290,8 @@ export class DbService implements IDbService {
         });
     }
 
-    deletePhoto(iid: string, user: IUser): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+    deletePhoto = (iid: string, user: IUser): Promise<boolean> =>
+        new Promise((resolve, reject) => {
             this.connection.query(
                 `DELETE FROM images
                 WHERE iid=? AND uploaded_by=?
@@ -298,7 +308,7 @@ export class DbService implements IDbService {
                 }
             );
         });
-    }
+
 
     getPhotos(user: IUser): Promise<IPhoto[]> {
         return this.getPhotosWithoutRatingAndComments(user)
@@ -333,7 +343,7 @@ export class DbService implements IDbService {
 
     createRating(user: IUser, iid: string, value: number): Promise<IRating> {
         return this.getPhoto(iid)
-            .then((photo: IPhoto) => this.upsertRating(user, photo, value))
+            .then((photo: IDbPhoto) => this.upsertRating(user, photo, value))
             .then((imageId: number) => this.getAverageRatings([imageId]))
             .then((ratingAccumulator: IAccumulator<IDbRating>) => {
                 const photoId = parseInt(Object.keys(ratingAccumulator)[0], 10);
@@ -350,7 +360,7 @@ export class DbService implements IDbService {
 
     createComment = (user: IUser, iid: string, text: string): Promise<IComment> => {
         return this.getPhoto(iid)
-            .then((photo: IPhoto) => this.insertComment(user, photo, text))
+            .then((photo: IDbPhoto) => this.insertComment(user, photo, text))
             .then(this.getComment)
             .then((dbComment: IDbComment) => {
                 const {
@@ -374,7 +384,7 @@ export class DbService implements IDbService {
 
     getComments = (iid: string): Promise<IComment[]> => {
         return this.getPhoto(iid)
-            .then(({id}: IPhoto) => new Promise((resolve, reject) => {
+            .then(({ id }: IDbPhoto) => new Promise((resolve, reject) => {
                 const args = [id];
                 this.connection.query(
                 `SELECT
@@ -425,7 +435,7 @@ export class DbService implements IDbService {
 
     registerView = (iid: string, user: IUser): Promise<boolean> =>
         this.getPhoto(iid)
-        .then(({ id }: IPhoto) => new Promise((resolve, reject) => {
+        .then(({ id }: IDbPhoto) => new Promise((resolve, reject) => {
             const args = [user.id, id];
             this.connection.query(
                 `INSERT IGNORE INTO views
@@ -486,7 +496,7 @@ export class DbService implements IDbService {
         });
     };
 
-    private insertComment = (user: IUser, photo: IPhoto, text: string): Promise<number> => {
+    private insertComment = (user: IUser, photo: IDbPhoto, text: string): Promise<number> => {
         const cid = this.utils.getUid();
         const args = [cid, user.id, photo.id, text];
         return new Promise((resolve, reject) => {
@@ -509,7 +519,7 @@ export class DbService implements IDbService {
         })
     };
 
-    private upsertRating(user: IUser, photo: IPhoto, value: number): Promise<number> {
+    private upsertRating(user: IUser, photo: IDbPhoto, value: number): Promise<number> {
         return new Promise((resolve, reject) => {
             this.connection.query(
                 `INSERT INTO ratings
@@ -529,7 +539,7 @@ export class DbService implements IDbService {
         })
     }
 
-    private getPhoto(iid: string): Promise<IPhoto> {
+    private getPhoto(iid: string): Promise<IDbPhoto> {
         return new Promise((resolve, reject) => {
             this.connection.query(
                 `SELECT * from images
