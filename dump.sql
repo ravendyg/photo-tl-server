@@ -8,15 +8,6 @@ CREATE TABLE `users` (
   UNIQUE KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `sessions` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `cookie` varchar(255) DEFAULT NULL,
-  `user` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY (`user`),
-  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 CREATE TABLE `images` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `iid` char(64) NOT NULL,

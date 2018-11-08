@@ -1,7 +1,11 @@
 import * as Express from 'express';
 import { IDbService } from '../services/DbService';
+import { IUtils } from '../utils/utils';
 
-export function createGetUser(dbService: IDbService) {
+export function createGetUser(
+    dbService: IDbService,
+    utils: IUtils,
+) {
     const getUser: Express.RequestHandler =
     async (
         req: Express.Request,
@@ -9,19 +13,25 @@ export function createGetUser(dbService: IDbService) {
         next: Express.NextFunction,
     ) => {
         try {
-            const { uId } = req.cookies;
+            const token = req.header('token');
 
-            if (!Boolean(uId)) {
+            if (!token) {
                 return res.json({
-                    error: "Session does not exist",
+                    error: "Missing credentials",
                     status: 403,
                 });
             }
-
-            const user = await dbService.getUserBySession(uId);
+            const userDto = utils.getUserFromToken(token);
+            if (!userDto) {
+                return res.json({
+                    error: "Unauthorized",
+                    status: 403,
+                });
+            }
+            const user = await dbService.getUserByUid(userDto.uid);
             if (user === null) {
                 return res.json({
-                    error: "Session expired",
+                    error: "Unauthorized",
                     status: 403,
                 });
             } else {

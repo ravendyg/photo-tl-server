@@ -1,9 +1,19 @@
 import {ICryptoService} from '../services/CryptoService';
+import {IUserDto} from '../types';
+import * as jwt from 'jsonwebtoken';
+
+const secret = 'secret';
 
 export interface IUtils {
     getRandom: () => number;
+
     getUid: () => string;
+
     getPasswordHash: (uid: string, password: string) => string;
+
+    createToken: (user: IUserDto) => string;
+
+    getUserFromToken: (token: string) => IUserDto | null;
 }
 
 export class Utils implements IUtils {
@@ -19,5 +29,18 @@ export class Utils implements IUtils {
 
     getPasswordHash(uid: string, password: string) {
         return this.cryptoService.getSha256(uid + password);
+    }
+
+    createToken(user: IUserDto) {
+        return jwt.sign(user, secret);
+    }
+
+    getUserFromToken(token: string = '') {
+        try {
+            const user = jwt.verify(token, secret) as IUserDto;
+            return user;
+        } catch (err) {
+            return null;
+        }
     }
 }

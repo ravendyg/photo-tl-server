@@ -10,12 +10,10 @@ import { config } from './config';
 import { DbService } from './services/DbService';
 import { CryptoService } from './services/CryptoService';
 import { createUserRouter } from './routes/userRouter';
-import { createSessionRouter } from './routes/sessionRouter';
 import { createPhotoRouter } from './routes/photoRouter';
 import { createCommentRouter } from './routes/commentRoute';
 import { createGetUser } from './middleware/getUser';
 import { Utils } from './utils/utils';
-import { SessionService } from './services/SessionService';
 import { WebSocketService } from './services/WebSocketService';
 import { FileService } from './services/FileService';
 import { DataBus } from './services/DataBus';
@@ -32,13 +30,11 @@ const webSocketService = new WebSocketService(server, app);
 const cryptoService = new CryptoService();
 const utils = new Utils(cryptoService);
 const dbService = new DbService(config, utils);
-const sessionService = new SessionService(utils, dbService);
 const fileService = new FileService(config, fs, path, pump);
 const dataBus = new DataBus(webSocketService);
 
-const getUser = createGetUser(dbService);
-const userRouter = createUserRouter(getUser, dbService, sessionService);
-const sessionRouter = createSessionRouter(dbService, sessionService);
+const getUser = createGetUser(dbService, utils);
+const userRouter = createUserRouter(dbService, utils);
 const photoRouter = createPhotoRouter(
     getUser,
     dbService,
@@ -57,7 +53,6 @@ app.use('*', (req: Express.Request, _, next) => {
     next();
 });
 app.use('/node/user', userRouter);
-app.use('/node/session', sessionRouter);
 app.use('/node/photo', photoRouter);
 app.use('/node/comment', commentRoute);
 

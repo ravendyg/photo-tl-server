@@ -75,7 +75,6 @@ export class WebSocketService implements IWebSocketService {
 
     private onWsClose = (key: string, code: number, reason: string) => {
         delete this.wsConnections[key];
-        console.log(code, reason);
     }
 
     broadcast(message: any) {
