@@ -21,7 +21,7 @@ CREATE TABLE `images` (
   PRIMARY KEY (`id`),
   UNIQUE KEY (`iid`),
   KEY  (`uploaded_by`),
-  CONSTRAINT FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`)
+  CONSTRAINT FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `comments` (
@@ -35,8 +35,8 @@ CREATE TABLE `comments` (
   UNIQUE KEY  (`cid`),
   KEY (`image`),
   KEY (`user`),
-  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`),
-  CONSTRAINT FOREIGN KEY (`image`) REFERENCES `images` (`id`)
+  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT FOREIGN KEY (`image`) REFERENCES `images` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `ratings` (
@@ -45,8 +45,8 @@ CREATE TABLE `ratings` (
   `image` bigint(20) NOT NULL,
   `user` bigint(20) NOT NULL,
   PRIMARY KEY (`image`, `user`),
-  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`),
-  CONSTRAINT FOREIGN KEY (`image`) REFERENCES `images` (`id`)
+  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT FOREIGN KEY (`image`) REFERENCES `images` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `views` (
@@ -54,6 +54,6 @@ CREATE TABLE `views` (
   `date` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `user` bigint(20) NOT NULL,
   PRIMARY KEY (`image`, `user`),
-  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`),
-  CONSTRAINT FOREIGN KEY (`image`) REFERENCES `images` (`id`)
+  CONSTRAINT FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT FOREIGN KEY (`image`) REFERENCES `images` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
