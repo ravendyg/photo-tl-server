@@ -43,16 +43,6 @@ interface IDbViewCount {
     value: number;
 }
 
-interface IDbPhoto {
-    id: number;
-    iid: string;
-    extension: string;
-    description: string;
-    title: string;
-    uploaded_by: number;
-    uploaded: number;
-}
-
 function reduceDbAccumulator<T extends {id: number}>(items: T[]): IAccumulator<T> {
     return (items || []).reduce((acc: IAccumulator<T>, item: T) => {
         acc[item.id] = item;
@@ -167,7 +157,7 @@ export class DbService implements IDbService {
         });
     }
 
-    deleteUser(id: number) {
+    deleteUser(_id: number) {
         return Promise.resolve();
     }
 
@@ -221,42 +211,8 @@ export class DbService implements IDbService {
     }
 
     createPhoto(photoRequest: IPhotoRequest): Promise<IPhoto> {
-        return new Promise((resolve, reject) => {
-            const {
-                description,
-                extension,
-                iid,
-                title,
-                uploadedBy,
-            } = photoRequest;
-            this.connection.query(
-                `INSERT INTO images
-                    (iid, ext, description, title, uploaded_by)
-                VALUES (?, ?, ?, ?, ?);`,
-                [iid, extension, description, title, uploadedBy.id],
-                (err, res) => {
-                    if (err) {
-                        return reject(err);
-                    } else {
-                        return resolve({
-                            averageRating: 0,
-                            changed: 0,
-                            commentCount: 0,
-                            description,
-                            extension,
-                            id: res.insertId,
-                            iid,
-                            ratingCount: 0,
-                            title,
-                            uploaded: 0,
-                            uploadedBy,
-                            userRating: 0,
-                            views: 0,
-                        });
-                    }
-                }
-            )
-        });
+        return this.insertPhoto(photoRequest)
+        .then(() => this.getPhoto(photoRequest.iid));
     }
 
     patchPhoto(patchPhotoRequest: IPatchPhotoRequest): Promise<IPhotoPatch | null> {
@@ -343,7 +299,7 @@ export class DbService implements IDbService {
 
     createRating(user: IUser, iid: string, value: number): Promise<IRating> {
         return this.getPhoto(iid)
-            .then((photo: IDbPhoto) => this.upsertRating(user, photo, value))
+            .then((photo: IPhoto) => this.upsertRating(user, photo, value))
             .then((imageId: number) => this.getAverageRatings([imageId]))
             .then((ratingAccumulator: IAccumulator<IDbRating>) => {
                 const photoId = parseInt(Object.keys(ratingAccumulator)[0], 10);
@@ -360,7 +316,7 @@ export class DbService implements IDbService {
 
     createComment = (user: IUser, iid: string, text: string): Promise<IComment> => {
         return this.getPhoto(iid)
-            .then((photo: IDbPhoto) => this.insertComment(user, photo, text))
+            .then((photo: IPhoto) => this.insertComment(user, photo, text))
             .then(this.getComment)
             .then((dbComment: IDbComment) => {
                 const {
@@ -382,9 +338,9 @@ export class DbService implements IDbService {
             });
     };
 
-    getComments = (iid: string): Promise<IComment[]> => {
+    getComments(iid: string): Promise<IComment[]> {
         return this.getPhoto(iid)
-            .then(({ id }: IDbPhoto) => new Promise((resolve, reject) => {
+            .then(({ id }: IPhoto) => new Promise((resolve, reject) => {
                 const args = [id];
                 this.connection.query(
                 `SELECT
@@ -433,9 +389,9 @@ export class DbService implements IDbService {
             );
         }));
 
-    registerView = (iid: string, user: IUser): Promise<boolean> =>
-        this.getPhoto(iid)
-        .then(({ id }: IDbPhoto) => new Promise((resolve, reject) => {
+    registerView(iid: string, user: IUser): Promise<boolean> {
+        return this.getPhoto(iid)
+        .then(({ id }: IPhoto) => new Promise((resolve, reject) => {
             const args = [user.id, id];
             this.connection.query(
                 `INSERT IGNORE INTO views
@@ -452,6 +408,33 @@ export class DbService implements IDbService {
                 }
             )
         }));
+    }
+
+    private insertPhoto: (photoRequest: IPhotoRequest) => Promise<number> =
+        (photoRequest: IPhotoRequest) => new Promise((resolve, reject) => {
+            const {
+                description,
+                extension,
+                iid,
+                title,
+                uploadedBy,
+            } = photoRequest;
+            this.connection.query(
+                `INSERT INTO images
+                    (iid, ext, description, title, uploaded_by)
+                VALUES (?, ?, ?, ?, ?);`,
+                [iid, extension, description, title, uploadedBy.id],
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    } else if (res.insertId > 0) {
+                        resolve(res.insertId);
+                    } else {
+                        reject(`Cannot find ${iid}`);
+                    }
+                }
+            );
+        });
 
     private getImageByComment = (cid: string): Promise<string> =>
         new Promise((resolve, reject) => {
@@ -496,7 +479,8 @@ export class DbService implements IDbService {
         });
     };
 
-    private insertComment = (user: IUser, photo: IDbPhoto, text: string): Promise<number> => {
+    private insertComment = (user: IUser, photo: IPhoto, text: string): Promise<number> => {
+        console.log(photo);
         const cid = this.utils.getUid();
         const args = [cid, user.id, photo.id, text];
         return new Promise((resolve, reject) => {
@@ -519,7 +503,7 @@ export class DbService implements IDbService {
         })
     };
 
-    private upsertRating(user: IUser, photo: IDbPhoto, value: number): Promise<number> {
+    private upsertRating(user: IUser, photo: IPhoto, value: number): Promise<number> {
         return new Promise((resolve, reject) => {
             this.connection.query(
                 `INSERT INTO ratings
@@ -539,10 +523,21 @@ export class DbService implements IDbService {
         })
     }
 
-    private getPhoto(iid: string): Promise<IDbPhoto> {
+    private getPhoto(iid: string): Promise<IPhoto> {
         return new Promise((resolve, reject) => {
             this.connection.query(
-                `SELECT * from images
+                `SELECT
+                    images.id AS id,
+                    images.description AS description,
+                    images.title AS title,
+                    images.uploaded AS uploaded,
+                    images.ext AS extension,
+                    images.changed AS changed,
+                    users.id AS user_id,
+                    users.uid as uid,
+                    users.name AS user_name
+                FROM images
+                    JOIN users ON images.uploaded_by=users.id
                 WHERE iid=?
                 ;`,
                 [iid],
@@ -552,7 +547,36 @@ export class DbService implements IDbService {
                     } else if (res.length === 0) {
                         return reject('not found');
                     } else {
-                        resolve(res[0]);
+                        const {
+                            id,
+                            description,
+                            extension,
+                            title,
+                            user_id: userId,
+                            user_name: userName,
+                            uid,
+                            uploaded,
+                        } = res[0];
+                        const photo: IPhoto = {
+                            averageRating: 0,
+                            changed: 0,
+                            commentCount: 0,
+                            description,
+                            extension,
+                            id,
+                            iid,
+                            ratingCount: 0,
+                            title,
+                            uploaded,
+                            uploadedBy: {
+                                id: userId,
+                                name: userName,
+                                uid,
+                            },
+                            userRating: 0,
+                            views: 0,
+                        };
+                        return resolve(photo);
                     }
                 }
             );
