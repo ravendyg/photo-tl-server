@@ -12,9 +12,16 @@ import * as WebSocket from 'ws';
 export const _path = '/node';
 
 export interface IWebSocketService {
-    broadcast: (message: any) => void;
+    broadcast: (message: any, mapper?: (message: any) => string | ArrayBuffer) => void;
 
     send: (id: string, message: string | ArrayBuffer) => void;
+}
+
+function defaultMapper(message: any) {
+    if (typeof message !== 'string') {
+        return JSON.stringify(message);
+    }
+    return message;
 }
 
 const PING_PERIOD = 30 * 1000;
@@ -77,7 +84,8 @@ export class WebSocketService implements IWebSocketService {
         delete this.wsConnections[key];
     }
 
-    broadcast(message: any) {
+    broadcast(rawMessage: any, mapper: (message: any) => string | ArrayBuffer = defaultMapper) {
+        const message = mapper(rawMessage);
         Object.keys(this.wsConnections).forEach(key => {
             const ws = this.wsConnections[key];
             ws.send(message);
