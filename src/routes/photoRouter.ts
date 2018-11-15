@@ -202,7 +202,7 @@ export function createPhotoRouter(
         }
     });
 
-    // TODO: extract as a separate router '/node/comment'?
+    // TODO: extract as a separate router '/node/rating'?
     router.post('/rating', getUser, async (req: Express.Request, res: Express.Response) => {
         const {
             body = {},
@@ -234,47 +234,6 @@ export function createPhotoRouter(
                 payload: '',
                 status: 200,
                 error: '',
-            });
-        } catch (err) {
-            console.error(err);
-            return res.json({
-                payload: '',
-                status: 500,
-                error: 'Server error',
-            });
-        }
-    });
-
-    router.post('/view/', getUser, async (req: Express.Request, res: Express.Response) => {
-        const {
-            body = {},
-            metadata: {
-                user
-            },
-        } = req;
-        if (!user) {
-            return res.json({
-                error: 'Unauthorized',
-                status: 403,
-            });
-        }
-
-        const {iid} = body;
-        if (!iid) {
-            return res.json({
-                error: 'Missing image id',
-                status: 400,
-            });
-        }
-
-        try {
-            const inserted = await dbService.registerView(iid, user);
-            if (inserted) {
-                dataBus.broadcastAddView(iid);
-            }
-            return res.json({
-                error: '',
-                status: 200,
             });
         } catch (err) {
             console.error(err);
