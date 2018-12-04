@@ -202,48 +202,5 @@ export function createPhotoRouter(
         }
     });
 
-    // TODO: extract as a separate router '/node/rating'?
-    router.post('/rating', getUser, async (req: Express.Request, res: Express.Response) => {
-        const {
-            body = {},
-            metadata: {
-                user
-            },
-        } = req;
-        if (!user) {
-            res.json({
-                error: 'Unauthorized',
-                status: 403,
-            });
-            return;
-        }
-        const {iid, rating} = body;
-        if (!iid || !rating) {
-            res.json({
-                error: 'Missing data',
-                status: 400,
-            });
-            return;
-        }
-
-
-        try {
-            const createdRating = await dbService.createRating(user, iid, rating)
-            dataBus.broadcastRating(createdRating);
-            return res.json({
-                payload: '',
-                status: 200,
-                error: '',
-            });
-        } catch (err) {
-            console.error(err);
-            return res.json({
-                payload: '',
-                status: 500,
-                error: 'Server error',
-            });
-        }
-    });
-
     return router;
 }

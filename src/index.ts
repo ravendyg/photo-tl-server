@@ -13,6 +13,7 @@ import { createUserRouter } from './routes/userRouter';
 import { createPhotoRouter } from './routes/photoRouter';
 import { createCommentRouter } from './routes/commentRoute';
 import { createViewRouter } from './routes/viewRouter';
+import { createRatingRouter } from './routes/ratingRouter';
 import { createGetUser } from './middleware/getUser';
 import { Utils } from './utils/utils';
 import { WebSocketService } from './services/WebSocketService';
@@ -44,7 +45,12 @@ const photoRouter = createPhotoRouter(
     dataBus,
 );
 const viewRouter = createViewRouter(getUser, dbService, dataBus);
-const commentRoute = createCommentRouter(
+const commentRouter = createCommentRouter(
+    getUser,
+    dbService,
+    dataBus,
+);
+const ratingRouter = createRatingRouter(
     getUser,
     dbService,
     dataBus,
@@ -56,8 +62,9 @@ app.use('*', (req: Express.Request, _, next) => {
 });
 app.use('/node/user', userRouter);
 app.use('/node/photo', photoRouter);
-app.use('/node/comment', commentRoute);
+app.use('/node/comment', commentRouter);
 app.use('/node/view', viewRouter);
+app.use('/node/rating', ratingRouter);
 
 // default NOT_FOUND
 app.use('*', function (_, webRes) {
