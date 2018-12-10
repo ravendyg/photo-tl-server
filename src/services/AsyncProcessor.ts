@@ -2,9 +2,11 @@ import { EWSAction, IDataBus } from './DataBus';
 import {IDbService} from './DbService';
 import {
     IDTOWrapper,
+    INewMessageRequest,
     IRatingUpdateRequest,
     IUser,
 } from '../types';
+import { mapCommentToDto } from '../utils/mappers';
 
 type TMessage<P> = {
     action: EWSAction;
@@ -50,6 +52,10 @@ export class AsyncProcessor implements IAsyncPropcessor {
                 return this.processRatingUpdate(message, user);
             }
 
+            case EWSAction.NEW_COMMENT: {
+                return this.processNewMessage(message, user);
+            }
+
             default:
                 // @ts-ignore
                 return Promise.resolve({
@@ -81,6 +87,42 @@ export class AsyncProcessor implements IAsyncPropcessor {
         try {
             const createdRating = await this.dbService.createRating(user, iid, rating)
             this.dataBus.broadcastRating(createdRating);
+            return {
+                payload: '',
+                status: 200,
+            };
+        } catch (err) {
+            console.error(err);
+            return {
+                status: 500,
+                error: 'Server error',
+            };
+        }
+    }
+
+    private async processNewMessage(
+        message: TMessage<INewMessageRequest>,
+        user: IUser,
+    // @ts-ignore
+    ): Promise<IDTOWrapper> {
+        const {
+            payload: {
+                iid,
+                text,
+            },
+        } = message;
+
+        if (!iid || !text) {
+            return {
+                error: 'Missing data',
+                status: 400,
+            };
+        }
+
+        try {
+            const comment = await this.dbService.createComment(user, iid, text);
+            const commentDto = mapCommentToDto(comment);
+            this.dataBus.broadcastComment(commentDto);
             return {
                 payload: '',
                 status: 200,

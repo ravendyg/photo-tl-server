@@ -86,11 +86,6 @@ export interface IPhotoDto {
     views: number;
 }
 
-export interface IRatingUpdateRequest {
-    iid: string,
-    rating: number
-}
-
 export interface IDTOWrapper {
     error?: string;
     payload?: string;
@@ -114,4 +109,17 @@ export interface IPatchPhotoRequest {
 export interface IDeletedComment {
     cid: string;
     iid: string;
+}
+
+
+
+
+export interface IRatingUpdateRequest {
+    iid: string,
+    rating: number
+}
+
+export interface INewMessageRequest {
+    iid: string;
+    text: string;
 }

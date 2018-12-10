@@ -48,49 +48,6 @@ export function createCommentRouter(
         }
     });
 
-    router.post('/', getUser, async (req: Express.Request, res: Express.Response) => {
-        const {
-            metadata: {
-                user
-            },
-        } = req;
-        if (!user) {
-            return res.json({
-                error: 'Unauthorized',
-                status: 403,
-            });
-        }
-        if (!req.body) {
-            return res.json({
-                error: 'Missing data',
-                status: 400,
-            });
-        }
-
-        const {
-            iid,
-            text,
-        } = req.body
-
-        try {
-            const comment = await dbService.createComment(user, iid, text);
-            const commentDto = mapCommentToDto(comment);
-            dataBus.broadcastComment(commentDto);
-            return res.json({
-                payload: '',
-                status: 200,
-                error: '',
-            });
-        } catch (err) {
-            console.error(err);
-            return res.json({
-                payload: '',
-                status: 500,
-                error: 'Server error',
-            });
-        }
-    });
-
     router.delete('/:cid', getUser, async (req: Express.Request, res: Express.Response) => {
         const {
             metadata: {
