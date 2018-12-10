@@ -10,7 +10,7 @@ export interface IUserDto {
 }
 
 export interface IRequestMetadata {
-    user?: IUser,
+    user: IUser,
 }
 
 declare global {
@@ -86,6 +86,16 @@ export interface IPhotoDto {
     views: number;
 }
 
+export interface IRatingUpdateRequest {
+    iid: string,
+    rating: number
+}
+
+export interface IDTOWrapper {
+    error?: string;
+    payload?: string;
+    status: number;
+}
 export interface IRating {
     uid: string;
     iid: string;

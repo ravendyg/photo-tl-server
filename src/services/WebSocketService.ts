@@ -4,10 +4,11 @@
  */
 
 import { Server } from 'http'
-import { Express } from 'express';
+import { Express, RequestHandler } from 'express';
 import { Request, Response } from 'express-serve-static-core';
 import * as Ws from 'ws';
 import * as WebSocket from 'ws';
+import {IAsyncPropcessor} from './AsyncProcessor';
 
 export const _path = '/node';
 
@@ -34,7 +35,12 @@ export class WebSocketService implements IWebSocketService {
     private wsConnections: { [key: string]: Ws } = {};
     private lpConnections: Response[] = [];
 
-    constructor (private server: Server, private app: Express) {
+    constructor (
+        private getUser: RequestHandler,
+        private app: Express,
+        private asyncProcessor: IAsyncPropcessor,
+        private server: Server,
+    ) {
         this.wss = new Ws.Server({
             server: this.server,
             path: `${_path}/ws`,
@@ -55,13 +61,27 @@ export class WebSocketService implements IWebSocketService {
         });
 
         // long poling handlers
-        this.app.post(`${_path}/lp`, (req: Request, res: Response) => {
-            // TODO: add a call to the message processors
-            console.log('post lp');
-            res.status(400).end();
+        this.app.post(`${_path}/lp`, this.getUser, async (req: Request, res: Response) => {
+            const {
+                body,
+                metadata: {
+                    user
+                },
+            } = req;
+
+            try {
+                const response = await this.asyncProcessor.process(body, user);
+                return res.json(response);
+            } catch (err) {
+                console.error(err);
+                return res.json({
+                    status: 500,
+                    error: 'Server error',
+                });
+            }
         });
 
-        this.app.get(`${_path}/lp`, (req: Request, res: Response) => {
+        this.app.get(`${_path}/lp`, this.getUser, (req: Request, res: Response) => {
             this.lpConnections.push(res);
             req.on('close', () => {
                 this.lpConnections = this.lpConnections.filter(connection => connection !== res);
@@ -84,7 +104,7 @@ export class WebSocketService implements IWebSocketService {
         delete this.wsConnections[key];
     }
 
-    broadcast(rawMessage: any, mapper: (message: any) => string | ArrayBuffer = defaultMapper) {
+    broadcast = (rawMessage: any, mapper: (message: any) => string | ArrayBuffer = defaultMapper) => {
         const message = mapper(rawMessage);
         Object.keys(this.wsConnections).forEach(key => {
             const ws = this.wsConnections[key];

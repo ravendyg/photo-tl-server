@@ -8,16 +8,18 @@ import {
 } from "../types";
 
 export enum EWSAction {
-    NEW_PHOTO = 1,
-    RATING_UPDATE = 2,
-    PATCH_PHOTO = 3,
-    DELETE_PHOTO = 4,
-    NEW_COMMENT = 5,
-    DELET_COMMENT = 6,
-    ADD_VIEW = 7,
+    NEW_PHOTO = 0,
+    RATING_UPDATE = 1,
+    PATCH_PHOTO = 2,
+    DELETE_PHOTO = 3,
+    NEW_COMMENT = 4,
+    DELET_COMMENT = 5,
+    ADD_VIEW = 6,
 }
 
 export interface IDataBus {
+    setPublisher: (webSocketService: IWebSocketService) => void;
+
     broadcastNewPhoto: (photo: IPhotoDto) => void;
 
     broadcastPatchPhoto: (patch: IPhotoPatch) => void;
@@ -34,52 +36,57 @@ export interface IDataBus {
 }
 
 export class DataBus implements IDataBus {
-    constructor (private webSocketService: IWebSocketService) { }
+    private broadcast: (message: any) => void = () => {};
+
+    setPublisher(webSocketService: IWebSocketService) {
+        this.broadcast = webSocketService.broadcast;
+    }
 
     broadcastNewPhoto(payload: IPhotoDto) {
-        this.webSocketService.broadcast({
+        this.broadcast({
             action: EWSAction.NEW_PHOTO,
             payload,
         });
     }
 
     broadcastPatchPhoto(payload: IPhotoPatch) {
-        this.webSocketService.broadcast({
+        this.broadcast({
             action: EWSAction.PATCH_PHOTO,
             payload,
         });
     }
 
     broadcastDeletePhoto(payload: string) {
-        this.webSocketService.broadcast({
+        this.broadcast({
             action: EWSAction.DELETE_PHOTO,
             payload,
         });
     }
 
     broadcastRating(payload: IRating) {
-        this.webSocketService.broadcast({
+        console.log(this.broadcast)
+        this.broadcast({
             action: EWSAction.RATING_UPDATE,
             payload,
         });
     }
 
     broadcastComment(payload: ICommentDto) {
-        this.webSocketService.broadcast({
+        this.broadcast({
             action: EWSAction.NEW_COMMENT,
             payload,
         });
     }
 
     broadcastDeleteComment(payload: IDeletedComment) {
-        this.webSocketService.broadcast({
+        this.broadcast({
             action: EWSAction.DELET_COMMENT,
             payload,
         });
     }
 
     broadcastAddView(payload: string) {
-        this.webSocketService.broadcast({
+        this.broadcast({
             action: EWSAction.ADD_VIEW,
             payload,
         });

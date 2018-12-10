@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as http from 'http';
+// @ts-ignore
 import * as logger from 'morgan';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,10 +14,10 @@ import { createUserRouter } from './routes/userRouter';
 import { createPhotoRouter } from './routes/photoRouter';
 import { createCommentRouter } from './routes/commentRoute';
 import { createViewRouter } from './routes/viewRouter';
-import { createRatingRouter } from './routes/ratingRouter';
 import { createGetUser } from './middleware/getUser';
 import { Utils } from './utils/utils';
 import { WebSocketService } from './services/WebSocketService';
+import { AsyncProcessor } from './services/AsyncProcessor';
 import { FileService } from './services/FileService';
 import { DataBus } from './services/DataBus';
 
@@ -25,17 +26,25 @@ app.use(logger('tiny'));
 app.disable('x-powered-by');
 app.set('port', config.port);
 app.use(bodyParser.json());
+app.use(bodyParser.raw({type: 'application/x-binary', limit : '2mb'}))
 app.use(cookieParser());
 
 const server = http.createServer(app);
-const webSocketService = new WebSocketService(server, app);
 const cryptoService = new CryptoService();
 const utils = new Utils(cryptoService);
 const dbService = new DbService(config, utils);
 const fileService = new FileService(config, fs, path, pump);
-const dataBus = new DataBus(webSocketService);
-
 const getUser = createGetUser(dbService, utils);
+const dataBus = new DataBus();
+const asyncProcessor = new AsyncProcessor(dbService, dataBus);
+const webSocketService = new WebSocketService(
+    getUser,
+    app,
+    asyncProcessor,
+    server,
+);
+dataBus.setPublisher(webSocketService);
+
 const userRouter = createUserRouter(dbService, utils);
 const photoRouter = createPhotoRouter(
     getUser,
@@ -50,21 +59,11 @@ const commentRouter = createCommentRouter(
     dbService,
     dataBus,
 );
-const ratingRouter = createRatingRouter(
-    getUser,
-    dbService,
-    dataBus,
-);
 
-app.use('*', (req: Express.Request, _, next) => {
-    req.metadata = {};
-    next();
-});
 app.use('/node/user', userRouter);
 app.use('/node/photo', photoRouter);
 app.use('/node/comment', commentRouter);
 app.use('/node/view', viewRouter);
-app.use('/node/rating', ratingRouter);
 
 // default NOT_FOUND
 app.use('*', function (_, webRes) {
