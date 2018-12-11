@@ -480,7 +480,6 @@ export class DbService implements IDbService {
     };
 
     private insertComment = (user: IUser, photo: IPhoto, text: string): Promise<number> => {
-        console.log(photo);
         const cid = this.utils.getUid();
         const args = [cid, user.id, photo.id, text];
         return new Promise((resolve, reject) => {

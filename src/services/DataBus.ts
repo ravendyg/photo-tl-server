@@ -13,7 +13,7 @@ export enum EWSAction {
     PATCH_PHOTO = 2,
     DELETE_PHOTO = 3,
     NEW_COMMENT = 4,
-    DELET_COMMENT = 5,
+    DELETE_COMMENT = 5,
     ADD_VIEW = 6,
 }
 
@@ -80,7 +80,7 @@ export class DataBus implements IDataBus {
 
     broadcastDeleteComment(payload: IDeletedComment) {
         this.broadcast({
-            action: EWSAction.DELET_COMMENT,
+            action: EWSAction.DELETE_COMMENT,
             payload,
         });
     }

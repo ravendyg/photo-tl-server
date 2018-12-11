@@ -4,6 +4,7 @@ import {
     IDTOWrapper,
     INewMessageRequest,
     IRatingUpdateRequest,
+    IDeleteMessageRequest,
     IUser,
 } from '../types';
 import { mapCommentToDto } from '../utils/mappers';
@@ -16,7 +17,7 @@ type TMessage<P> = {
 // TODO: implement
 function unmarshal(_rawData: Buffer): TMessage<any> {
     return {
-        action: EWSAction.DELET_COMMENT,
+        action: EWSAction.DELETE_COMMENT,
         payload: {
             iid: 'sdfsdf',
         },
@@ -56,6 +57,10 @@ export class AsyncProcessor implements IAsyncPropcessor {
                 return this.processNewMessage(message, user);
             }
 
+            case EWSAction.DELETE_COMMENT: {
+                return this.processDeleteMessage(message, user);
+            }
+
             default:
                 // @ts-ignore
                 return Promise.resolve({
@@ -65,6 +70,7 @@ export class AsyncProcessor implements IAsyncPropcessor {
         }
     }
 
+    // TODO: refactor common verification logic
     private async processRatingUpdate(
         message: TMessage<IRatingUpdateRequest>,
         user: IUser,
@@ -127,6 +133,47 @@ export class AsyncProcessor implements IAsyncPropcessor {
                 payload: '',
                 status: 200,
             };
+        } catch (err) {
+            console.error(err);
+            return {
+                status: 500,
+                error: 'Server error',
+            };
+        }
+    }
+
+    private async processDeleteMessage(
+        message: TMessage<IDeleteMessageRequest>,
+        user: IUser,
+    // @ts-ignore
+    ): Promise<IDTOWrapper> {
+        const {
+            payload: {
+                cid,
+            },
+        } = message;
+
+        if (!cid) {
+            return {
+                error: 'Missing data',
+                status: 400,
+            };
+        }
+
+        try {
+            const iid = await this.dbService.deleteComment(cid, user);
+            if (iid) {
+                this.dataBus.broadcastDeleteComment({ cid, iid });
+                return {
+                    payload: '',
+                    status: 200,
+                };
+            } else {
+                return {
+                    status: 404,
+                    error: 'Comment not found',
+                };
+            }
         } catch (err) {
             console.error(err);
             return {

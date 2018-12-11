@@ -123,3 +123,7 @@ export interface INewMessageRequest {
     iid: string;
     text: string;
 }
+
+export interface IDeleteMessageRequest {
+    cid: string;
+}
