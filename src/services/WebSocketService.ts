@@ -57,7 +57,6 @@ export class WebSocketService implements IWebSocketService {
             ws.on('close', (code: number, reason: string) =>
                 this.onWsClose(key, code, reason));
             // check that connection works
-            console.log('ping');
             ws.ping();
         });
 
@@ -93,7 +92,6 @@ export class WebSocketService implements IWebSocketService {
     private heartBeet() {
         Object.keys(this.wsConnections).forEach(key => {
             const ws = this.wsConnections[key];
-            console.log('ping');
             ws.ping();
         });
     }

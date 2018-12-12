@@ -5,6 +5,8 @@ import {
     INewMessageRequest,
     IRatingUpdateRequest,
     IDeleteMessageRequest,
+    IDeletePhotoRequest,
+    IPhotoPatch,
     IUser,
 } from '../types';
 import { mapCommentToDto } from '../utils/mappers';
@@ -40,7 +42,7 @@ export class AsyncProcessor implements IAsyncPropcessor {
     process = (
         rawMessage: TMessage<any> | Buffer,
         user: IUser,
-    ) => {
+    ): Promise<IDTOWrapper> => {
         let message: TMessage<any>;
         if (Buffer.isBuffer(rawMessage)) {
             message = unmarshal(rawMessage);
@@ -59,6 +61,14 @@ export class AsyncProcessor implements IAsyncPropcessor {
 
             case EWSAction.DELETE_COMMENT: {
                 return this.processDeleteMessage(message, user);
+            }
+
+            case EWSAction.DELETE_PHOTO: {
+                return this.processDeletePhoto(message, user);
+            }
+
+            case EWSAction.PATCH_PHOTO: {
+                return this.processPatchPhoto(message, user);
             }
 
             default:
@@ -172,6 +182,95 @@ export class AsyncProcessor implements IAsyncPropcessor {
                 return {
                     status: 404,
                     error: 'Comment not found',
+                };
+            }
+        } catch (err) {
+            console.error(err);
+            return {
+                status: 500,
+                error: 'Server error',
+            };
+        }
+    }
+
+    private async processDeletePhoto(
+        message: TMessage<IDeletePhotoRequest>,
+        user: IUser,
+    // @ts-ignore
+    ): Promise<IDTOWrapper> {
+        const {
+            payload: {
+                iid,
+            },
+        } = message;
+
+        if (!iid) {
+            return {
+                error: 'Missing data',
+                status: 400,
+            };
+        }
+
+        try {
+            const deleted = await this.dbService.deletePhoto(iid, user);
+            if (deleted) {
+                this.dataBus.broadcastDeletePhoto(iid);
+                return {
+                    payload: '',
+                    status: 200,
+                };
+            } else {
+                return {
+                    status: 404,
+                    error: 'Photo not found',
+                };
+            }
+        } catch (err) {
+            console.error(err);
+            return {
+                status: 500,
+                error: 'Server error',
+            };
+        }
+    }
+
+    private async processPatchPhoto(
+        message: TMessage<IPhotoPatch>,
+        user: IUser,
+    // @ts-ignore
+    ): Promise<IDTOWrapper> {
+        const {
+            payload: {
+                description,
+                iid,
+                title,
+            },
+        } = message;
+
+        if (!description || !iid || !title) {
+            return {
+                status: 400,
+                error: 'Missing data',
+            };
+        }
+
+        try {
+            const maybePhoto = await this.dbService.patchPhoto({
+                description,
+                iid,
+                title,
+                user
+            });
+            if (!maybePhoto) {
+                return {
+                    status: 400,
+                    error: 'Could not update',
+                };
+            } else {
+                this.dataBus.broadcastPatchPhoto(maybePhoto);
+                return {
+                    payload: '',
+                    status: 200,
                 };
             }
         } catch (err) {

@@ -248,12 +248,14 @@ export class DbService implements IDbService {
 
     deletePhoto = (iid: string, user: IUser): Promise<boolean> =>
         new Promise((resolve, reject) => {
+            console.log(iid, user.id);
             this.connection.query(
                 `DELETE FROM images
                 WHERE iid=? AND uploaded_by=?
                 ;`,
                 [iid, user.id],
                 (err, res) => {
+                    console.log('query done');
                     if (err) {
                         return reject(err);
                     } else if (res.affectedRows > 0) {

@@ -112,8 +112,6 @@ export interface IDeletedComment {
 }
 
 
-
-
 export interface IRatingUpdateRequest {
     iid: string,
     rating: number
@@ -126,4 +124,8 @@ export interface INewMessageRequest {
 
 export interface IDeleteMessageRequest {
     cid: string;
+}
+
+export interface IDeletePhotoRequest {
+    iid: string;
 }
