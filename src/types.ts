@@ -64,11 +64,14 @@ export interface IPhoto {
     views: number;
 }
 
-export interface IPhotoPatch {
+export interface IPhotoPatchRequest {
     iid: string;
     description: string;
     title: string;
-    changed: number;
+}
+
+export interface IPhotoPatch extends IPhotoPatchRequest {
+    changed: string;
 }
 
 export interface IPhotoDto {
@@ -127,5 +130,9 @@ export interface IDeleteMessageRequest {
 }
 
 export interface IDeletePhotoRequest {
+    iid: string;
+}
+
+export interface IViewReport {
     iid: string;
 }

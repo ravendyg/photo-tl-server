@@ -6,8 +6,9 @@ import {
     IRatingUpdateRequest,
     IDeleteMessageRequest,
     IDeletePhotoRequest,
-    IPhotoPatch,
     IUser,
+    IPhotoPatchRequest,
+    IViewReport,
 } from '../types';
 import { mapCommentToDto } from '../utils/mappers';
 
@@ -69,6 +70,10 @@ export class AsyncProcessor implements IAsyncPropcessor {
 
             case EWSAction.PATCH_PHOTO: {
                 return this.processPatchPhoto(message, user);
+            }
+
+            case EWSAction.ADD_VIEW: {
+                return this.processView(message, user);
             }
 
             default:
@@ -235,7 +240,7 @@ export class AsyncProcessor implements IAsyncPropcessor {
     }
 
     private async processPatchPhoto(
-        message: TMessage<IPhotoPatch>,
+        message: TMessage<IPhotoPatchRequest>,
         user: IUser,
     // @ts-ignore
     ): Promise<IDTOWrapper> {
@@ -273,6 +278,42 @@ export class AsyncProcessor implements IAsyncPropcessor {
                     status: 200,
                 };
             }
+        } catch (err) {
+            console.error(err);
+            return {
+                status: 500,
+                error: 'Server error',
+            };
+        }
+    }
+
+    private async processView(
+        message: TMessage<IViewReport>,
+        user: IUser,
+    // @ts-ignore
+    ): Promise<IDTOWrapper> {
+        const {
+            payload: {
+                iid,
+            },
+        } = message;
+
+        if (!iid) {
+            return {
+                status: 400,
+                error: 'Missing data',
+            };
+        }
+
+        try {
+            const inserted = await this.dbService.registerView(iid, user);
+            if (inserted) {
+                this.dataBus.broadcastAddView(iid);
+            }
+            return {
+                payload: '',
+                status: 200,
+            };
         } catch (err) {
             console.error(err);
             return {

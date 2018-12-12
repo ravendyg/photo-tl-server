@@ -64,7 +64,6 @@ export class DataBus implements IDataBus {
     }
 
     broadcastRating(payload: IRating) {
-        console.log(this.broadcast)
         this.broadcast({
             action: EWSAction.RATING_UPDATE,
             payload,

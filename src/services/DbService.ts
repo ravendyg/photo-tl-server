@@ -393,7 +393,10 @@ export class DbService implements IDbService {
 
     registerView(iid: string, user: IUser): Promise<boolean> {
         return this.getPhoto(iid)
-            .then(({ id }: IPhoto) => new Promise((resolve, reject) => {
+            .then(({ id, uploadedBy }: IPhoto) => new Promise((resolve, reject) => {
+                if (uploadedBy.id === user.id) {
+                    return resolve(false);
+                }
                 const args = [user.id, id];
                 this.connection.query(
                     `INSERT IGNORE INTO views
