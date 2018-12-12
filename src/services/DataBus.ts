@@ -5,6 +5,7 @@ import {
     IPhotoPatch,
     IRating,
     ICommentDto,
+    IViewReport,
 } from "../types";
 
 export enum EWSAction {
@@ -32,7 +33,7 @@ export interface IDataBus {
 
     broadcastDeleteComment: (deleted: IDeletedComment) => void;
 
-    broadcastAddView: (iid: string) => void;
+    broadcastAddView: (view: IViewReport) => void;
 }
 
 export class DataBus implements IDataBus {
@@ -84,7 +85,7 @@ export class DataBus implements IDataBus {
         });
     }
 
-    broadcastAddView(payload: string) {
+    broadcastAddView(payload: IViewReport) {
         this.broadcast({
             action: EWSAction.ADD_VIEW,
             payload,

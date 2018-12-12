@@ -308,7 +308,11 @@ export class AsyncProcessor implements IAsyncPropcessor {
         try {
             const inserted = await this.dbService.registerView(iid, user);
             if (inserted) {
-                this.dataBus.broadcastAddView(iid);
+                const view: IViewReport = {
+                    iid,
+                    uid: user.uid,
+                };
+                this.dataBus.broadcastAddView(view);
             }
             return {
                 payload: '',

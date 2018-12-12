@@ -135,4 +135,5 @@ export interface IDeletePhotoRequest {
 
 export interface IViewReport {
     iid: string;
+    uid: string;
 }
